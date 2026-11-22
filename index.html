@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<script src="vendor/leaflet/leaflet.js"></script>
+<meta name="theme-color" content="#A9CBDA">
 <style>
 :root{
   /* layout: full-bleed hand-drawn map, chips on top, sheet at the bottom (left panel on wide screens) */
@@ -36,18 +39,21 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .pin.saved::after{content:"";position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--ink)}
 .pin-label{position:absolute;transform:translate(-50%,0);pointer-events:none;font-family:var(--font-display);font-weight:700;font-size:13px;white-space:nowrap;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:0 8px;line-height:1.5}
 .pin-label.hi{font-size:15px;background:#FFF3D6;box-shadow:2px 2px 0 var(--ink)}
-.top{position:absolute;top:0;left:0;right:0;padding:14px 16px 0;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.top{z-index:1000;position:absolute;top:0;left:0;right:0;padding:14px 16px 0;display:flex;flex-direction:column;gap:10px;pointer-events:none}
 .brand{display:flex;align-items:center;gap:10px;pointer-events:auto}
-.brand h1{margin:0;font-family:var(--font-display);font-size:28px;line-height:1;font-weight:700}
+.brand h1{white-space:nowrap;margin:0;font-family:var(--font-display);font-size:28px;line-height:1;font-weight:700}
 .brand span{font-size:12px;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;font-weight:700}
 .chips{display:flex;gap:8px;overflow-x:auto;pointer-events:auto;padding-bottom:4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--paper);border-radius:999px;padding:5px 12px 5px 8px;font-size:13px;font-weight:700}
 .chip i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);display:block}
 .chip[aria-pressed="false"]{background:transparent;opacity:.55}
-.zoom{position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
+.zoom{position:absolute;right:16px;top:146px;z-index:1000;display:flex;flex-direction:column;gap:8px}
+body.street .sheet{max-height:46%}
+@media (max-width:420px){.brand span{display:none}.brand h1{font-size:24px}.mode button{padding:6px 10px}}
+@media (min-width:820px){.zoom{top:50%;transform:translateY(-50%)}body.street .sheet{max-height:calc(100% - 150px)}}
 .zoom button{width:42px;height:42px;border-radius:12px;border:2.5px solid var(--ink);background:var(--paper);font-size:22px;font-weight:800;line-height:1}
-.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-top:2.5px solid var(--ink);border-radius:22px 22px 0 0;padding:10px 16px 18px;max-height:62%;overflow-y:auto;transition:transform .25s}
+.sheet{z-index:1100;position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-top:2.5px solid var(--ink);border-radius:22px 22px 0 0;padding:10px 16px 18px;max-height:62%;overflow-y:auto;transition:transform .25s}
 .grab{width:44px;height:5px;border-radius:5px;background:#D8CFBD;margin:0 auto 12px}
 .plan{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:2.5px solid var(--ink);background:var(--accent);color:#fff;border-radius:999px;padding:13px 16px;font-size:17px;font-weight:800;box-shadow:0 4px 0 var(--ink)}
 .plan:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
@@ -77,8 +83,35 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .actions .add{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--ink)}
 .actions .add.on{background:#6E9E5A}
 .note{font-size:11.5px;color:var(--muted);margin-top:12px}
-.toast{position:absolute;left:50%;top:110px;transform:translate(-50%,-10px);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:700;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap}
+.toast{z-index:1200;position:absolute;left:50%;top:110px;transform:translate(-50%,-10px);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:700;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.mode{display:flex;gap:2px;margin-left:auto;border:2px solid var(--ink);border-radius:999px;background:var(--paper);padding:3px}
+.mode button{border:0;background:none;border-radius:999px;padding:6px 12px;font-weight:800;font-size:13px}
+.mode button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+#street{position:absolute;inset:0;display:none;background:#EDE6D6}
+body.street #street{display:block}
+body.street #map{display:none}
+#street .leaflet-tile-pane{filter:sepia(.22) saturate(.95)}
+#street .leaflet-control-attribution{font-size:10px;margin-top:118px!important;background:rgba(255,252,244,.85)}
+.lp{width:38px;height:38px;border:2.5px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.lp svg{width:20px;height:20px}
+.lp.hi{width:50px;height:50px;border-radius:15px;box-shadow:3px 4px 0 var(--ink)}
+.lp.hi svg{width:28px;height:28px}
+.lp.active{transform:scale(1.15);box-shadow:0 0 0 5px rgba(217,105,58,.45)}
+.lp.saved{outline:3px solid var(--accent);outline-offset:2px}
+.me{width:20px;height:20px;border-radius:50%;background:#2F80ED;border:3.5px solid #fff;box-shadow:0 0 0 2px rgba(47,128,237,.35),0 2px 6px rgba(0,0,0,.3)}
+.zoom .loc{font-size:0;display:flex;align-items:center;justify-content:center}
+.zoom .loc svg{width:22px;height:22px}
+.zoom .loc.on{background:#2F80ED}
+.zoom .loc.on svg{stroke:#fff}
+.nrow{display:flex;gap:12px;align-items:center;width:100%;border:0;border-bottom:1.5px dashed #E2D8C3;background:none;padding:10px 2px;text-align:left}
+.nrow .ic{width:42px;height:42px;border-radius:12px;border:2px solid var(--ink);flex:none;display:flex;align-items:center;justify-content:center}
+.nrow .ic svg{width:24px;height:24px}
+.nrow b{display:block;font-size:14px;line-height:1.3}
+.nrow em{font-style:normal;font-size:12px;color:var(--muted)}
+.nrow .d{margin-left:auto;text-align:right;font-weight:800;font-size:14px;white-space:nowrap}
+.nrow .d small{display:block;font-weight:600;font-size:11.5px;color:var(--muted)}
+.locate{width:100%;margin-top:4px;border:2px dashed var(--ink);background:none;border-radius:14px;padding:12px;font-weight:800;font-size:14px}
 @media (min-width:820px){
   .sheet{left:16px;right:auto;bottom:16px;top:auto;width:380px;border:2.5px solid var(--ink);border-radius:22px;max-height:calc(100% - 150px)}
   .grab{display:none}
@@ -93,14 +126,17 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <div id="pins"></div>
   </div>
 
+  <div id="street" aria-label="Street map of Fukui"></div>
+
   <div class="top">
-    <div class="brand"><h1>Visit Fukui</h1><span>福井</span></div>
+    <div class="brand"><h1>Visit Fukui</h1><span>福井</span><div class="mode" role="group" aria-label="Map style"><button id="m-art" aria-pressed="true">Illustrated</button><button id="m-street" aria-pressed="false">Street</button></div></div>
     <div class="chips" id="chips" role="toolbar" aria-label="Filter places"></div>
   </div>
 
   <div class="zoom">
     <button id="zin" aria-label="Zoom in">+</button>
     <button id="zout" aria-label="Zoom out">−</button>
+    <button id="loc" class="loc" aria-label="Show my location"><svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
   </div>
 
   <section class="sheet" id="sheet" aria-live="polite"></section>
@@ -271,6 +307,7 @@ function render(){
     const hit = taken.some(t => r.left < t.right && r.right > t.left && r.top < t.bottom && r.bottom > t.top);
     if (hit && el.dataset.id !== selected) el.style.display = "none"; else taken.push(r);
   });
+  syncStreet();
 }
 function buildPins(){
   PLACES.forEach(p => {
@@ -302,24 +339,26 @@ const sheet = document.getElementById("sheet");
 const icon = (c, size) => `<svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:${size}px;height:${size}px">${CATS[c].icon}</svg>`;
 function home(){
   selected = null;
+  if (mode === "street") return homeStreet();
   const n = trip.length;
   sheet.innerHTML = `<div class="grab"></div>
     <button class="plan" id="plan">Plan your trip ${n ? `<span class="count">${n} saved</span>` : ""}</button>
     <div class="sec"><h2>Must-see in Fukui</h2><small>Tap to explore</small></div>
     <div class="hl">${PLACES.filter(p => p.hi).map(p => `<button class="hcard" data-id="${p.id}"><div class="art" style="background:${CATS[p.cat].color}">${icon(p.cat, 34)}</div><b>${shortName(p)}</b><em>${p.town}</em></button>`).join("")}</div>`;
-  sheet.querySelector("#plan").onclick = () => toast("Trip planner comes in step 2");
+  sheet.querySelector("#plan").onclick = () => toast("Trip planner is coming next");
   sheet.querySelectorAll(".hcard").forEach(b => b.onclick = () => openPlace(b.dataset.id, true));
   render();
 }
 function openPlace(id, fly){
   const p = PLACES.find(q => q.id === id), c = CATS[p.cat], on = trip.includes(id);
   selected = id;
-  if (fly) flyTo(p);
-  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=transit`;
+  if (fly) (mode === "street" ? streetFly(p) : flyTo(p));
+  const d = me && nearFukui() ? dist(me, p) : null;
+  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=${d !== null && d < 2 ? "walking" : "transit"}`;
   sheet.innerHTML = `<div class="grab"></div><div class="card" style="position:relative">
     <div class="art" style="background:${c.color}">${icon(p.cat, 60)}<span class="tag">${c.name}</span></div>
     <button class="close" id="close" aria-label="Close">×</button>
-    <h3>${p.name}</h3><div class="jp">${p.jp} · ${p.town}</div>
+    <h3>${p.name}</h3><div class="jp">${p.jp} · ${p.town}${d !== null ? ` · <b style="color:var(--ink)">${fmtDist(d)} away</b>` : ""}</div>
     <p>${p.desc}</p>
     <div class="facts"><div><small>Time needed</small><span>${p.time}</span></div><div><small>Getting there</small><span>${p.access}</span></div><div><small>Hours & fee</small><span>Check site</span></div></div>
     <div class="actions">${p.cat === "station" ? "" : `<button class="add ${on ? "on" : ""}" id="add">${on ? "✓ In your trip" : "+ Add to trip"}</button>`}<a href="${gmaps}" target="_blank" rel="noopener">Directions ↗</a></div>
@@ -363,11 +402,120 @@ const end = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) last = null; if 
 mapEl.addEventListener("pointerup", e => { end(e); });
 mapEl.addEventListener("pointercancel", end);
 mapEl.addEventListener("wheel", e => { e.preventDefault(); const r = mapEl.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top); }, {passive: false});
-document.getElementById("zin").onclick = () => { const r = mapEl.getBoundingClientRect(); zoomAt(1.3, r.width / 2, r.height / 2); };
-document.getElementById("zout").onclick = () => { const r = mapEl.getBoundingClientRect(); zoomAt(1 / 1.3, r.width / 2, r.height / 2); };
-window.addEventListener("resize", () => { fit(); render(); });
+document.getElementById("zin").onclick = () => { if (mode === "street") return lmap.zoomIn(); const r = mapEl.getBoundingClientRect(); zoomAt(1.3, r.width / 2, r.height / 2); };
+document.getElementById("zout").onclick = () => { if (mode === "street") return lmap.zoomOut(); const r = mapEl.getBoundingClientRect(); zoomAt(1 / 1.3, r.width / 2, r.height / 2); };
+window.addEventListener("resize", () => { fit(); render(); if (lmap) lmap.invalidateSize(); });
 
-buildChips(); buildPins(); fit(); home();
+let mode = "art", lmap = null, meLayer = null, me = null, watchId = null, nearKey = "";
+const markers = {};
+const FUKUI_STN = {lat: 36.062, lon: 136.223};
+function dist(a, b){
+  const R = 6371, t = x => x * Math.PI / 180, dLa = t(b.lat - a.lat), dLo = t(b.lon - a.lon);
+  const h = Math.sin(dLa / 2) ** 2 + Math.cos(t(a.lat)) * Math.cos(t(b.lat)) * Math.sin(dLo / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+const fmtDist = d => d < 1 ? `${Math.max(10, Math.round(d * 100) * 10)} m` : d < 10 ? `${d.toFixed(1)} km` : `${Math.round(d)} km`;
+const howLong = d => d <= 2 ? `${Math.max(1, Math.round(d * 1000 / 80))} min walk` : `~${Math.round(d / 35 * 60 + 5)} min by car`;
+const nearFukui = () => me && dist(me, FUKUI_STN) < 70;
+
+function setMode(m){
+  mode = m;
+  document.body.classList.toggle("street", m === "street");
+  document.getElementById("m-art").setAttribute("aria-pressed", m === "art");
+  document.getElementById("m-street").setAttribute("aria-pressed", m === "street");
+  try { localStorage.setItem("vf-mode", m); } catch (e) {}
+  if (m === "street"){ initStreet(); setTimeout(() => lmap.invalidateSize(), 0); }
+  selected ? openPlace(selected) : home();
+}
+function initStreet(){
+  if (lmap || !window.L) return;
+  lmap = L.map("street", {zoomControl: false});
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    subdomains: "abcd", maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  }).addTo(lmap);
+  lmap.attributionControl.setPrefix(false);
+  lmap.attributionControl.setPosition("topright");
+  PLACES.forEach(p => {
+    const c = CATS[p.cat], s = p.hi ? 50 : 38;
+    const icon = L.divIcon({className: "", iconSize: [s, s], iconAnchor: [s / 2, s / 2],
+      html: `<div class="lp${p.hi ? " hi" : ""}" style="background:${c.color}"><svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg></div>`});
+    markers[p.id] = L.marker([p.lat, p.lon], {icon, title: p.name, riseOnHover: true}).addTo(lmap).on("click", () => openPlace(p.id, true));
+  });
+  const wide = innerWidth >= 820;
+  lmap.fitBounds(L.latLngBounds(PLACES.map(p => [p.lat, p.lon])), {paddingTopLeft: [wide ? 420 : 24, 130], paddingBottomRight: [70, wide ? 30 : innerHeight * .35]});
+  if (me) drawMe();
+  syncStreet();
+}
+function syncStreet(){
+  if (!lmap) return;
+  PLACES.forEach(p => {
+    const m = markers[p.id], show = active.has(p.cat);
+    if (show && !lmap.hasLayer(m)) m.addTo(lmap);
+    if (!show && lmap.hasLayer(m)) m.remove();
+    const el = m.getElement() && m.getElement().querySelector(".lp");
+    if (el){ el.classList.toggle("active", selected === p.id); el.classList.toggle("saved", trip.includes(p.id)); }
+    m.setZIndexOffset(selected === p.id ? 1000 : p.hi ? 100 : 0);
+  });
+}
+function streetFly(p){
+  if (!lmap) return;
+  const wide = innerWidth >= 820, z = Math.max(lmap.getZoom(), 14);
+  const pt = lmap.project([p.lat, p.lon], z).add([wide ? -200 : 0, wide ? 0 : innerHeight * .22]);
+  lmap.flyTo(lmap.unproject(pt, z), z, {duration: .8});
+}
+function drawMe(){
+  if (!lmap || !me) return;
+  if (!meLayer) meLayer = L.layerGroup().addTo(lmap);
+  meLayer.clearLayers();
+  L.circle([me.lat, me.lon], {radius: Math.min(me.acc, 1500), color: "#2F80ED", weight: 1, fillOpacity: .12, interactive: false}).addTo(meLayer);
+  L.marker([me.lat, me.lon], {interactive: false, zIndexOffset: 2000, icon: L.divIcon({className: "", iconSize: [20, 20], iconAnchor: [10, 10], html: '<div class="me"></div>'})}).addTo(meLayer);
+}
+function locate(center){
+  if (!navigator.geolocation){ toast("Location isn't available on this device"); return; }
+  document.getElementById("loc").classList.add("on");
+  if (watchId !== null){ if (center && me) centerMe(); return; }
+  if (center) toast("Finding you…");
+  let first = true;
+  watchId = navigator.geolocation.watchPosition(pos => {
+    me = {lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy};
+    drawMe();
+    if (first && center) centerMe();
+    first = false;
+    const key = me.lat.toFixed(3) + me.lon.toFixed(3);
+    if (key !== nearKey){ nearKey = key; if (!selected && mode === "street") homeStreet(); }
+  }, err => {
+    watchId = null;
+    document.getElementById("loc").classList.remove("on");
+    toast(err.code === 1 ? "Location is blocked. Allow it in your browser settings" : "Couldn't find your location");
+  }, {enableHighAccuracy: true, maximumAge: 15000, timeout: 20000});
+}
+function centerMe(){
+  if (!nearFukui()){ toast(`You're ${fmtDist(dist(me, FUKUI_STN))} from Fukui`); return; }
+  if (mode !== "street") setMode("street");
+  lmap.flyTo([me.lat, me.lon], 15, {duration: .8});
+}
+function homeStreet(){
+  const n = trip.length, here = nearFukui(), from = here ? me : FUKUI_STN;
+  const list = PLACES.filter(p => active.has(p.cat) && p.cat !== "station").map(p => ({p, d: dist(from, p)})).sort((a, b) => a.d - b.d).slice(0, 10);
+  const note = here ? "From where you are" : me ? "You're outside Fukui · from Fukui Stn" : "From Fukui Station";
+  sheet.innerHTML = `<div class="grab"></div>
+    <button class="plan" id="plan">Plan your trip ${n ? `<span class="count">${n} saved</span>` : ""}</button>
+    <div class="sec"><h2>Near you</h2><small>${note}</small></div>
+    ${me ? "" : '<button class="locate" id="findme">Use my location to sort by distance</button>'}
+    <div>${list.map(({p, d}) => `<button class="nrow" data-id="${p.id}"><span class="ic" style="background:${CATS[p.cat].color}">${icon(p.cat, 24)}</span><span><b>${shortName(p)}</b><em>${CATS[p.cat].name} · ${p.town}</em></span><span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span></button>`).join("")}</div>`;
+  sheet.querySelector("#plan").onclick = () => toast("Trip planner is coming next");
+  const f = sheet.querySelector("#findme"); if (f) f.onclick = () => locate(true);
+  sheet.querySelectorAll(".nrow").forEach(b => b.onclick = () => openPlace(b.dataset.id, true));
+  syncStreet();
+}
+document.getElementById("m-art").onclick = () => setMode("art");
+document.getElementById("m-street").onclick = () => setMode("street");
+document.getElementById("loc").onclick = () => locate(true);
+
+buildChips(); buildPins(); fit();
+let saved = "art"; try { saved = localStorage.getItem("vf-mode") || "art"; } catch (e) {}
+if (saved === "street" && window.L) setMode("street"); else home();
 </script>
 </body>
 </html>
