@@ -2,159 +2,145 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Visit Fukui</title>
+<meta name="theme-color" content="#EAF3EC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Visit Fukui">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
-<script src="vendor/leaflet/leaflet.js"></script>
-<meta name="theme-color" content="#A9CBDA">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
+<script src="vendor/maplibre/maplibre-gl.js"></script>
 <style>
 :root{
-  /* layout: full-bleed hand-drawn map, chips on top, sheet at the bottom (left panel on wide screens) */
-  --sea:#A9CBDA; --land:#F4EAD3; --ink:#3B3A36; --paper:#FFFCF4; --accent:#D9693A; --muted:#7C766A;
-  --font-display:"Kalam","Comic Sans MS",cursive; --font-body:"Nunito",system-ui,sans-serif;
+  /* layout: full-bleed map, floating round buttons, one pill bar at the bottom, sheets slide up over it */
+  --land:#EAF3EC; --water:#A6D6EA; --ink:#1F3D36; --muted:#6B827B; --card:#FFFFFF; --accent:#1F6F5C; --pink:#E8508F;
+  --shadow:0 6px 20px rgba(31,61,54,.14),0 1px 3px rgba(31,61,54,.10);
+  --font:"Nunito",ui-rounded,system-ui,-apple-system,sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
   color-scheme:light;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0}
-body{background:var(--sea);color:var(--ink);font-family:var(--font-body);overflow:hidden;-webkit-font-smoothing:antialiased}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-#app{position:relative;height:100%;width:100%;overflow:hidden}
-#map{position:absolute;inset:0;touch-action:none;cursor:grab}
-#map.dragging{cursor:grabbing}
-#map svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-#pins{position:absolute;inset:0;pointer-events:none}
-.pin{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;border:2.5px solid var(--ink);background:#fff;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;padding:0;transition:transform .15s}
-.pin svg{width:20px;height:20px}
-.pin.hi{width:54px;height:54px;border-radius:16px;border-width:3px;box-shadow:3px 4px 0 var(--ink);rotate:-4deg}
-.pin.hi:nth-child(4n){rotate:5deg}
-.pin.hi svg{width:30px;height:30px}
-.pin.dot{width:16px;height:16px;border-width:2px}
-.pin.dot svg{display:none}
-.pin:hover{transform:translate(-50%,-50%) scale(1.1)}
-.pin.active{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 0 0 5px rgba(217,105,58,.35)}
-.pin.saved::after{content:"";position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--ink)}
-.pin-label{position:absolute;transform:translate(-50%,0);pointer-events:none;font-family:var(--font-display);font-weight:700;font-size:13px;white-space:nowrap;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:0 8px;line-height:1.5}
-.pin-label.hi{font-size:15px;background:#FFF3D6;box-shadow:2px 2px 0 var(--ink)}
-.top{z-index:1000;position:absolute;top:0;left:0;right:0;padding:14px 16px 0;display:flex;flex-direction:column;gap:10px;pointer-events:none}
-.brand{display:flex;align-items:center;gap:10px;pointer-events:auto}
-.brand h1{white-space:nowrap;margin:0;font-family:var(--font-display);font-size:28px;line-height:1;font-weight:700}
-.brand span{font-size:12px;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;font-weight:700}
-.chips{display:flex;gap:8px;overflow-x:auto;pointer-events:auto;padding-bottom:4px;scrollbar-width:none}
+body{background:var(--land);color:var(--ink);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#map{position:absolute;inset:0;z-index:0}
+[hidden]{display:none!important}
+.maplibregl-ctrl-attrib{font-size:10px;font-family:var(--font)}
+.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right{bottom:calc(92px + var(--safe-b))}
+
+.fab{position:absolute;z-index:5;width:56px;height:56px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:24px;transition:transform .15s}
+.fab:active{transform:scale(.94)}
+.fab svg{width:24px;height:24px}
+#brand{position:absolute;z-index:5;left:16px;top:calc(16px + var(--safe-t));height:56px;padding:0 20px 0 8px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-weight:900;font-size:19px;letter-spacing:-.01em}
+#brand .logo{width:40px;height:40px;border-radius:50%;background:var(--land);display:flex;align-items:center;justify-content:center;font-size:22px}
+#brand small{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em;margin-top:-2px}
+#saved-btn{right:16px;top:calc(16px + var(--safe-t))}
+#saved-btn .n{position:absolute;top:2px;right:2px;min-width:20px;height:20px;border-radius:10px;background:var(--pink);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
+#loc-btn{right:16px;bottom:calc(100px + var(--safe-b))}
+#loc-btn.on svg{fill:var(--accent)}
+
+.chips{position:absolute;z-index:4;left:0;right:0;top:calc(84px + var(--safe-t));display:flex;gap:8px;overflow-x:auto;padding:4px 16px 10px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:none;display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--paper);border-radius:999px;padding:5px 12px 5px 8px;font-size:13px;font-weight:700}
-.chip i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);display:block}
-.chip[aria-pressed="false"]{background:transparent;opacity:.55}
-.zoom{position:absolute;right:16px;top:146px;z-index:1000;display:flex;flex-direction:column;gap:8px}
-body.street .sheet{max-height:46%}
-@media (max-width:420px){.brand span{display:none}.brand h1{font-size:24px}.mode button{padding:6px 10px}}
-@media (min-width:820px){.zoom{top:50%;transform:translateY(-50%)}body.street .sheet{max-height:calc(100% - 150px)}}
-.zoom button{width:42px;height:42px;border-radius:12px;border:2.5px solid var(--ink);background:var(--paper);font-size:22px;font-weight:800;line-height:1}
-.sheet{z-index:1100;position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-top:2.5px solid var(--ink);border-radius:22px 22px 0 0;padding:10px 16px 18px;max-height:62%;overflow-y:auto;transition:transform .25s}
-.grab{width:44px;height:5px;border-radius:5px;background:#D8CFBD;margin:0 auto 12px}
-.plan{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:2.5px solid var(--ink);background:var(--accent);color:#fff;border-radius:999px;padding:13px 16px;font-size:17px;font-weight:800;box-shadow:0 4px 0 var(--ink)}
-.plan:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-.plan .count{background:var(--paper);color:var(--ink);border-radius:999px;font-size:12px;padding:2px 8px;border:2px solid var(--ink)}
-.sec{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 8px}
-.sec h2{margin:0;font-family:var(--font-display);font-size:21px}
-.sec small{color:var(--muted);font-size:12px}
-.hl{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
-.hcard{flex:none;width:138px;border:2px solid var(--ink);border-radius:14px;background:#fff;padding:0;text-align:left;overflow:hidden}
-.hcard .art{height:70px;display:flex;align-items:center;justify-content:center}
-.hcard .art svg{width:34px;height:34px}
-.hcard b{display:block;font-size:13px;padding:7px 9px 0;line-height:1.25}
-.hcard em{display:block;font-style:normal;font-size:11.5px;color:var(--muted);padding:2px 9px 8px}
-.card .art{height:120px;border:2px solid var(--ink);border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative}
-.card .art svg{width:60px;height:60px}
-.card .art .tag{position:absolute;left:10px;top:10px;background:var(--paper);border:2px solid var(--ink);border-radius:999px;font-size:12px;font-weight:800;padding:2px 10px}
-.card .close{position:absolute;right:10px;top:10px;width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);font-size:18px;font-weight:800;line-height:1}
-.card h3{margin:12px 0 0;font-family:var(--font-display);font-size:26px;line-height:1.1;text-wrap:balance}
-.card .jp{color:var(--muted);font-size:14px;margin-top:2px}
-.card p{margin:10px 0;font-size:15px;line-height:1.55;max-width:60ch}
-.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 14px}
-.facts div{border:2px dashed #CFC4AE;border-radius:12px;padding:7px 9px}
-.facts small{display:block;font-size:11px;color:var(--muted);font-weight:700}
-.facts span{font-size:13px;font-weight:700}
-.actions{display:flex;gap:10px}
-.actions button,.actions a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:2.5px solid var(--ink);border-radius:999px;padding:11px 10px;font-size:15px;font-weight:800;text-decoration:none;color:var(--ink);background:var(--paper)}
-.actions .add{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--ink)}
-.actions .add.on{background:#6E9E5A}
-.note{font-size:11.5px;color:var(--muted);margin-top:12px}
-.toast{z-index:1200;position:absolute;left:50%;top:110px;transform:translate(-50%,-10px);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:700;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap}
+.chip{flex:none;height:38px;border-radius:19px;background:var(--card);box-shadow:0 2px 8px rgba(31,61,54,.12);padding:0 14px 0 10px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:14px;transition:background .15s,color .15s}
+.chip span{font-size:18px}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+.bar{position:absolute;z-index:6;left:12px;right:12px;bottom:calc(14px + var(--safe-b));height:76px;border-radius:38px;background:rgba(255,255,255,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;padding:8px;max-width:560px;margin:0 auto}
+.search{flex:1;min-width:0;height:60px;border-radius:30px;background:var(--card);display:flex;align-items:center;gap:8px;padding:0 16px 0 10px;box-shadow:0 1px 4px rgba(31,61,54,.08)}
+.search .mascot{font-size:30px;line-height:1}
+.search input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:17px;font-weight:700}
+.search input::placeholder{color:#9AACA6;font-weight:600}
+.round{flex:none;width:60px;height:60px;border-radius:50%;background:var(--card);font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(31,61,54,.08);transition:transform .15s}
+.round:active{transform:scale(.92)}
+
+.mk{position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.mk .dot{width:42px;height:42px;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(31,61,54,.25);display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #fff;transition:transform .18s}
+.mk.hi .dot{width:52px;height:52px;font-size:28px}
+.mk .lbl{position:absolute;top:100%;margin-top:4px;white-space:nowrap;font-weight:800;font-size:12.5px;color:var(--ink);background:rgba(255,255,255,.92);padding:2px 9px;border-radius:10px;box-shadow:0 1px 4px rgba(31,61,54,.15);pointer-events:none;display:none}
+.mk.hi .lbl{display:block}
+.mk.on .dot{transform:scale(1.18);border-color:var(--accent)}
+.mk.on .lbl{display:block;background:var(--ink);color:#fff}
+.mk.saved .dot::after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:var(--pink);border:2px solid #fff;transform:translate(15px,-15px)}
+body.far .mk:not(.hi):not(.on){display:none}
+body.far .mk.hi:not(.on) .lbl{display:none}
+body.mid .mk:not(.hi):not(.on) .dot{width:30px;height:30px;font-size:15px;border-width:2px}
+.mk.hidden{display:none!important}
+.me{width:22px;height:22px;border-radius:50%;background:#2F80ED;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25);position:relative}
+.me::before{content:"";position:absolute;inset:-14px;border-radius:50%;background:rgba(47,128,237,.18);animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.6);opacity:0}}
+
+.sheet{position:absolute;z-index:7;left:0;right:0;bottom:0;max-height:72%;background:var(--card);border-radius:28px 28px 0 0;box-shadow:0 -6px 30px rgba(31,61,54,.16);padding:10px 20px calc(24px + var(--safe-b));overflow-y:auto;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.9,.3,1);max-width:560px;margin:0 auto}
+.sheet.open{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:#D5E0DB;margin:0 auto 10px}
+.shead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.shead h2{margin:0;font-size:22px;font-weight:900;letter-spacing:-.01em;flex:1}
+.x{width:36px;height:36px;border-radius:50%;background:#EEF3F1;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;flex:none}
+.sub{color:var(--muted);font-size:13px;font-weight:700;margin:0 0 6px}
+.row{display:flex;align-items:center;gap:14px;width:100%;padding:11px 0;border-bottom:1px solid #EEF3F1;text-align:left}
+.row:last-child{border-bottom:0}
+.row .em{width:48px;height:48px;border-radius:16px;background:var(--land);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none}
+.row b{display:block;font-size:15.5px;font-weight:800;line-height:1.25}
+.row em{display:block;font-style:normal;font-size:13px;color:var(--muted);font-weight:600;margin-top:1px}
+.row .d{margin-left:auto;text-align:right;font-weight:900;font-size:15px;white-space:nowrap;padding-left:8px}
+.row .d small{display:block;font-weight:700;font-size:12px;color:var(--muted)}
+.empty{padding:22px 4px;text-align:center;color:var(--muted);font-weight:700}
+.cta{width:100%;height:52px;border-radius:26px;background:var(--ink);color:#fff;font-weight:900;font-size:16px;margin:8px 0 4px}
+
+.place .top{display:flex;gap:14px;align-items:flex-start}
+.place .badge{width:64px;height:64px;border-radius:20px;background:var(--land);display:flex;align-items:center;justify-content:center;font-size:36px;flex:none}
+.place h2{margin:2px 0 0;font-size:23px;font-weight:900;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
+.place .jp{color:var(--muted);font-weight:700;font-size:14px;margin-top:3px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}
+.pill{background:#F1F6F3;border-radius:12px;padding:6px 11px;font-size:13px;font-weight:800}
+.pill.g{background:#E3F2EA;color:var(--accent)}
+.place p{font-size:15.5px;line-height:1.6;margin:12px 0 16px;color:#2C4740}
+.acts{display:flex;gap:10px}
+.acts button,.acts a{flex:1;height:52px;border-radius:26px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;font-size:15.5px;text-decoration:none}
+.acts .go{background:var(--ink);color:#fff}
+.acts .save{background:#F1F6F3;color:var(--ink)}
+.acts .save.on{background:#FCE4EE;color:#B5265F}
+.note{font-size:12px;color:#93A6A0;font-weight:600;margin-top:12px}
+
+.toast{position:absolute;z-index:9;left:50%;top:calc(90px + var(--safe-t));transform:translate(-50%,-8px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:20px;font-weight:800;font-size:14px;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.mode{display:flex;gap:2px;margin-left:auto;border:2px solid var(--ink);border-radius:999px;background:var(--paper);padding:3px}
-.mode button{border:0;background:none;border-radius:999px;padding:6px 12px;font-weight:800;font-size:13px}
-.mode button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-#street{position:absolute;inset:0;display:none;background:#EDE6D6}
-body.street #street{display:block}
-body.street #map{display:none}
-#street .leaflet-tile-pane{filter:sepia(.22) saturate(.95)}
-#street .leaflet-control-attribution{font-size:10px;margin-top:118px!important;background:rgba(255,252,244,.85)}
-.lp{width:38px;height:38px;border:2.5px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .15s}
-.lp svg{width:20px;height:20px}
-.lp.hi{width:50px;height:50px;border-radius:15px;box-shadow:3px 4px 0 var(--ink)}
-.lp.hi svg{width:28px;height:28px}
-.lp.active{transform:scale(1.15);box-shadow:0 0 0 5px rgba(217,105,58,.45)}
-.lp.saved{outline:3px solid var(--accent);outline-offset:2px}
-.me{width:20px;height:20px;border-radius:50%;background:#2F80ED;border:3.5px solid #fff;box-shadow:0 0 0 2px rgba(47,128,237,.35),0 2px 6px rgba(0,0,0,.3)}
-.zoom .loc{font-size:0;display:flex;align-items:center;justify-content:center}
-.zoom .loc svg{width:22px;height:22px}
-.zoom .loc.on{background:#2F80ED}
-.zoom .loc.on svg{stroke:#fff}
-.nrow{display:flex;gap:12px;align-items:center;width:100%;border:0;border-bottom:1.5px dashed #E2D8C3;background:none;padding:10px 2px;text-align:left}
-.nrow .ic{width:42px;height:42px;border-radius:12px;border:2px solid var(--ink);flex:none;display:flex;align-items:center;justify-content:center}
-.nrow .ic svg{width:24px;height:24px}
-.nrow b{display:block;font-size:14px;line-height:1.3}
-.nrow em{font-style:normal;font-size:12px;color:var(--muted)}
-.nrow .d{margin-left:auto;text-align:right;font-weight:800;font-size:14px;white-space:nowrap}
-.nrow .d small{display:block;font-weight:600;font-size:11.5px;color:var(--muted)}
-.locate{width:100%;margin-top:4px;border:2px dashed var(--ink);background:none;border-radius:14px;padding:12px;font-weight:800;font-size:14px}
-@media (min-width:820px){
-  .sheet{left:16px;right:auto;bottom:16px;top:auto;width:380px;border:2.5px solid var(--ink);border-radius:22px;max-height:calc(100% - 150px)}
-  .grab{display:none}
+.nomap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800}
+@media (min-width:760px){
+  .sheet{left:16px;right:auto;bottom:calc(104px + var(--safe-b));width:400px;border-radius:28px;max-height:calc(100% - 210px);margin:0}
+  .bar{left:16px;right:auto;width:420px;margin:0}
+  .maplibregl-ctrl-bottom-left{bottom:0}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:380px){#brand small{display:none}.round{width:54px;height:54px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
-<body>
-<div id="app">
-  <div id="map" aria-label="Illustrated map of Fukui Prefecture">
-    <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
-    <div id="pins"></div>
-  </div>
+<body class="far">
+<div id="map" aria-label="Map of Fukui"></div>
 
-  <div id="street" aria-label="Street map of Fukui"></div>
+<div id="brand"><span class="logo" aria-hidden="true">🦕</span><span>Visit Fukui<small>福井 · Japan</small></span></div>
+<button class="fab" id="saved-btn" aria-label="Saved places">❤️<span class="n" id="saved-n" hidden></span></button>
+<div class="chips" id="chips" role="toolbar" aria-label="Filter by type"></div>
+<button class="fab" id="loc-btn" aria-label="Show my location"><svg viewBox="0 0 24 24" fill="none" stroke="#1F3D36" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2.5l7 18-7-4-7 4z"/></svg></button>
 
-  <div class="top">
-    <div class="brand"><h1>Visit Fukui</h1><span>福井</span><div class="mode" role="group" aria-label="Map style"><button id="m-art" aria-pressed="true">Illustrated</button><button id="m-street" aria-pressed="false">Street</button></div></div>
-    <div class="chips" id="chips" role="toolbar" aria-label="Filter places"></div>
-  </div>
-
-  <div class="zoom">
-    <button id="zin" aria-label="Zoom in">+</button>
-    <button id="zout" aria-label="Zoom out">−</button>
-    <button id="loc" class="loc" aria-label="Show my location"><svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
-  </div>
-
-  <section class="sheet" id="sheet" aria-live="polite"></section>
-  <div class="toast" id="toast" role="status"></div>
+<div class="bar">
+  <label class="search"><span class="mascot" aria-hidden="true">🦕</span><input id="q" type="search" placeholder="Search Fukui…" autocomplete="off" aria-label="Search places"></label>
+  <button class="round" id="near-btn" aria-label="Places near me">📍</button>
+  <button class="round" id="plan-btn" aria-label="Plan your trip">🗺️</button>
 </div>
+
+<section class="sheet" id="sheet" aria-live="polite"></section>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 const CATS = {
-  dino:    {name:"Dinosaurs", color:"#F2B33D", icon:'<path d="M3 18c1.5 0 2-3 5-3.5 2-.3 3 .8 5 .5 1.5-.3 2-2 2-4l2-3 2.5.5L20 11l-2.5.3c0 3-1 6-4 7"/><path d="M7 18v2M12 18v2"/><circle cx="18.6" cy="8.4" r=".6" fill="currentColor"/>'},
-  nature:  {name:"Nature", color:"#86B26F", icon:'<path d="M2.5 19l6.5-10 4 6 3-4 5.5 8z"/><path d="M7.5 11.5l1.5 1 1.5-1"/>'},
-  temple:  {name:"Temples & shrines", color:"#E07A62", icon:'<path d="M3 6.5c3 .8 15 .8 18 0M5 10h14M7.5 7v13M16.5 7v13M12 7v3"/>'},
-  history: {name:"Castles & history", color:"#C9A577", icon:'<path d="M5 20v-8h14v8M8 12V9h8v3M10 9V6h4v3M3.5 20h17M11 20v-3h2v3"/><path d="M7 9l5-4 5 4"/>'},
-  onsen:   {name:"Onsen", color:"#F09A6E", icon:'<path d="M5 15c0 3 3 5 7 5s7-2 7-5"/><path d="M8 12c-1.2-1.6 1.2-2.4 0-4.2M12 12c-1.2-1.6 1.2-2.4 0-4.2M16 12c-1.2-1.6 1.2-2.4 0-4.2"/>'},
-  food:    {name:"Food", color:"#D883A8", icon:'<path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M14 3l-4 8M18 4l-6 7"/>'},
-  craft:   {name:"Crafts", color:"#82AFCB", icon:'<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3M9 11h6M9 15h6"/>'},
-  station: {name:"Stations", color:"#FFFFFF", icon:'<rect x="6" y="3.5" width="12" height="13" rx="3"/><path d="M6 10h12M9 20l1.5-3.5M15 20l-1.5-3.5"/><circle cx="9.5" cy="13.3" r=".6" fill="currentColor"/><circle cx="14.5" cy="13.3" r=".6" fill="currentColor"/>'}
+  dino:{name:"Dinosaurs", e:"🦕"}, nature:{name:"Nature", e:"⛰️"}, temple:{name:"Temples", e:"⛩️"},
+  history:{name:"Castles & history", e:"🏯"}, onsen:{name:"Onsen", e:"♨️"}, food:{name:"Food", e:"🍜"},
+  craft:{name:"Crafts", e:"🎨"}, station:{name:"Stations", e:"🚄"}
 };
-
+const EMOJI = {dino:"🦕", heisenji:"⛩️", eiheiji:"🔔", tojinbo:"🌊", maruoka:"🏯", awara:"♨️", ichijodani:"🏘️", yokokan:"🍵", ono:"🏯", washi:"📜", knife:"🔪", megane:"👓", coast:"🌅", crab:"🦀", katsudon:"🍱", soba:"🍜", kehi:"⛩️", mikata:"🏞️", kumagawa:"🏮", obama:"🐟", "st-fukui":"🚄", "st-tsuruga":"🚄", "st-awara":"🚄", "st-takefu":"🚄"};
 const PLACES = [
   {id:"dino", cat:"dino", hi:1, name:"Fukui Prefectural Dinosaur Museum", jp:"福井県立恐竜博物館", town:"Katsuyama", lat:36.083, lon:136.507, time:"3–4 h", access:"Echizen Rwy + bus", desc:"One of the world's big dinosaur museums, built near the quarries where Japan's own dinosaurs were dug up. Huge skeletons, a live-moving T. rex and a fossil dig area."},
   {id:"heisenji", cat:"temple", name:"Heisenji Hakusan Shrine", jp:"平泉寺白山神社", town:"Katsuyama", lat:36.050, lon:136.533, time:"1 h", access:"Car / taxi", desc:"An ancient mountain shrine where the whole forest floor is a carpet of moss under giant cedars. Quiet and green, best after rain."},
@@ -181,341 +167,205 @@ const PLACES = [
   {id:"st-awara", cat:"station", name:"Awara-Onsen Station", jp:"芦原温泉駅", town:"Awara", lat:36.211, lon:136.233, time:"—", access:"Hokuriku Shinkansen", desc:"Shinkansen stop for Awara Onsen and the closest station for buses to Tojinbo."},
   {id:"st-takefu", cat:"station", name:"Echizen-Takefu Station", jp:"越前たけふ駅", town:"Echizen City", lat:35.888, lon:136.193, time:"—", access:"Hokuriku Shinkansen", desc:"Shinkansen stop for the knife, paper and pottery villages of Echizen."}
 ];
-
-const OUTLINE = [[136.27,36.30],[136.20,36.27],[136.13,36.235],[136.11,36.20],[136.14,36.16],[136.10,36.10],[136.05,36.03],[136.00,35.97],[135.98,35.90],[136.01,35.82],[136.04,35.76],[136.05,35.70],[136.07,35.66],[136.04,35.638],[136.00,35.66],[135.97,35.70],[135.95,35.66],[135.97,35.62],[135.93,35.60],[135.88,35.62],[135.85,35.58],[135.80,35.55],[135.75,35.515],[135.70,35.53],[135.65,35.52],[135.60,35.54],[135.55,35.51],[135.50,35.54],[135.45,35.53],[135.44,35.48],[135.48,35.42],[135.55,35.39],[135.65,35.37],[135.75,35.38],[135.82,35.42],[135.88,35.42],[135.93,35.44],[136.00,35.50],[136.08,35.53],[136.15,35.58],[136.22,35.64],[136.26,35.72],[136.30,35.78],[136.38,35.82],[136.48,35.84],[136.58,35.83],[136.68,35.86],[136.78,35.92],[136.83,36.00],[136.78,36.06],[136.70,36.10],[136.65,36.17],[136.58,36.22],[136.48,36.27],[136.38,36.29]];
-const RIVER = [[136.56,35.95],[136.48,36.01],[136.40,36.04],[136.30,36.08],[136.24,36.13],[136.19,36.18],[136.15,36.215]];
-
-const K = 690, LON0 = 135.30, LAT0 = 36.45, W = 1100, H = 1080;
-const px = lon => (lon - LON0) * K;
-const py = lat => (LAT0 - lat) * K * 1.236;
-
-let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-function rough(pts, amp, close){
-  let d = "";
-  pts.forEach((p, i) => {
-    const x = px(p[0]) + (rnd() - .5) * amp, y = py(p[1]) + (rnd() - .5) * amp;
-    if (i === 0) { d += `M${x.toFixed(1)} ${y.toFixed(1)}`; return; }
-    const q = pts[i - 1], mx = (px(q[0]) + px(p[0])) / 2 + (rnd() - .5) * amp * 2, my = (py(q[1]) + py(p[1])) / 2 + (rnd() - .5) * amp * 2;
-    d += ` Q${mx.toFixed(1)} ${my.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
-  });
-  return close ? d + " Z" : d;
-}
-function inside(lon, lat){
-  let c = false;
-  for (let i = 0, j = OUTLINE.length - 1; i < OUTLINE.length; j = i++){
-    const [xi, yi] = OUTLINE[i], [xj, yj] = OUTLINE[j];
-    if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c;
-  }
-  return c;
-}
-
-function drawMap(){
-  const s = [];
-  s.push('<defs><pattern id="waves" width="60" height="34" patternUnits="userSpaceOnUse"><path d="M6 20q7-7 14 0t14 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".55"/></pattern></defs>');
-  s.push(`<rect x="-3000" y="-3000" width="${W + 6000}" height="${H + 6000}" fill="#A9CBDA"/>`);
-  s.push(`<rect x="-3000" y="-3000" width="${W + 6000}" height="${H + 6000}" fill="url(#waves)"/>`);
-  const coast = rough(OUTLINE, 3, true);
-  [[90,'#BCD8E4',1],[62,'#A9CBDA',1],[44,'#C6DFE9',1],[22,'#D7EAF1',1]].forEach(([w,c]) => s.push(`<path d="${coast}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`));
-  [76,52,32].forEach(w => s.push(`<path d="${coast}" fill="none" stroke="#fff" stroke-width="${w}" stroke-linejoin="round" opacity=".0"/>`));
-  s.push(`<path d="${coast}" fill="none" stroke="#fff" stroke-width="56" stroke-linejoin="round" stroke-dasharray="2 14" stroke-linecap="round" opacity=".7"/>`);
-  s.push(`<path d="${coast}" fill="#D9C9A6" transform="translate(5 7)"/>`);
-  s.push(`<path d="${coast}" fill="#F4EAD3" stroke="#3B3A36" stroke-width="3" stroke-linejoin="round"/>`);
-  s.push(`<path d="${rough(OUTLINE, 5, true)}" fill="none" stroke="#3B3A36" stroke-width="1" opacity=".35"/>`);
-  const ok = (lon, lat) => inside(lon, lat) && PLACES.every(p => Math.hypot(p.lon - lon, (p.lat - lat) * 1.24) > .045);
-  const mts = [];
-  for (let lon = 135.45; lon < 136.85; lon += .055){
-    for (let lat = 35.36; lat < 36.3; lat += .045){
-      const jl = lon + (rnd() - .5) * .04, ja = lat + (rnd() - .5) * .03;
-      const mountainous = (jl > 136.36 && ja < 36.24) || ja < 35.47 || (jl > 136.1 && ja < 35.8) || (jl < 136.0 && jl > 135.5 && ja < 35.5);
-      if (mountainous && ok(jl, ja) && rnd() > .35) mts.push([px(jl), py(ja), 14 + rnd() * 10]);
-    }
-  }
-  mts.sort((a, b) => a[1] - b[1]).forEach(([x, y, r]) => {
-    s.push(`<path d="M${x - r} ${y + r * .55}L${x} ${y - r * .8}L${x + r} ${y + r * .55}Z" fill="#B9CF9B" stroke="#3B3A36" stroke-width="1.6" stroke-linejoin="round"/>`);
-    s.push(`<path d="M${x - r * .32} ${y - r * .3}L${x} ${y - r * .8}L${x + r * .32} ${y - r * .3}l-.1 .1-${r * .16} ${r * .12}-${r * .16} -${r * .12}-${r * .16} ${r * .12}z" fill="#fff" stroke="#3B3A36" stroke-width="1.2" stroke-linejoin="round"/>`);
-  });
-  const trees = [];
-  for (let lon = 135.5; lon < 136.8; lon += .04){
-    for (let lat = 35.4; lat < 36.3; lat += .035){
-      const jl = lon + (rnd() - .5) * .03, ja = lat + (rnd() - .5) * .025;
-      const low = !((jl > 136.36 && ja < 36.24) || ja < 35.47 || (jl > 136.1 && ja < 35.8));
-      if (low && ok(jl, ja) && rnd() > .72) trees.push([px(jl), py(ja)]);
-    }
-  }
-  trees.sort((a, b) => a[1] - b[1]).forEach(([x, y]) => {
-    s.push(`<path d="M${x} ${y + 9}v5" stroke="#7A5A3A" stroke-width="2" stroke-linecap="round"/>`);
-    s.push(`<circle cx="${x}" cy="${y + 2}" r="7.5" fill="#9DC27F" stroke="#3B3A36" stroke-width="1.5"/>`);
-    s.push(`<path d="M${x - 3} ${y}q2 -3 5 -1" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>`);
-  });
-  const cxr = px(135.52), cyr = py(35.86);
-  s.push(`<g transform="translate(${cxr} ${cyr})"><circle r="46" fill="#FFFCF4" stroke="#3B3A36" stroke-width="2.5"/><circle r="38" fill="none" stroke="#3B3A36" stroke-width="1" stroke-dasharray="3 5"/><path d="M0 -34L8 0L0 34L-8 0Z" fill="#fff" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/><path d="M0 -34L8 0L-8 0Z" fill="#D9693A" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/><path d="M-34 0L0 -6L34 0L0 6Z" fill="#F4EAD3" stroke="#3B3A36" stroke-width="1.6" stroke-linejoin="round"/><text y="-50" text-anchor="middle" font-family="Kalam" font-weight="700" font-size="20" fill="#3B3A36">N</text></g>`);
-  [[135.62,36.25],[135.95,36.28],[135.55,35.70]].forEach(([lo, la]) => { const x = px(lo), y = py(la); s.push(`<path d="M${x} ${y}q10 -14 20 0q10 -14 20 0" fill="none" stroke="#3B3A36" stroke-width="2" stroke-linecap="round" opacity=".5"/>`); });
-  const bx = px(135.70), by = py(35.78);
-  s.push(`<g transform="translate(${bx} ${by}) rotate(-8)"><path d="M-30 6h60l-8 12h-44z" fill="#C9775A" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/><path d="M0 6v-30" stroke="#3B3A36" stroke-width="2"/><path d="M2 -24l20 22h-20z" fill="#FFFCF4" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/></g>`);
-  s.push(`<path d="${rough(RIVER, 2, false)}" fill="none" stroke="#6FA5C0" stroke-width="4" stroke-linecap="round"/>`);
-  [[135.893, 35.567, 10, 14], [135.867, 35.556, 7, 9], [135.905, 35.548, 6, 7]].forEach(([lo, la, rx, ry]) =>
-    s.push(`<ellipse cx="${px(lo)}" cy="${py(la)}" rx="${rx}" ry="${ry}" fill="#8DC0D6" stroke="#3B3A36" stroke-width="1.5"/>`));
-  const label = (t, lo, la, size, op, rot = 0) => s.push(`<text x="${px(lo)}" y="${py(la)}" font-family="Kalam" font-size="${size}" font-weight="700" fill="#3B3A36" opacity="${op}" text-anchor="middle" transform="rotate(${rot} ${px(lo)} ${py(la)})">${t}</text>`);
-  label("Sea of Japan", 135.72, 36.12, 34, .55, -8);
-  label("Wakasa Bay", 135.78, 35.66, 22, .55, -6);
-  label("REIHOKU · North", 136.47, 36.205, 18, .45);
-  label("REINAN · South", 135.66, 35.43, 18, .45);
-  label("Kuzuryu River", 136.34, 36.105, 13, .55, -22);
-  return s.join("");
-}
-
-const svg = document.getElementById("svg"), pinsEl = document.getElementById("pins"), mapEl = document.getElementById("map");
-svg.innerHTML = drawMap();
-
-let view = {x: 0, y: 0, z: 1};
-const active = new Set(Object.keys(CATS));
-let trip = [];
-try { trip = JSON.parse(localStorage.getItem("vf-trip") || "[]"); } catch (e) {}
-let selected = null;
-
-function fit(){
-  const r = mapEl.getBoundingClientRect(), wide = r.width >= 820;
-  const left = wide ? 410 : 0, top = 110, bottom = wide ? 20 : r.height * .3;
-  const minX = px(wide ? 135.42 : 135.98), maxX = px(136.86), minY = py(36.31), maxY = py(wide ? 35.36 : 35.80);
-  const z = Math.min((r.width - left - 30) / (maxX - minX), (r.height - top - bottom) / (maxY - minY));
-  view.z = z;
-  view.x = left + (r.width - left - (maxX - minX) * z) / 2 - minX * z;
-  view.y = top + (r.height - top - bottom - (maxY - minY) * z) / 2 - minY * z;
-}
-function render(){
-  const r = mapEl.getBoundingClientRect();
-  svg.setAttribute("viewBox", `${-view.x / view.z} ${-view.y / view.z} ${r.width / view.z} ${r.height / view.z}`);
-  pinsEl.querySelectorAll(".pin,.pin-label").forEach(el => {
-    const p = PLACES.find(q => q.id === el.dataset.id), show = active.has(p.cat);
-    const x = px(p.lon) * view.z + view.x, y = py(p.lat) * view.z + view.y;
-    el.style.left = x + "px";
-    if (el.classList.contains("pin")){
-      el.style.top = y + "px"; el.style.display = show ? "flex" : "none";
-      el.classList.toggle("active", selected === p.id);
-      el.classList.toggle("dot", !p.hi && view.z < 1.25 && selected !== p.id);
-      el.classList.toggle("saved", trip.includes(p.id));
-    } else {
-      el.style.top = (y + (p.hi ? 36 : 22)) + "px";
-      el.style.display = show && (p.hi || view.z > 1.5 || selected === p.id) ? "block" : "none";
-    }
-  });
-  const taken = [...pinsEl.querySelectorAll(".pin.hi")].filter(e => e.style.display !== "none").map(e => e.getBoundingClientRect());
-  const labels = [...pinsEl.querySelectorAll(".pin-label")].filter(e => e.style.display !== "none")
-    .sort((a, b) => (b.dataset.id === selected) - (a.dataset.id === selected) || b.classList.contains("hi") - a.classList.contains("hi"));
-  labels.forEach(el => {
-    const r = el.getBoundingClientRect();
-    const hit = taken.some(t => r.left < t.right && r.right > t.left && r.top < t.bottom && r.bottom > t.top);
-    if (hit && el.dataset.id !== selected) el.style.display = "none"; else taken.push(r);
-  });
-  syncStreet();
-}
-function buildPins(){
-  PLACES.forEach(p => {
-    const c = CATS[p.cat], b = document.createElement("button");
-    b.className = "pin" + (p.hi ? " hi" : ""); b.dataset.id = p.id; b.style.background = c.color;
-    b.setAttribute("aria-label", p.name);
-    b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg>`;
-    b.addEventListener("click", e => { e.stopPropagation(); openPlace(p.id); });
-    const l = document.createElement("div");
-    l.className = "pin-label" + (p.hi ? " hi" : ""); l.dataset.id = p.id; l.textContent = shortName(p);
-    pinsEl.append(l, b);
-  });
-}
+const em = p => EMOJI[p.id] || CATS[p.cat].e;
 const shortName = p => p.name.replace("Fukui Prefectural ", "").replace(" at Mikuni Port", "").replace(" · Rainbow Line", "").replace(": mackerel and temples", "");
+const FUKUI_STN = {lat:36.062, lon:136.223};
 
-function buildChips(){
-  const el = document.getElementById("chips");
-  el.innerHTML = Object.entries(CATS).map(([k, c]) => `<button class="chip" aria-pressed="true" data-k="${k}"><i style="background:${c.color}"></i>${c.name}</button>`).join("");
-  el.addEventListener("click", e => {
-    const b = e.target.closest(".chip"); if (!b) return;
-    const k = b.dataset.k;
-    active.has(k) ? active.delete(k) : active.add(k);
-    b.setAttribute("aria-pressed", active.has(k));
-    render();
-  });
-}
+let selected = null, me = null, watchId = null, map = null;
+const active = new Set();
+let saved = [];
+try { saved = JSON.parse(localStorage.getItem("vf-trip") || "[]"); } catch (e) {}
+const els = {};
 
-const sheet = document.getElementById("sheet");
-const icon = (c, size) => `<svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:${size}px;height:${size}px">${CATS[c].icon}</svg>`;
-function home(){
-  selected = null;
-  if (mode === "street") return homeStreet();
-  const n = trip.length;
-  sheet.innerHTML = `<div class="grab"></div>
-    <button class="plan" id="plan">Plan your trip ${n ? `<span class="count">${n} saved</span>` : ""}</button>
-    <div class="sec"><h2>Must-see in Fukui</h2><small>Tap to explore</small></div>
-    <div class="hl">${PLACES.filter(p => p.hi).map(p => `<button class="hcard" data-id="${p.id}"><div class="art" style="background:${CATS[p.cat].color}">${icon(p.cat, 34)}</div><b>${shortName(p)}</b><em>${p.town}</em></button>`).join("")}</div>`;
-  sheet.querySelector("#plan").onclick = () => toast("Trip planner is coming next");
-  sheet.querySelectorAll(".hcard").forEach(b => b.onclick = () => openPlace(b.dataset.id, true));
-  render();
-}
-function openPlace(id, fly){
-  const p = PLACES.find(q => q.id === id), c = CATS[p.cat], on = trip.includes(id);
-  selected = id;
-  if (fly) (mode === "street" ? streetFly(p) : flyTo(p));
-  const d = me && nearFukui() ? dist(me, p) : null;
-  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=${d !== null && d < 2 ? "walking" : "transit"}`;
-  sheet.innerHTML = `<div class="grab"></div><div class="card" style="position:relative">
-    <div class="art" style="background:${c.color}">${icon(p.cat, 60)}<span class="tag">${c.name}</span></div>
-    <button class="close" id="close" aria-label="Close">×</button>
-    <h3>${p.name}</h3><div class="jp">${p.jp} · ${p.town}${d !== null ? ` · <b style="color:var(--ink)">${fmtDist(d)} away</b>` : ""}</div>
-    <p>${p.desc}</p>
-    <div class="facts"><div><small>Time needed</small><span>${p.time}</span></div><div><small>Getting there</small><span>${p.access}</span></div><div><small>Hours & fee</small><span>Check site</span></div></div>
-    <div class="actions">${p.cat === "station" ? "" : `<button class="add ${on ? "on" : ""}" id="add">${on ? "✓ In your trip" : "+ Add to trip"}</button>`}<a href="${gmaps}" target="_blank" rel="noopener">Directions ↗</a></div>
-    <div class="note">Sample data for the prototype. Opening hours and fees still need checking.</div></div>`;
-  sheet.querySelector("#close").onclick = home;
-  const add = sheet.querySelector("#add");
-  if (add) add.onclick = () => {
-    trip.includes(id) ? trip = trip.filter(x => x !== id) : trip.push(id);
-    try { localStorage.setItem("vf-trip", JSON.stringify(trip)); } catch (e) {}
-    toast(trip.includes(id) ? "Added to your trip" : "Removed from your trip");
-    openPlace(id);
-  };
-  sheet.scrollTop = 0;
-  render();
-}
-function flyTo(p){
-  const r = mapEl.getBoundingClientRect(), wide = r.width >= 820;
-  const z = Math.max(view.z, 1.6), cx = wide ? (r.width + 400) / 2 : r.width / 2, cy = wide ? r.height / 2 : r.height * .3;
-  view.z = z; view.x = cx - px(p.lon) * z; view.y = cy - py(p.lat) * z;
-}
-let tt;
-function toast(t){ const el = document.getElementById("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 1800); }
-
-function zoomAt(f, cx, cy){
-  const nz = Math.min(6, Math.max(.4, view.z * f)); f = nz / view.z;
-  view.x = cx - (cx - view.x) * f; view.y = cy - (cy - view.y) * f; view.z = nz; render();
-}
-const ptrs = new Map(); let last = null, moved = 0;
-mapEl.addEventListener("pointerdown", e => { if (e.target.closest(".pin")) return; mapEl.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); moved = 0; mapEl.classList.add("dragging"); });
-mapEl.addEventListener("pointermove", e => {
-  if (!ptrs.has(e.pointerId)) return;
-  const prev = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
-  if (ptrs.size === 1){ view.x += e.clientX - prev[0]; view.y += e.clientY - prev[1]; moved += Math.abs(e.clientX - prev[0]) + Math.abs(e.clientY - prev[1]); render(); }
-  else if (ptrs.size === 2){
-    const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]), r = mapEl.getBoundingClientRect();
-    if (last) zoomAt(d / last, (a[0] + b[0]) / 2 - r.left, (a[1] + b[1]) / 2 - r.top);
-    last = d; moved = 99;
-  }
-});
-const end = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) last = null; if (!ptrs.size) mapEl.classList.remove("dragging"); };
-mapEl.addEventListener("pointerup", e => { end(e); });
-mapEl.addEventListener("pointercancel", end);
-mapEl.addEventListener("wheel", e => { e.preventDefault(); const r = mapEl.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top); }, {passive: false});
-document.getElementById("zin").onclick = () => { if (mode === "street") return lmap.zoomIn(); const r = mapEl.getBoundingClientRect(); zoomAt(1.3, r.width / 2, r.height / 2); };
-document.getElementById("zout").onclick = () => { if (mode === "street") return lmap.zoomOut(); const r = mapEl.getBoundingClientRect(); zoomAt(1 / 1.3, r.width / 2, r.height / 2); };
-window.addEventListener("resize", () => { fit(); render(); if (lmap) lmap.invalidateSize(); });
-
-let mode = "art", lmap = null, meLayer = null, me = null, watchId = null, nearKey = "";
-const markers = {};
-const FUKUI_STN = {lat: 36.062, lon: 136.223};
 function dist(a, b){
   const R = 6371, t = x => x * Math.PI / 180, dLa = t(b.lat - a.lat), dLo = t(b.lon - a.lon);
   const h = Math.sin(dLa / 2) ** 2 + Math.cos(t(a.lat)) * Math.cos(t(b.lat)) * Math.sin(dLo / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 const fmtDist = d => d < 1 ? `${Math.max(10, Math.round(d * 100) * 10)} m` : d < 10 ? `${d.toFixed(1)} km` : `${Math.round(d)} km`;
-const howLong = d => d <= 2 ? `${Math.max(1, Math.round(d * 1000 / 80))} min walk` : `~${Math.round(d / 35 * 60 + 5)} min by car`;
-const nearFukui = () => me && dist(me, FUKUI_STN) < 70;
+const howLong = d => d <= 2 ? `${Math.max(1, Math.round(d * 1000 / 80))} min walk` : `~${Math.round(d / 35 * 60 + 5)} min drive`;
+const inFukui = () => me && dist(me, FUKUI_STN) < 70;
+const origin = () => inFukui() ? me : FUKUI_STN;
 
-function setMode(m){
-  mode = m;
-  document.body.classList.toggle("street", m === "street");
-  document.getElementById("m-art").setAttribute("aria-pressed", m === "art");
-  document.getElementById("m-street").setAttribute("aria-pressed", m === "street");
-  try { localStorage.setItem("vf-mode", m); } catch (e) {}
-  if (m === "street"){ initStreet(); setTimeout(() => lmap.invalidateSize(), 0); }
-  selected ? openPlace(selected) : home();
-}
-function initStreet(){
-  if (lmap || !window.L) return;
-  lmap = L.map("street", {zoomControl: false});
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-    subdomains: "abcd", maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-  }).addTo(lmap);
-  lmap.attributionControl.setPrefix(false);
-  lmap.attributionControl.setPosition("topright");
-  PLACES.forEach(p => {
-    const c = CATS[p.cat], s = p.hi ? 50 : 38;
-    const icon = L.divIcon({className: "", iconSize: [s, s], iconAnchor: [s / 2, s / 2],
-      html: `<div class="lp${p.hi ? " hi" : ""}" style="background:${c.color}"><svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg></div>`});
-    markers[p.id] = L.marker([p.lat, p.lon], {icon, title: p.name, riseOnHover: true}).addTo(lmap).on("click", () => openPlace(p.id, true));
-  });
-  const wide = innerWidth >= 820;
-  lmap.fitBounds(L.latLngBounds(PLACES.map(p => [p.lat, p.lon])), {paddingTopLeft: [wide ? 420 : 24, 130], paddingBottomRight: [70, wide ? 30 : innerHeight * .35]});
-  if (me) drawMe();
-  syncStreet();
-}
-function syncStreet(){
-  if (!lmap) return;
-  PLACES.forEach(p => {
-    const m = markers[p.id], show = active.has(p.cat);
-    if (show && !lmap.hasLayer(m)) m.addTo(lmap);
-    if (!show && lmap.hasLayer(m)) m.remove();
-    const el = m.getElement() && m.getElement().querySelector(".lp");
-    if (el){ el.classList.toggle("active", selected === p.id); el.classList.toggle("saved", trip.includes(p.id)); }
-    m.setZIndexOffset(selected === p.id ? 1000 : p.hi ? 100 : 0);
+const THEME = {land:"#EAF3EC", water:"#A6D6EA", green:"#CFE8D2", road:"#FFFFFF", casing:"#DCE8DF", rail:"#C9D9CF", building:"#DEEAE1", border:"#BFD3C6", label:"#2E5A4F", halo:"#F3F8F4"};
+function theme(){
+  map.getStyle().layers.forEach(l => {
+    const id = l.id.toLowerCase(), set = (k, v) => { try { map.setPaintProperty(l.id, k, v); } catch (e) {} }, lay = (k, v) => { try { map.setLayoutProperty(l.id, k, v); } catch (e) {} };
+    if (l.type === "background") set("background-color", THEME.land);
+    else if (l.type === "fill"){
+      if (/water|ocean|lake|river|sea/.test(id)) set("fill-color", THEME.water);
+      else if (/park|wood|forest|grass|scrub|landcover|green|cemetery|golf|nature/.test(id)){ set("fill-color", THEME.green); set("fill-opacity", .85); }
+      else if (/building/.test(id)){ set("fill-color", THEME.building); set("fill-outline-color", THEME.building); }
+      else if (/landuse|residential|industrial|commercial|school|hospital|aeroway/.test(id)) set("fill-color", THEME.land);
+    } else if (l.type === "fill-extrusion") lay("visibility", "none");
+    else if (l.type === "line"){
+      if (/water|river|stream|canal|ditch/.test(id)) set("line-color", THEME.water);
+      else if (/casing|outline/.test(id)) set("line-color", THEME.casing);
+      else if (/rail|transit/.test(id)) set("line-color", THEME.rail);
+      else if (/boundary|admin/.test(id)) set("line-color", THEME.border);
+      else if (/road|highway|street|path|motorway|trunk|primary|secondary|tertiary|minor|service|bridge|tunnel|track/.test(id)) set("line-color", THEME.road);
+    } else if (l.type === "symbol"){
+      if (/poi|housenum|aerodrome|airport|mountain_peak/.test(id)) return lay("visibility", "none");
+      if (l.layout && l.layout["text-field"]){
+        lay("text-field", ["coalesce", ["get", "name:en"], ["get", "name_en"], ["get", "name:latin"], ["get", "name"]]);
+        set("text-color", THEME.label); set("text-halo-color", THEME.halo); set("text-halo-width", 1.4);
+      }
+      if (l.layout && l.layout["icon-image"] && /road|shield|highway/.test(id)) lay("visibility", "none");
+    }
   });
 }
-function streetFly(p){
-  if (!lmap) return;
-  const wide = innerWidth >= 820, z = Math.max(lmap.getZoom(), 14);
-  const pt = lmap.project([p.lat, p.lon], z).add([wide ? -200 : 0, wide ? 0 : innerHeight * .22]);
-  lmap.flyTo(lmap.unproject(pt, z), z, {duration: .8});
+
+function initMap(){
+  if (!window.maplibregl){ document.getElementById("map").innerHTML = '<div class="nomap">The map could not load. Check your connection.</div>'; return; }
+  map = new maplibregl.Map({
+    container: "map", style: "https://tiles.openfreemap.org/styles/positron",
+    center: [136.25, 35.95], zoom: 8.6, minZoom: 7, maxZoom: 18, attributionControl: {compact: true},
+    maxBounds: [[134.6, 34.9], [137.6, 36.9]]
+  });
+  map.on("style.load", theme);
+  map.on("zoom", zoomClass);
+  map.on("click", e => { if (!e.originalEvent.target.closest(".mk")) closeSheet(); });
+  const wide = innerWidth >= 760;
+  map.once("load", () => map.fitBounds([[135.45, 35.40], [136.85, 36.30]], {padding: {top: 140, bottom: wide ? 40 : 120, left: wide ? 440 : 20, right: 20}, duration: 0}));
+  PLACES.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "mk" + (p.hi ? " hi" : "");
+    el.innerHTML = `<div class="dot">${em(p)}</div><div class="lbl">${shortName(p)}</div>`;
+    el.setAttribute("role", "button"); el.setAttribute("aria-label", p.name); el.tabIndex = 0;
+    el.addEventListener("click", e => { e.stopPropagation(); openPlace(p.id, true); });
+    el.addEventListener("keydown", e => { if (e.key === "Enter") openPlace(p.id, true); });
+    new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([p.lon, p.lat]).addTo(map);
+    els[p.id] = el;
+  });
+  zoomClass(); syncMarkers();
 }
+function zoomClass(){
+  const z = map ? map.getZoom() : 8;
+  document.body.classList.toggle("far", z < 10);
+  document.body.classList.toggle("mid", z >= 10 && z < 12);
+}
+function syncMarkers(){
+  PLACES.forEach(p => {
+    const el = els[p.id]; if (!el) return;
+    el.classList.toggle("hidden", active.size > 0 && !active.has(p.cat));
+    el.classList.toggle("on", selected === p.id);
+    el.classList.toggle("saved", saved.includes(p.id));
+    el.parentElement && (el.style.zIndex = selected === p.id ? 10 : p.hi ? 2 : 1);
+  });
+  const n = document.getElementById("saved-n");
+  n.hidden = !saved.length; n.textContent = saved.length;
+}
+
+function buildChips(){
+  const c = document.getElementById("chips");
+  c.innerHTML = Object.entries(CATS).map(([k, v]) => `<button class="chip" data-k="${k}" aria-pressed="false"><span>${v.e}</span>${v.name}</button>`).join("");
+  c.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    const k = b.dataset.k;
+    active.has(k) ? active.delete(k) : active.add(k);
+    b.setAttribute("aria-pressed", active.has(k));
+    syncMarkers();
+    if (sheetMode === "list") renderList(listTitle, listItems());
+  });
+}
+
+const sheet = document.getElementById("sheet");
+let sheetMode = null, listTitle = "", listKind = "near";
+function openSheet(html, mode){ sheet.innerHTML = `<div class="grab"></div>${html}`; sheet.classList.add("open"); sheet.scrollTop = 0; sheetMode = mode; const x = sheet.querySelector(".x"); if (x) x.onclick = closeSheet; }
+function closeSheet(){ sheet.classList.remove("open"); sheetMode = null; selected = null; syncMarkers(); }
+const row = (p, d) => `<button class="row" data-id="${p.id}"><span class="em">${em(p)}</span><span><b>${shortName(p)}</b><em>${CATS[p.cat].name} · ${p.town}</em></span>${d !== undefined ? `<span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span>` : ""}</button>`;
+function bindRows(){ sheet.querySelectorAll(".row").forEach(b => b.onclick = () => openPlace(b.dataset.id, true)); }
+
+function listItems(){
+  const q = document.getElementById("q").value.trim().toLowerCase(), o = origin();
+  let items = PLACES.filter(p => (active.size === 0 || active.has(p.cat)));
+  if (listKind === "search" && q) items = items.filter(p => (p.name + " " + p.jp + " " + p.town + " " + CATS[p.cat].name).toLowerCase().includes(q));
+  if (listKind === "saved") items = items.filter(p => saved.includes(p.id));
+  if (listKind === "near") items = items.filter(p => p.cat !== "station");
+  return items.map(p => ({p, d: dist(o, p)})).sort((a, b) => a.d - b.d);
+}
+function renderList(title, items){
+  listTitle = title;
+  const sub = listKind === "saved" ? "Your saved places, nearest first" : inFukui() ? "Distance from where you are" : me ? "You're outside Fukui · distance from Fukui Station" : "Distance from Fukui Station";
+  const body = items.length ? items.map(({p, d}) => row(p, d)).join("") :
+    `<div class="empty">${listKind === "saved" ? "Tap ❤️ on any place to save it here." : "No places match. Try another word or filter."}</div>`;
+  openSheet(`<div class="shead"><h2>${title}</h2><button class="x" aria-label="Close">✕</button></div><p class="sub">${sub}</p>
+    ${listKind === "near" && !me ? '<button class="cta" id="use-loc">📍 Use my location</button>' : ""}${body}`, "list");
+  const u = document.getElementById("use-loc"); if (u) u.onclick = () => locate(true);
+  bindRows();
+}
+
+function openPlace(id, fly){
+  const p = PLACES.find(q => q.id === id), on = saved.includes(id);
+  selected = id; syncMarkers();
+  if (fly && map){
+    const wide = innerWidth >= 760, z = Math.max(map.getZoom(), 13);
+    map.flyTo({center: [p.lon, p.lat], zoom: z, offset: [wide ? 210 : 0, wide ? 0 : -innerHeight * .2], duration: 900});
+  }
+  const d = dist(origin(), p), near = inFukui();
+  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=${near && d < 2 ? "walking" : "transit"}`;
+  openSheet(`<div class="place">
+    <div class="top"><div class="badge">${em(p)}</div><div style="flex:1"><h2>${p.name}</h2><div class="jp">${p.jp} · ${p.town}</div></div><button class="x" aria-label="Close">✕</button></div>
+    <div class="pills"><span class="pill g">${fmtDist(d)} ${near ? "away" : "from Fukui Stn"}</span><span class="pill">⏱ ${p.time}</span><span class="pill">🚃 ${p.access}</span></div>
+    <p>${p.desc}</p>
+    <div class="acts">${p.cat === "station" ? "" : `<button class="save ${on ? "on" : ""}" id="save">${on ? "❤️ Saved" : "🤍 Save"}</button>`}<a class="go" href="${gmaps}" target="_blank" rel="noopener">Directions</a></div>
+    <div class="note">Sample data. Check opening hours and fees before you go.</div></div>`, "place");
+  const s = document.getElementById("save");
+  if (s) s.onclick = () => {
+    saved.includes(id) ? saved = saved.filter(x => x !== id) : saved.push(id);
+    try { localStorage.setItem("vf-trip", JSON.stringify(saved)); } catch (e) {}
+    toast(saved.includes(id) ? "Saved ❤️" : "Removed");
+    openPlace(id);
+  };
+}
+
+let meMarker = null;
 function drawMe(){
-  if (!lmap || !me) return;
-  if (!meLayer) meLayer = L.layerGroup().addTo(lmap);
-  meLayer.clearLayers();
-  L.circle([me.lat, me.lon], {radius: Math.min(me.acc, 1500), color: "#2F80ED", weight: 1, fillOpacity: .12, interactive: false}).addTo(meLayer);
-  L.marker([me.lat, me.lon], {interactive: false, zIndexOffset: 2000, icon: L.divIcon({className: "", iconSize: [20, 20], iconAnchor: [10, 10], html: '<div class="me"></div>'})}).addTo(meLayer);
+  if (!map || !me) return;
+  if (!meMarker){ const el = document.createElement("div"); el.className = "me"; meMarker = new maplibregl.Marker({element: el}).setLngLat([me.lon, me.lat]).addTo(map); }
+  else meMarker.setLngLat([me.lon, me.lat]);
 }
 function locate(center){
-  if (!navigator.geolocation){ toast("Location isn't available on this device"); return; }
-  document.getElementById("loc").classList.add("on");
+  if (!navigator.geolocation){ toast("Location isn't available here"); return; }
   if (watchId !== null){ if (center && me) centerMe(); return; }
   if (center) toast("Finding you…");
   let first = true;
   watchId = navigator.geolocation.watchPosition(pos => {
-    me = {lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy};
+    const prev = me;
+    me = {lat: pos.coords.latitude, lon: pos.coords.longitude};
+    document.getElementById("loc-btn").classList.add("on");
     drawMe();
     if (first && center) centerMe();
     first = false;
-    const key = me.lat.toFixed(3) + me.lon.toFixed(3);
-    if (key !== nearKey){ nearKey = key; if (!selected && mode === "street") homeStreet(); }
+    if (sheetMode === "list" && listKind === "near" && (!prev || dist(prev, me) > .1)) renderList("Near you", listItems());
   }, err => {
     watchId = null;
-    document.getElementById("loc").classList.remove("on");
-    toast(err.code === 1 ? "Location is blocked. Allow it in your browser settings" : "Couldn't find your location");
+    toast(err.code === 1 ? "Location is blocked. Allow it in Settings" : "Couldn't find your location");
   }, {enableHighAccuracy: true, maximumAge: 15000, timeout: 20000});
 }
 function centerMe(){
-  if (!nearFukui()){ toast(`You're ${fmtDist(dist(me, FUKUI_STN))} from Fukui`); return; }
-  if (mode !== "street") setMode("street");
-  lmap.flyTo([me.lat, me.lon], 15, {duration: .8});
+  if (!inFukui()){ toast(`You're ${fmtDist(dist(me, FUKUI_STN))} from Fukui`); return; }
+  map && map.flyTo({center: [me.lon, me.lat], zoom: 15, duration: 900});
 }
-function homeStreet(){
-  const n = trip.length, here = nearFukui(), from = here ? me : FUKUI_STN;
-  const list = PLACES.filter(p => active.has(p.cat) && p.cat !== "station").map(p => ({p, d: dist(from, p)})).sort((a, b) => a.d - b.d).slice(0, 10);
-  const note = here ? "From where you are" : me ? "You're outside Fukui · from Fukui Stn" : "From Fukui Station";
-  sheet.innerHTML = `<div class="grab"></div>
-    <button class="plan" id="plan">Plan your trip ${n ? `<span class="count">${n} saved</span>` : ""}</button>
-    <div class="sec"><h2>Near you</h2><small>${note}</small></div>
-    ${me ? "" : '<button class="locate" id="findme">Use my location to sort by distance</button>'}
-    <div>${list.map(({p, d}) => `<button class="nrow" data-id="${p.id}"><span class="ic" style="background:${CATS[p.cat].color}">${icon(p.cat, 24)}</span><span><b>${shortName(p)}</b><em>${CATS[p.cat].name} · ${p.town}</em></span><span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span></button>`).join("")}</div>`;
-  sheet.querySelector("#plan").onclick = () => toast("Trip planner is coming next");
-  const f = sheet.querySelector("#findme"); if (f) f.onclick = () => locate(true);
-  sheet.querySelectorAll(".nrow").forEach(b => b.onclick = () => openPlace(b.dataset.id, true));
-  syncStreet();
-}
-document.getElementById("m-art").onclick = () => setMode("art");
-document.getElementById("m-street").onclick = () => setMode("street");
-document.getElementById("loc").onclick = () => locate(true);
 
-buildChips(); buildPins(); fit();
-let saved = "art"; try { saved = localStorage.getItem("vf-mode") || "art"; } catch (e) {}
-if (saved === "street" && window.L) setMode("street"); else home();
+let tt;
+function toast(t){ const el = document.getElementById("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 1800); }
+
+const q = document.getElementById("q");
+q.addEventListener("focus", () => { listKind = "search"; renderList("Explore Fukui", listItems()); });
+q.addEventListener("input", () => { listKind = "search"; renderList(q.value ? `Results for “${q.value}”` : "Explore Fukui", listItems()); });
+document.getElementById("near-btn").onclick = () => { listKind = "near"; locate(false); renderList("Near you", listItems()); };
+document.getElementById("saved-btn").onclick = () => { listKind = "saved"; renderList("Saved", listItems()); };
+document.getElementById("plan-btn").onclick = () => {
+  openSheet(`<div class="shead"><h2>Plan your trip</h2><button class="x" aria-label="Close">✕</button></div>
+    <p class="sub">Day-by-day planning is coming next. For now, save places with 🤍 and they'll be waiting here.</p>
+    ${saved.length ? PLACES.filter(p => saved.includes(p.id)).map(p => row(p)).join("") : '<div class="empty">No saved places yet.</div>'}`, "plan");
+  bindRows();
+};
+document.getElementById("loc-btn").onclick = () => locate(true);
+
+buildChips();
+initMap();
 </script>
 </body>
 </html>
