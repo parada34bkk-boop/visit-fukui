@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visit Fukui</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: full-bleed hand-drawn map, chips on top, sheet at the bottom (left panel on wide screens) */
+  --sea:#A9CBDA; --land:#F4EAD3; --ink:#3B3A36; --paper:#FFFCF4; --accent:#D9693A; --muted:#7C766A;
+  --font-display:"Kalam","Comic Sans MS",cursive; --font-body:"Nunito",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--sea);color:var(--ink);font-family:var(--font-body);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{position:relative;height:100%;width:100%;overflow:hidden}
+#map{position:absolute;inset:0;touch-action:none;cursor:grab}
+#map.dragging{cursor:grabbing}
+#map svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#pins{position:absolute;inset:0;pointer-events:none}
+.pin{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;border:2.5px solid var(--ink);background:#fff;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;padding:0;transition:transform .15s}
+.pin svg{width:20px;height:20px}
+.pin.hi{width:54px;height:54px;border-radius:16px;border-width:3px;box-shadow:3px 4px 0 var(--ink);rotate:-4deg}
+.pin.hi:nth-child(4n){rotate:5deg}
+.pin.hi svg{width:30px;height:30px}
+.pin.dot{width:16px;height:16px;border-width:2px}
+.pin.dot svg{display:none}
+.pin:hover{transform:translate(-50%,-50%) scale(1.1)}
+.pin.active{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 0 0 5px rgba(217,105,58,.35)}
+.pin.saved::after{content:"";position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--ink)}
+.pin-label{position:absolute;transform:translate(-50%,0);pointer-events:none;font-family:var(--font-display);font-weight:700;font-size:13px;white-space:nowrap;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:0 8px;line-height:1.5}
+.pin-label.hi{font-size:15px;background:#FFF3D6;box-shadow:2px 2px 0 var(--ink)}
+.top{position:absolute;top:0;left:0;right:0;padding:14px 16px 0;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.brand{display:flex;align-items:center;gap:10px;pointer-events:auto}
+.brand h1{margin:0;font-family:var(--font-display);font-size:28px;line-height:1;font-weight:700}
+.brand span{font-size:12px;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;font-weight:700}
+.chips{display:flex;gap:8px;overflow-x:auto;pointer-events:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--paper);border-radius:999px;padding:5px 12px 5px 8px;font-size:13px;font-weight:700}
+.chip i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);display:block}
+.chip[aria-pressed="false"]{background:transparent;opacity:.55}
+.zoom{position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
+.zoom button{width:42px;height:42px;border-radius:12px;border:2.5px solid var(--ink);background:var(--paper);font-size:22px;font-weight:800;line-height:1}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-top:2.5px solid var(--ink);border-radius:22px 22px 0 0;padding:10px 16px 18px;max-height:62%;overflow-y:auto;transition:transform .25s}
+.grab{width:44px;height:5px;border-radius:5px;background:#D8CFBD;margin:0 auto 12px}
+.plan{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:2.5px solid var(--ink);background:var(--accent);color:#fff;border-radius:999px;padding:13px 16px;font-size:17px;font-weight:800;box-shadow:0 4px 0 var(--ink)}
+.plan:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.plan .count{background:var(--paper);color:var(--ink);border-radius:999px;font-size:12px;padding:2px 8px;border:2px solid var(--ink)}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 8px}
+.sec h2{margin:0;font-family:var(--font-display);font-size:21px}
+.sec small{color:var(--muted);font-size:12px}
+.hl{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.hcard{flex:none;width:138px;border:2px solid var(--ink);border-radius:14px;background:#fff;padding:0;text-align:left;overflow:hidden}
+.hcard .art{height:70px;display:flex;align-items:center;justify-content:center}
+.hcard .art svg{width:34px;height:34px}
+.hcard b{display:block;font-size:13px;padding:7px 9px 0;line-height:1.25}
+.hcard em{display:block;font-style:normal;font-size:11.5px;color:var(--muted);padding:2px 9px 8px}
+.card .art{height:120px;border:2px solid var(--ink);border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative}
+.card .art svg{width:60px;height:60px}
+.card .art .tag{position:absolute;left:10px;top:10px;background:var(--paper);border:2px solid var(--ink);border-radius:999px;font-size:12px;font-weight:800;padding:2px 10px}
+.card .close{position:absolute;right:10px;top:10px;width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);font-size:18px;font-weight:800;line-height:1}
+.card h3{margin:12px 0 0;font-family:var(--font-display);font-size:26px;line-height:1.1;text-wrap:balance}
+.card .jp{color:var(--muted);font-size:14px;margin-top:2px}
+.card p{margin:10px 0;font-size:15px;line-height:1.55;max-width:60ch}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 14px}
+.facts div{border:2px dashed #CFC4AE;border-radius:12px;padding:7px 9px}
+.facts small{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.facts span{font-size:13px;font-weight:700}
+.actions{display:flex;gap:10px}
+.actions button,.actions a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:2.5px solid var(--ink);border-radius:999px;padding:11px 10px;font-size:15px;font-weight:800;text-decoration:none;color:var(--ink);background:var(--paper)}
+.actions .add{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--ink)}
+.actions .add.on{background:#6E9E5A}
+.note{font-size:11.5px;color:var(--muted);margin-top:12px}
+.toast{position:absolute;left:50%;top:110px;transform:translate(-50%,-10px);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:700;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (min-width:820px){
+  .sheet{left:16px;right:auto;bottom:16px;top:auto;width:380px;border:2.5px solid var(--ink);border-radius:22px;max-height:calc(100% - 150px)}
+  .grab{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="map" aria-label="Illustrated map of Fukui Prefecture">
+    <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="pins"></div>
+  </div>
+
+  <div class="top">
+    <div class="brand"><h1>Visit Fukui</h1><span>福井</span></div>
+    <div class="chips" id="chips" role="toolbar" aria-label="Filter places"></div>
+  </div>
+
+  <div class="zoom">
+    <button id="zin" aria-label="Zoom in">+</button>
+    <button id="zout" aria-label="Zoom out">−</button>
+  </div>
+
+  <section class="sheet" id="sheet" aria-live="polite"></section>
+  <div class="toast" id="toast" role="status"></div>
+</div>
+
+<script>
+const CATS = {
+  dino:    {name:"Dinosaurs", color:"#F2B33D", icon:'<path d="M3 18c1.5 0 2-3 5-3.5 2-.3 3 .8 5 .5 1.5-.3 2-2 2-4l2-3 2.5.5L20 11l-2.5.3c0 3-1 6-4 7"/><path d="M7 18v2M12 18v2"/><circle cx="18.6" cy="8.4" r=".6" fill="currentColor"/>'},
+  nature:  {name:"Nature", color:"#86B26F", icon:'<path d="M2.5 19l6.5-10 4 6 3-4 5.5 8z"/><path d="M7.5 11.5l1.5 1 1.5-1"/>'},
+  temple:  {name:"Temples & shrines", color:"#E07A62", icon:'<path d="M3 6.5c3 .8 15 .8 18 0M5 10h14M7.5 7v13M16.5 7v13M12 7v3"/>'},
+  history: {name:"Castles & history", color:"#C9A577", icon:'<path d="M5 20v-8h14v8M8 12V9h8v3M10 9V6h4v3M3.5 20h17M11 20v-3h2v3"/><path d="M7 9l5-4 5 4"/>'},
+  onsen:   {name:"Onsen", color:"#F09A6E", icon:'<path d="M5 15c0 3 3 5 7 5s7-2 7-5"/><path d="M8 12c-1.2-1.6 1.2-2.4 0-4.2M12 12c-1.2-1.6 1.2-2.4 0-4.2M16 12c-1.2-1.6 1.2-2.4 0-4.2"/>'},
+  food:    {name:"Food", color:"#D883A8", icon:'<path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M14 3l-4 8M18 4l-6 7"/>'},
+  craft:   {name:"Crafts", color:"#82AFCB", icon:'<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3M9 11h6M9 15h6"/>'},
+  station: {name:"Stations", color:"#FFFFFF", icon:'<rect x="6" y="3.5" width="12" height="13" rx="3"/><path d="M6 10h12M9 20l1.5-3.5M15 20l-1.5-3.5"/><circle cx="9.5" cy="13.3" r=".6" fill="currentColor"/><circle cx="14.5" cy="13.3" r=".6" fill="currentColor"/>'}
+};
+
+const PLACES = [
+  {id:"dino", cat:"dino", hi:1, name:"Fukui Prefectural Dinosaur Museum", jp:"福井県立恐竜博物館", town:"Katsuyama", lat:36.083, lon:136.507, time:"3–4 h", access:"Echizen Rwy + bus", desc:"One of the world's big dinosaur museums, built near the quarries where Japan's own dinosaurs were dug up. Huge skeletons, a live-moving T. rex and a fossil dig area."},
+  {id:"heisenji", cat:"temple", name:"Heisenji Hakusan Shrine", jp:"平泉寺白山神社", town:"Katsuyama", lat:36.050, lon:136.533, time:"1 h", access:"Car / taxi", desc:"An ancient mountain shrine where the whole forest floor is a carpet of moss under giant cedars. Quiet and green, best after rain."},
+  {id:"eiheiji", cat:"temple", hi:1, name:"Eiheiji Temple", jp:"永平寺", town:"Eiheiji", lat:36.055, lon:136.355, time:"1.5–2 h", access:"Direct bus from Fukui Stn", desc:"Head temple of Soto Zen, founded in 1244. Monks still train here; covered wooden corridors climb the hillside between halls."},
+  {id:"tojinbo", cat:"nature", hi:1, name:"Tojinbo Cliffs", jp:"東尋坊", town:"Sakai", lat:36.238, lon:136.123, time:"1–1.5 h", access:"Bus from Awara-Onsen Stn", desc:"Rugged basalt columns rising straight out of the Sea of Japan. Walk the cliff edge, take a short boat trip, and stay for the sunset."},
+  {id:"maruoka", cat:"history", name:"Maruoka Castle", jp:"丸岡城", town:"Sakai", lat:36.152, lon:136.272, time:"45 min", access:"Bus from Fukui Stn", desc:"One of only twelve castles in Japan with its original keep. Small and steep inside, and ringed with cherry trees in spring."},
+  {id:"awara", cat:"onsen", name:"Awara Onsen", jp:"あわら温泉", town:"Awara", lat:36.222, lon:136.190, time:"Overnight", access:"Shinkansen Awara-Onsen", desc:"Fukui's best-known hot spring town, with ryokan baths and a free footbath outside the station. A good base for Tojinbo."},
+  {id:"ichijodani", cat:"history", hi:1, name:"Ichijodani Asakura Ruins", jp:"一乗谷朝倉氏遺跡", town:"Fukui City", lat:35.997, lon:136.296, time:"1.5 h", access:"JR Etsumi-Hoku Line", desc:"A whole samurai-era castle town lost in 1573 and dug out again, with a rebuilt street of houses and shops you can walk through."},
+  {id:"yokokan", cat:"history", name:"Yokokan Garden", jp:"養浩館庭園", town:"Fukui City", lat:36.073, lon:136.217, time:"45 min", access:"Walk from Fukui Stn", desc:"A former lord's villa built around a pond, with tatami rooms that open onto the water. A calm stop in the city centre."},
+  {id:"ono", cat:"history", hi:1, name:"Echizen Ono Castle", jp:"越前大野城", town:"Ono", lat:35.979, lon:136.482, time:"1 h", access:"JR Kuzuryu Line", desc:"The \"castle in the sky\": on autumn mornings it floats above a sea of cloud. Ono's old town below is known for spring water."},
+  {id:"washi", cat:"craft", name:"Echizen Washi Village", jp:"越前和紙の里", town:"Echizen City", lat:35.906, lon:136.236, time:"1–2 h", access:"Bus from Takefu", desc:"A papermaking area with 1,500 years of history. Watch artisans at work and make your own sheet of washi."},
+  {id:"knife", cat:"craft", name:"Takefu Knife Village", jp:"タケフナイフビレッジ", town:"Echizen City", lat:35.884, lon:136.140, time:"1 h", access:"Car / taxi", desc:"A shared workshop where Echizen knife makers forge blades. See the forging up close and buy straight from the makers."},
+  {id:"megane", cat:"craft", name:"Megane Museum", jp:"めがねミュージアム", town:"Sabae", lat:35.950, lon:136.187, time:"1 h", access:"Walk from Sabae Stn", desc:"Sabae makes most of Japan's glasses frames. Learn the story, shop local brands, or make a frame yourself."},
+  {id:"coast", cat:"nature", name:"Echizen Coast", jp:"越前海岸", town:"Echizen Town", lat:35.985, lon:136.025, time:"Half day drive", access:"Car recommended", desc:"A dramatic coastal road of cliffs and rock arches. In winter, wild narcissus flowers cover the slopes."},
+  {id:"crab", cat:"food", name:"Echizen crab at Mikuni Port", jp:"越前がに", town:"Sakai", lat:36.212, lon:136.160, time:"1 h", access:"Near Tojinbo", desc:"Fukui's famous snow crab, landed in the colder months. Try it boiled whole at a harbour restaurant."},
+  {id:"katsudon", cat:"food", name:"Sauce katsudon", jp:"ソースカツ丼", town:"Fukui City", lat:36.055, lon:136.235, time:"45 min", access:"Near Fukui Stn", desc:"Fukui's soul food: thin pork cutlets dipped in a sweet Worcestershire sauce over rice."},
+  {id:"soba", cat:"food", name:"Echizen oroshi soba", jp:"越前おろしそば", town:"Echizen City", lat:35.900, lon:136.180, time:"45 min", access:"Near Echizen-Takefu Stn", desc:"Cold buckwheat noodles topped with grated daikon radish and bonito flakes. Light, peppery and very local."},
+  {id:"kehi", cat:"temple", name:"Kehi Jingu Shrine", jp:"氣比神宮", town:"Tsuruga", lat:35.656, lon:136.081, time:"45 min", access:"Walk from Tsuruga Stn", desc:"Tsuruga's grand shrine, with one of Japan's three great wooden torii gates at the entrance."},
+  {id:"mikata", cat:"nature", hi:1, name:"Mikata Five Lakes · Rainbow Line", jp:"三方五湖", town:"Wakasa / Mihama", lat:35.585, lon:135.887, time:"2 h", access:"Car recommended", desc:"Five lakes, each a different shade of blue, seen from a hilltop terrace at the top of the Rainbow Line scenic road."},
+  {id:"kumagawa", cat:"history", name:"Kumagawa-juku", jp:"熊川宿", town:"Wakasa", lat:35.465, lon:135.904, time:"1 h", access:"Bus from Kaminaka", desc:"An old post town on the Saba Kaido, the route that carried mackerel to Kyoto. Wooden houses line a clear water channel."},
+  {id:"obama", cat:"food", name:"Obama: mackerel and temples", jp:"小浜", town:"Obama", lat:35.497, lon:135.746, time:"Half day", access:"JR Obama Line", desc:"Start of the mackerel road to Kyoto. Eat grilled saba, then visit some of the many old temples in the hills around town."},
+  {id:"st-fukui", cat:"station", name:"Fukui Station", jp:"福井駅", town:"Fukui City", lat:36.062, lon:136.223, time:"—", access:"Hokuriku Shinkansen", desc:"Main hub. Dinosaur statues greet you outside. Buses to Eiheiji, Maruoka and Tojinbo start here; the Echizen Railway runs to Katsuyama."},
+  {id:"st-tsuruga", cat:"station", name:"Tsuruga Station", jp:"敦賀駅", town:"Tsuruga", lat:35.645, lon:136.075, time:"—", access:"Shinkansen + JR", desc:"Where the Hokuriku Shinkansen meets trains to Kyoto, Osaka and the southern Wakasa coast."},
+  {id:"st-awara", cat:"station", name:"Awara-Onsen Station", jp:"芦原温泉駅", town:"Awara", lat:36.211, lon:136.233, time:"—", access:"Hokuriku Shinkansen", desc:"Shinkansen stop for Awara Onsen and the closest station for buses to Tojinbo."},
+  {id:"st-takefu", cat:"station", name:"Echizen-Takefu Station", jp:"越前たけふ駅", town:"Echizen City", lat:35.888, lon:136.193, time:"—", access:"Hokuriku Shinkansen", desc:"Shinkansen stop for the knife, paper and pottery villages of Echizen."}
+];
+
+const OUTLINE = [[136.27,36.30],[136.20,36.27],[136.13,36.235],[136.11,36.20],[136.14,36.16],[136.10,36.10],[136.05,36.03],[136.00,35.97],[135.98,35.90],[136.01,35.82],[136.04,35.76],[136.05,35.70],[136.07,35.66],[136.04,35.638],[136.00,35.66],[135.97,35.70],[135.95,35.66],[135.97,35.62],[135.93,35.60],[135.88,35.62],[135.85,35.58],[135.80,35.55],[135.75,35.515],[135.70,35.53],[135.65,35.52],[135.60,35.54],[135.55,35.51],[135.50,35.54],[135.45,35.53],[135.44,35.48],[135.48,35.42],[135.55,35.39],[135.65,35.37],[135.75,35.38],[135.82,35.42],[135.88,35.42],[135.93,35.44],[136.00,35.50],[136.08,35.53],[136.15,35.58],[136.22,35.64],[136.26,35.72],[136.30,35.78],[136.38,35.82],[136.48,35.84],[136.58,35.83],[136.68,35.86],[136.78,35.92],[136.83,36.00],[136.78,36.06],[136.70,36.10],[136.65,36.17],[136.58,36.22],[136.48,36.27],[136.38,36.29]];
+const RIVER = [[136.56,35.95],[136.48,36.01],[136.40,36.04],[136.30,36.08],[136.24,36.13],[136.19,36.18],[136.15,36.215]];
+
+const K = 690, LON0 = 135.30, LAT0 = 36.45, W = 1100, H = 1080;
+const px = lon => (lon - LON0) * K;
+const py = lat => (LAT0 - lat) * K * 1.236;
+
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+function rough(pts, amp, close){
+  let d = "";
+  pts.forEach((p, i) => {
+    const x = px(p[0]) + (rnd() - .5) * amp, y = py(p[1]) + (rnd() - .5) * amp;
+    if (i === 0) { d += `M${x.toFixed(1)} ${y.toFixed(1)}`; return; }
+    const q = pts[i - 1], mx = (px(q[0]) + px(p[0])) / 2 + (rnd() - .5) * amp * 2, my = (py(q[1]) + py(p[1])) / 2 + (rnd() - .5) * amp * 2;
+    d += ` Q${mx.toFixed(1)} ${my.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  });
+  return close ? d + " Z" : d;
+}
+function inside(lon, lat){
+  let c = false;
+  for (let i = 0, j = OUTLINE.length - 1; i < OUTLINE.length; j = i++){
+    const [xi, yi] = OUTLINE[i], [xj, yj] = OUTLINE[j];
+    if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
+
+function drawMap(){
+  const s = [];
+  s.push('<defs><pattern id="waves" width="60" height="34" patternUnits="userSpaceOnUse"><path d="M6 20q7-7 14 0t14 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".55"/></pattern></defs>');
+  s.push(`<rect x="-3000" y="-3000" width="${W + 6000}" height="${H + 6000}" fill="#A9CBDA"/>`);
+  s.push(`<rect x="-3000" y="-3000" width="${W + 6000}" height="${H + 6000}" fill="url(#waves)"/>`);
+  const coast = rough(OUTLINE, 3, true);
+  [[90,'#BCD8E4',1],[62,'#A9CBDA',1],[44,'#C6DFE9',1],[22,'#D7EAF1',1]].forEach(([w,c]) => s.push(`<path d="${coast}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`));
+  [76,52,32].forEach(w => s.push(`<path d="${coast}" fill="none" stroke="#fff" stroke-width="${w}" stroke-linejoin="round" opacity=".0"/>`));
+  s.push(`<path d="${coast}" fill="none" stroke="#fff" stroke-width="56" stroke-linejoin="round" stroke-dasharray="2 14" stroke-linecap="round" opacity=".7"/>`);
+  s.push(`<path d="${coast}" fill="#D9C9A6" transform="translate(5 7)"/>`);
+  s.push(`<path d="${coast}" fill="#F4EAD3" stroke="#3B3A36" stroke-width="3" stroke-linejoin="round"/>`);
+  s.push(`<path d="${rough(OUTLINE, 5, true)}" fill="none" stroke="#3B3A36" stroke-width="1" opacity=".35"/>`);
+  const ok = (lon, lat) => inside(lon, lat) && PLACES.every(p => Math.hypot(p.lon - lon, (p.lat - lat) * 1.24) > .045);
+  const mts = [];
+  for (let lon = 135.45; lon < 136.85; lon += .055){
+    for (let lat = 35.36; lat < 36.3; lat += .045){
+      const jl = lon + (rnd() - .5) * .04, ja = lat + (rnd() - .5) * .03;
+      const mountainous = (jl > 136.36 && ja < 36.24) || ja < 35.47 || (jl > 136.1 && ja < 35.8) || (jl < 136.0 && jl > 135.5 && ja < 35.5);
+      if (mountainous && ok(jl, ja) && rnd() > .35) mts.push([px(jl), py(ja), 14 + rnd() * 10]);
+    }
+  }
+  mts.sort((a, b) => a[1] - b[1]).forEach(([x, y, r]) => {
+    s.push(`<path d="M${x - r} ${y + r * .55}L${x} ${y - r * .8}L${x + r} ${y + r * .55}Z" fill="#B9CF9B" stroke="#3B3A36" stroke-width="1.6" stroke-linejoin="round"/>`);
+    s.push(`<path d="M${x - r * .32} ${y - r * .3}L${x} ${y - r * .8}L${x + r * .32} ${y - r * .3}l-.1 .1-${r * .16} ${r * .12}-${r * .16} -${r * .12}-${r * .16} ${r * .12}z" fill="#fff" stroke="#3B3A36" stroke-width="1.2" stroke-linejoin="round"/>`);
+  });
+  const trees = [];
+  for (let lon = 135.5; lon < 136.8; lon += .04){
+    for (let lat = 35.4; lat < 36.3; lat += .035){
+      const jl = lon + (rnd() - .5) * .03, ja = lat + (rnd() - .5) * .025;
+      const low = !((jl > 136.36 && ja < 36.24) || ja < 35.47 || (jl > 136.1 && ja < 35.8));
+      if (low && ok(jl, ja) && rnd() > .72) trees.push([px(jl), py(ja)]);
+    }
+  }
+  trees.sort((a, b) => a[1] - b[1]).forEach(([x, y]) => {
+    s.push(`<path d="M${x} ${y + 9}v5" stroke="#7A5A3A" stroke-width="2" stroke-linecap="round"/>`);
+    s.push(`<circle cx="${x}" cy="${y + 2}" r="7.5" fill="#9DC27F" stroke="#3B3A36" stroke-width="1.5"/>`);
+    s.push(`<path d="M${x - 3} ${y}q2 -3 5 -1" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>`);
+  });
+  const cxr = px(135.52), cyr = py(35.86);
+  s.push(`<g transform="translate(${cxr} ${cyr})"><circle r="46" fill="#FFFCF4" stroke="#3B3A36" stroke-width="2.5"/><circle r="38" fill="none" stroke="#3B3A36" stroke-width="1" stroke-dasharray="3 5"/><path d="M0 -34L8 0L0 34L-8 0Z" fill="#fff" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/><path d="M0 -34L8 0L-8 0Z" fill="#D9693A" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/><path d="M-34 0L0 -6L34 0L0 6Z" fill="#F4EAD3" stroke="#3B3A36" stroke-width="1.6" stroke-linejoin="round"/><text y="-50" text-anchor="middle" font-family="Kalam" font-weight="700" font-size="20" fill="#3B3A36">N</text></g>`);
+  [[135.62,36.25],[135.95,36.28],[135.55,35.70]].forEach(([lo, la]) => { const x = px(lo), y = py(la); s.push(`<path d="M${x} ${y}q10 -14 20 0q10 -14 20 0" fill="none" stroke="#3B3A36" stroke-width="2" stroke-linecap="round" opacity=".5"/>`); });
+  const bx = px(135.70), by = py(35.78);
+  s.push(`<g transform="translate(${bx} ${by}) rotate(-8)"><path d="M-30 6h60l-8 12h-44z" fill="#C9775A" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/><path d="M0 6v-30" stroke="#3B3A36" stroke-width="2"/><path d="M2 -24l20 22h-20z" fill="#FFFCF4" stroke="#3B3A36" stroke-width="2" stroke-linejoin="round"/></g>`);
+  s.push(`<path d="${rough(RIVER, 2, false)}" fill="none" stroke="#6FA5C0" stroke-width="4" stroke-linecap="round"/>`);
+  [[135.893, 35.567, 10, 14], [135.867, 35.556, 7, 9], [135.905, 35.548, 6, 7]].forEach(([lo, la, rx, ry]) =>
+    s.push(`<ellipse cx="${px(lo)}" cy="${py(la)}" rx="${rx}" ry="${ry}" fill="#8DC0D6" stroke="#3B3A36" stroke-width="1.5"/>`));
+  const label = (t, lo, la, size, op, rot = 0) => s.push(`<text x="${px(lo)}" y="${py(la)}" font-family="Kalam" font-size="${size}" font-weight="700" fill="#3B3A36" opacity="${op}" text-anchor="middle" transform="rotate(${rot} ${px(lo)} ${py(la)})">${t}</text>`);
+  label("Sea of Japan", 135.72, 36.12, 34, .55, -8);
+  label("Wakasa Bay", 135.78, 35.66, 22, .55, -6);
+  label("REIHOKU · North", 136.47, 36.205, 18, .45);
+  label("REINAN · South", 135.66, 35.43, 18, .45);
+  label("Kuzuryu River", 136.34, 36.105, 13, .55, -22);
+  return s.join("");
+}
+
+const svg = document.getElementById("svg"), pinsEl = document.getElementById("pins"), mapEl = document.getElementById("map");
+svg.innerHTML = drawMap();
+
+let view = {x: 0, y: 0, z: 1};
+const active = new Set(Object.keys(CATS));
+let trip = [];
+try { trip = JSON.parse(localStorage.getItem("vf-trip") || "[]"); } catch (e) {}
+let selected = null;
+
+function fit(){
+  const r = mapEl.getBoundingClientRect(), wide = r.width >= 820;
+  const left = wide ? 410 : 0, top = 110, bottom = wide ? 20 : r.height * .3;
+  const minX = px(wide ? 135.42 : 135.98), maxX = px(136.86), minY = py(36.31), maxY = py(wide ? 35.36 : 35.80);
+  const z = Math.min((r.width - left - 30) / (maxX - minX), (r.height - top - bottom) / (maxY - minY));
+  view.z = z;
+  view.x = left + (r.width - left - (maxX - minX) * z) / 2 - minX * z;
+  view.y = top + (r.height - top - bottom - (maxY - minY) * z) / 2 - minY * z;
+}
+function render(){
+  const r = mapEl.getBoundingClientRect();
+  svg.setAttribute("viewBox", `${-view.x / view.z} ${-view.y / view.z} ${r.width / view.z} ${r.height / view.z}`);
+  pinsEl.querySelectorAll(".pin,.pin-label").forEach(el => {
+    const p = PLACES.find(q => q.id === el.dataset.id), show = active.has(p.cat);
+    const x = px(p.lon) * view.z + view.x, y = py(p.lat) * view.z + view.y;
+    el.style.left = x + "px";
+    if (el.classList.contains("pin")){
+      el.style.top = y + "px"; el.style.display = show ? "flex" : "none";
+      el.classList.toggle("active", selected === p.id);
+      el.classList.toggle("dot", !p.hi && view.z < 1.25 && selected !== p.id);
+      el.classList.toggle("saved", trip.includes(p.id));
+    } else {
+      el.style.top = (y + (p.hi ? 36 : 22)) + "px";
+      el.style.display = show && (p.hi || view.z > 1.5 || selected === p.id) ? "block" : "none";
+    }
+  });
+  const taken = [...pinsEl.querySelectorAll(".pin.hi")].filter(e => e.style.display !== "none").map(e => e.getBoundingClientRect());
+  const labels = [...pinsEl.querySelectorAll(".pin-label")].filter(e => e.style.display !== "none")
+    .sort((a, b) => (b.dataset.id === selected) - (a.dataset.id === selected) || b.classList.contains("hi") - a.classList.contains("hi"));
+  labels.forEach(el => {
+    const r = el.getBoundingClientRect();
+    const hit = taken.some(t => r.left < t.right && r.right > t.left && r.top < t.bottom && r.bottom > t.top);
+    if (hit && el.dataset.id !== selected) el.style.display = "none"; else taken.push(r);
+  });
+}
+function buildPins(){
+  PLACES.forEach(p => {
+    const c = CATS[p.cat], b = document.createElement("button");
+    b.className = "pin" + (p.hi ? " hi" : ""); b.dataset.id = p.id; b.style.background = c.color;
+    b.setAttribute("aria-label", p.name);
+    b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg>`;
+    b.addEventListener("click", e => { e.stopPropagation(); openPlace(p.id); });
+    const l = document.createElement("div");
+    l.className = "pin-label" + (p.hi ? " hi" : ""); l.dataset.id = p.id; l.textContent = shortName(p);
+    pinsEl.append(l, b);
+  });
+}
+const shortName = p => p.name.replace("Fukui Prefectural ", "").replace(" at Mikuni Port", "").replace(" · Rainbow Line", "").replace(": mackerel and temples", "");
+
+function buildChips(){
+  const el = document.getElementById("chips");
+  el.innerHTML = Object.entries(CATS).map(([k, c]) => `<button class="chip" aria-pressed="true" data-k="${k}"><i style="background:${c.color}"></i>${c.name}</button>`).join("");
+  el.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    const k = b.dataset.k;
+    active.has(k) ? active.delete(k) : active.add(k);
+    b.setAttribute("aria-pressed", active.has(k));
+    render();
+  });
+}
+
+const sheet = document.getElementById("sheet");
+const icon = (c, size) => `<svg viewBox="0 0 24 24" fill="none" stroke="#3B3A36" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:${size}px;height:${size}px">${CATS[c].icon}</svg>`;
+function home(){
+  selected = null;
+  const n = trip.length;
+  sheet.innerHTML = `<div class="grab"></div>
+    <button class="plan" id="plan">Plan your trip ${n ? `<span class="count">${n} saved</span>` : ""}</button>
+    <div class="sec"><h2>Must-see in Fukui</h2><small>Tap to explore</small></div>
+    <div class="hl">${PLACES.filter(p => p.hi).map(p => `<button class="hcard" data-id="${p.id}"><div class="art" style="background:${CATS[p.cat].color}">${icon(p.cat, 34)}</div><b>${shortName(p)}</b><em>${p.town}</em></button>`).join("")}</div>`;
+  sheet.querySelector("#plan").onclick = () => toast("Trip planner comes in step 2");
+  sheet.querySelectorAll(".hcard").forEach(b => b.onclick = () => openPlace(b.dataset.id, true));
+  render();
+}
+function openPlace(id, fly){
+  const p = PLACES.find(q => q.id === id), c = CATS[p.cat], on = trip.includes(id);
+  selected = id;
+  if (fly) flyTo(p);
+  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=transit`;
+  sheet.innerHTML = `<div class="grab"></div><div class="card" style="position:relative">
+    <div class="art" style="background:${c.color}">${icon(p.cat, 60)}<span class="tag">${c.name}</span></div>
+    <button class="close" id="close" aria-label="Close">×</button>
+    <h3>${p.name}</h3><div class="jp">${p.jp} · ${p.town}</div>
+    <p>${p.desc}</p>
+    <div class="facts"><div><small>Time needed</small><span>${p.time}</span></div><div><small>Getting there</small><span>${p.access}</span></div><div><small>Hours & fee</small><span>Check site</span></div></div>
+    <div class="actions">${p.cat === "station" ? "" : `<button class="add ${on ? "on" : ""}" id="add">${on ? "✓ In your trip" : "+ Add to trip"}</button>`}<a href="${gmaps}" target="_blank" rel="noopener">Directions ↗</a></div>
+    <div class="note">Sample data for the prototype. Opening hours and fees still need checking.</div></div>`;
+  sheet.querySelector("#close").onclick = home;
+  const add = sheet.querySelector("#add");
+  if (add) add.onclick = () => {
+    trip.includes(id) ? trip = trip.filter(x => x !== id) : trip.push(id);
+    try { localStorage.setItem("vf-trip", JSON.stringify(trip)); } catch (e) {}
+    toast(trip.includes(id) ? "Added to your trip" : "Removed from your trip");
+    openPlace(id);
+  };
+  sheet.scrollTop = 0;
+  render();
+}
+function flyTo(p){
+  const r = mapEl.getBoundingClientRect(), wide = r.width >= 820;
+  const z = Math.max(view.z, 1.6), cx = wide ? (r.width + 400) / 2 : r.width / 2, cy = wide ? r.height / 2 : r.height * .3;
+  view.z = z; view.x = cx - px(p.lon) * z; view.y = cy - py(p.lat) * z;
+}
+let tt;
+function toast(t){ const el = document.getElementById("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 1800); }
+
+function zoomAt(f, cx, cy){
+  const nz = Math.min(6, Math.max(.4, view.z * f)); f = nz / view.z;
+  view.x = cx - (cx - view.x) * f; view.y = cy - (cy - view.y) * f; view.z = nz; render();
+}
+const ptrs = new Map(); let last = null, moved = 0;
+mapEl.addEventListener("pointerdown", e => { if (e.target.closest(".pin")) return; mapEl.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); moved = 0; mapEl.classList.add("dragging"); });
+mapEl.addEventListener("pointermove", e => {
+  if (!ptrs.has(e.pointerId)) return;
+  const prev = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+  if (ptrs.size === 1){ view.x += e.clientX - prev[0]; view.y += e.clientY - prev[1]; moved += Math.abs(e.clientX - prev[0]) + Math.abs(e.clientY - prev[1]); render(); }
+  else if (ptrs.size === 2){
+    const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]), r = mapEl.getBoundingClientRect();
+    if (last) zoomAt(d / last, (a[0] + b[0]) / 2 - r.left, (a[1] + b[1]) / 2 - r.top);
+    last = d; moved = 99;
+  }
+});
+const end = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) last = null; if (!ptrs.size) mapEl.classList.remove("dragging"); };
+mapEl.addEventListener("pointerup", e => { end(e); });
+mapEl.addEventListener("pointercancel", end);
+mapEl.addEventListener("wheel", e => { e.preventDefault(); const r = mapEl.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top); }, {passive: false});
+document.getElementById("zin").onclick = () => { const r = mapEl.getBoundingClientRect(); zoomAt(1.3, r.width / 2, r.height / 2); };
+document.getElementById("zout").onclick = () => { const r = mapEl.getBoundingClientRect(); zoomAt(1 / 1.3, r.width / 2, r.height / 2); };
+window.addEventListener("resize", () => { fit(); render(); });
+
+buildChips(); buildPins(); fit(); home();
+</script>
+</body>
+</html>
