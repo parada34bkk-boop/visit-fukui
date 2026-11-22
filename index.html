@@ -51,20 +51,23 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 
 .bar{position:absolute;z-index:6;left:12px;right:12px;bottom:calc(14px + var(--safe-b));height:76px;border-radius:38px;background:rgba(255,255,255,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;padding:8px;max-width:560px;margin:0 auto}
 .search{flex:1;min-width:0;height:60px;border-radius:30px;background:var(--card);display:flex;align-items:center;gap:8px;padding:0 16px 0 10px;box-shadow:0 1px 4px rgba(31,61,54,.08)}
-.search .mascot{font-size:30px;line-height:1}
+.search .mascot{font-size:26px;line-height:1}
 .search input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:17px;font-weight:700}
 .search input::placeholder{color:#9AACA6;font-weight:600}
 .round{flex:none;width:60px;height:60px;border-radius:50%;background:var(--card);font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(31,61,54,.08);transition:transform .15s}
 .round:active{transform:scale(.92)}
 
-.mk{position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.mk .dot{width:42px;height:42px;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(31,61,54,.25);display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #fff;transition:transform .18s}
+.mk{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.mk .dot{position:relative;width:42px;height:42px;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(31,61,54,.25);display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #fff;transition:transform .18s}
 .mk.hi .dot{width:52px;height:52px;font-size:28px}
 .mk .lbl{position:absolute;top:100%;margin-top:4px;white-space:nowrap;font-weight:800;font-size:12.5px;color:var(--ink);background:rgba(255,255,255,.92);padding:2px 9px;border-radius:10px;box-shadow:0 1px 4px rgba(31,61,54,.15);pointer-events:none;display:none}
 .mk.hi .lbl{display:block}
 .mk.on .dot{transform:scale(1.18);border-color:var(--accent)}
 .mk.on .lbl{display:block;background:var(--ink);color:#fff}
-.mk.saved .dot::after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:var(--pink);border:2px solid #fff;transform:translate(15px,-15px)}
+.mk.saved .dot::after{content:"";position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:var(--pink);border:2px solid #fff}
+.mk .num{position:absolute;top:-6px;left:-6px;min-width:22px;height:22px;border-radius:11px;background:var(--accent);color:#fff;font-size:12px;font-weight:900;display:none;align-items:center;justify-content:center;border:2px solid #fff;padding:0 4px}
+.mk.inday .num{display:flex}
+body.far .mk.inday{display:flex!important}
 body.far .mk:not(.hi):not(.on){display:none}
 body.far .mk.hi:not(.on) .lbl{display:none}
 body.mid .mk:not(.hi):not(.on) .dot{width:30px;height:30px;font-size:15px;border-width:2px}
@@ -105,6 +108,38 @@ body.mid .mk:not(.hi):not(.on) .dot{width:30px;height:30px;font-size:15px;border
 .acts .save.on{background:#FCE4EE;color:#B5265F}
 .note{font-size:12px;color:#93A6A0;font-weight:600;margin-top:12px}
 
+.planpill{flex:none;height:60px;border-radius:30px;background:var(--ink);color:#fff;font-weight:900;font-size:16px;display:flex;align-items:center;gap:6px;padding:0 18px 0 14px;box-shadow:0 2px 8px rgba(31,61,54,.25)}
+.planpill span{font-size:22px}
+.planpill.has{background:var(--accent)}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:#F4F8F6;border-radius:20px;padding:14px;margin:8px 0}
+.opt .ems{font-size:22px;letter-spacing:-3px;flex:none;width:66px;white-space:nowrap}
+.opt b{display:block;font-size:16px;font-weight:900}
+.opt em{display:block;font-style:normal;font-size:13px;color:var(--muted);font-weight:700;margin-top:2px}
+.lbl2{font-size:13px;font-weight:900;color:var(--muted);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.06em}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{height:44px;min-width:52px;padding:0 16px;border-radius:22px;background:#F1F6F3;font-weight:900;font-size:15px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.days{display:flex;gap:8px;overflow-x:auto;margin:12px 0 4px;scrollbar-width:none}
+.days button{flex:none;height:40px;padding:0 16px;border-radius:20px;background:#F1F6F3;font-weight:900;font-size:14px}
+.days button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.meter{height:10px;border-radius:5px;background:#EEF3F1;overflow:hidden;margin:6px 0 4px}
+.meter i{display:block;height:100%;border-radius:5px;background:var(--accent)}
+.meter.over i{background:#E0794A}
+.sum{display:flex;justify-content:space-between;font-weight:800;font-size:14px;margin-top:10px}
+.sum .warn{color:#C25A2C}
+.stop{display:flex;align-items:center;gap:12px;padding:10px 0}
+.stop .n{width:28px;height:28px;border-radius:14px;background:var(--accent);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.stop .em{width:44px;height:44px;border-radius:14px;background:var(--land);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+.stop .t{flex:1;min-width:0;text-align:left}
+.stop b{display:block;font-size:15px;font-weight:800;line-height:1.25}
+.stop em{display:block;font-style:normal;font-size:12.5px;color:var(--muted);font-weight:700}
+.stop .ctl{display:flex;gap:4px}
+.stop .ctl button{width:32px;height:32px;border-radius:16px;background:#F1F6F3;font-weight:900;font-size:13px}
+.leg{margin-left:13px;border-left:2px dashed #CFDDD6;padding:4px 0 4px 26px;font-size:12.5px;font-weight:800;color:var(--muted)}
+.hint{background:#F4F8F6;border-radius:16px;padding:12px 14px;font-weight:700;font-size:14px;color:#3D5A52;margin:12px 0}
+.link{color:var(--muted);font-weight:800;font-size:13px;text-decoration:underline;margin-top:10px;display:inline-block}
+.acts .add{background:var(--accent);color:#fff}
+.acts .add.on{background:#E3F2EA;color:var(--accent)}
 .toast{position:absolute;z-index:9;left:50%;top:calc(90px + var(--safe-t));transform:translate(-50%,-8px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:20px;font-weight:800;font-size:14px;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .nomap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800}
@@ -126,9 +161,9 @@ body.mid .mk:not(.hi):not(.on) .dot{width:30px;height:30px;font-size:15px;border
 <button class="fab" id="loc-btn" aria-label="Show my location"><svg viewBox="0 0 24 24" fill="none" stroke="#1F3D36" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2.5l7 18-7-4-7 4z"/></svg></button>
 
 <div class="bar">
-  <label class="search"><span class="mascot" aria-hidden="true">🦕</span><input id="q" type="search" placeholder="Search Fukui…" autocomplete="off" aria-label="Search places"></label>
+  <label class="search"><span class="mascot" aria-hidden="true">🦕</span><input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Search places"></label>
   <button class="round" id="near-btn" aria-label="Places near me">📍</button>
-  <button class="round" id="plan-btn" aria-label="Plan your trip">🗺️</button>
+  <button class="planpill" id="plan-btn"><span aria-hidden="true">🗺️</span>Plan</button>
 </div>
 
 <section class="sheet" id="sheet" aria-live="polite"></section>
@@ -223,6 +258,7 @@ function initMap(){
     maxBounds: [[134.6, 34.9], [137.6, 36.9]]
   });
   map.on("style.load", theme);
+  map.on("load", drawRoute);
   map.on("zoom", zoomClass);
   map.on("click", e => { if (!e.originalEvent.target.closest(".mk")) closeSheet(); });
   const wide = innerWidth >= 760;
@@ -230,7 +266,7 @@ function initMap(){
   PLACES.forEach(p => {
     const el = document.createElement("div");
     el.className = "mk" + (p.hi ? " hi" : "");
-    el.innerHTML = `<div class="dot">${em(p)}</div><div class="lbl">${shortName(p)}</div>`;
+    el.innerHTML = `<div class="dot">${em(p)}<span class="num"></span></div><div class="lbl">${shortName(p)}</div>`;
     el.setAttribute("role", "button"); el.setAttribute("aria-label", p.name); el.tabIndex = 0;
     el.addEventListener("click", e => { e.stopPropagation(); openPlace(p.id, true); });
     el.addEventListener("keydown", e => { if (e.key === "Enter") openPlace(p.id, true); });
@@ -250,8 +286,13 @@ function syncMarkers(){
     el.classList.toggle("hidden", active.size > 0 && !active.has(p.cat));
     el.classList.toggle("on", selected === p.id);
     el.classList.toggle("saved", saved.includes(p.id));
+    const k = plan ? plan.stops[day].indexOf(p.id) : -1;
+    el.classList.toggle("inday", k >= 0);
+    el.querySelector(".num").textContent = k >= 0 ? k + 1 : "";
     el.parentElement && (el.style.zIndex = selected === p.id ? 10 : p.hi ? 2 : 1);
   });
+  document.getElementById("plan-btn").classList.toggle("has", !!plan);
+  drawRoute();
   const n = document.getElementById("saved-n");
   n.hidden = !saved.length; n.textContent = saved.length;
 }
@@ -270,9 +311,9 @@ function buildChips(){
 }
 
 const sheet = document.getElementById("sheet");
-let sheetMode = null, listTitle = "", listKind = "near";
+let sheetMode = null, prevMode = null, listTitle = "", listKind = "near";
 function openSheet(html, mode){ sheet.innerHTML = `<div class="grab"></div>${html}`; sheet.classList.add("open"); sheet.scrollTop = 0; sheetMode = mode; const x = sheet.querySelector(".x"); if (x) x.onclick = closeSheet; }
-function closeSheet(){ sheet.classList.remove("open"); sheetMode = null; selected = null; syncMarkers(); }
+function closeSheet(){ if (sheetMode === "place" && plan && prevMode === "trip"){ selected = null; prevMode = null; return tripView(); } sheet.classList.remove("open"); sheetMode = null; selected = null; syncMarkers(); }
 const row = (p, d) => `<button class="row" data-id="${p.id}"><span class="em">${em(p)}</span><span><b>${shortName(p)}</b><em>${CATS[p.cat].name} · ${p.town}</em></span>${d !== undefined ? `<span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span>` : ""}</button>`;
 function bindRows(){ sheet.querySelectorAll(".row").forEach(b => b.onclick = () => openPlace(b.dataset.id, true)); }
 
@@ -296,6 +337,7 @@ function renderList(title, items){
 }
 
 function openPlace(id, fly){
+  if (sheetMode === "trip") prevMode = "trip";
   const p = PLACES.find(q => q.id === id), on = saved.includes(id);
   selected = id; syncMarkers();
   if (fly && map){
@@ -308,8 +350,15 @@ function openPlace(id, fly){
     <div class="top"><div class="badge">${em(p)}</div><div style="flex:1"><h2>${p.name}</h2><div class="jp">${p.jp} · ${p.town}</div></div><button class="x" aria-label="Close">✕</button></div>
     <div class="pills"><span class="pill g">${fmtDist(d)} ${near ? "away" : "from Fukui Stn"}</span><span class="pill">⏱ ${p.time}</span><span class="pill">🚃 ${p.access}</span></div>
     <p>${p.desc}</p>
-    <div class="acts">${p.cat === "station" ? "" : `<button class="save ${on ? "on" : ""}" id="save">${on ? "❤️ Saved" : "🤍 Save"}</button>`}<a class="go" href="${gmaps}" target="_blank" rel="noopener">Directions</a></div>
+    <div class="acts">${p.cat === "station" ? "" : plan ? addBtn(id) : `<button class="save ${on ? "on" : ""}" id="save">${on ? "❤️ Saved" : "🤍 Save"}</button>`}<a class="go" href="${gmaps}" target="_blank" rel="noopener">Directions</a></div>
     <div class="note">Sample data. Check opening hours and fees before you go.</div></div>`, "place");
+  const ad = document.getElementById("addday");
+  if (ad) ad.onclick = () => {
+    const where = plan.stops.findIndex(d => d.includes(id));
+    if (where >= 0){ plan.stops[where] = plan.stops[where].filter(x => x !== id); toast(`Removed from Day ${where + 1}`); }
+    else { plan.stops[day].push(id); toast(`Added to Day ${day + 1}`); }
+    savePlan(); openPlace(id);
+  };
   const s = document.getElementById("save");
   if (s) s.onclick = () => {
     saved.includes(id) ? saved = saved.filter(x => x !== id) : saved.push(id);
@@ -356,12 +405,96 @@ q.addEventListener("focus", () => { listKind = "search"; renderList("Explore Fuk
 q.addEventListener("input", () => { listKind = "search"; renderList(q.value ? `Results for “${q.value}”` : "Explore Fukui", listItems()); });
 document.getElementById("near-btn").onclick = () => { listKind = "near"; locate(false); renderList("Near you", listItems()); };
 document.getElementById("saved-btn").onclick = () => { listKind = "saved"; renderList("Saved", listItems()); };
-document.getElementById("plan-btn").onclick = () => {
-  openSheet(`<div class="shead"><h2>Plan your trip</h2><button class="x" aria-label="Close">✕</button></div>
-    <p class="sub">Day-by-day planning is coming next. For now, save places with 🤍 and they'll be waiting here.</p>
-    ${saved.length ? PLACES.filter(p => saved.includes(p.id)).map(p => row(p)).join("") : '<div class="empty">No saved places yet.</div>'}`, "plan");
-  bindRows();
+
+const TRIPS = [
+  {name:"Dinosaurs & Zen", mode:"public", stops:[["eiheiji","dino","heisenji"]], blurb:"Temple morning, dinosaur afternoon"},
+  {name:"Coast, castle & crab", mode:"car", stops:[["maruoka","tojinbo","crab","awara"]], blurb:"Cliffs at sunset, onsen at night"},
+  {name:"Southern Wakasa", mode:"car", stops:[["kehi","mikata","kumagawa","obama"]], blurb:"Lakes, post towns and mackerel"},
+  {name:"Best of Fukui", mode:"car", stops:[["yokokan","ichijodani","katsudon"],["dino","heisenji","ono"],["maruoka","tojinbo","crab","awara"]], blurb:"The highlights in three days"}
+];
+const MODES = {car:"🚗 Car", public:"🚃 Train & bus", both:"🚗🚃 Both"};
+let plan = null, day = 0, draft = {days: 2, mode: "public"};
+try { plan = JSON.parse(localStorage.getItem("vf-plan") || "null"); } catch (e) {}
+function savePlan(){ try { localStorage.setItem("vf-plan", JSON.stringify(plan)); } catch (e) {} syncMarkers(); }
+const P = id => PLACES.find(p => p.id === id);
+function hoursAt(p){
+  const t = p.time.toLowerCase();
+  if (/overnight|—/.test(t)) return 0;
+  if (/half day/.test(t)) return 4;
+  const n = (t.match(/[\d.]+/g) || ["1"]).map(Number), v = n.reduce((a, b) => a + b, 0) / n.length;
+  return /min/.test(t) ? v / 60 : v;
+}
+function leg(a, b, mode){
+  const d = dist(a, b) * 1.3, m = mode === "both" ? (d < 12 ? "public" : "car") : mode;
+  if (d < 1.6) return {h: d / 4.5, txt: `🚶 ${Math.max(3, Math.round(d / 4.5 * 60))} min walk`};
+  if (m === "car") return {h: d / 38 + .08, txt: `🚗 ~${Math.round((d / 38 + .08) * 60)} min drive · ${fmtDist(d / 1.3)}`};
+  return {h: d / 24 + .3, txt: `🚃 ~${Math.round((d / 24 + .3) * 60)} min by train/bus · ${fmtDist(d / 1.3)}`};
+}
+const fmtH = h => h < 1 ? `${Math.round(h * 60)} min` : `${(Math.round(h * 2) / 2).toString()} h`;
+const addBtn = id => {
+  const where = plan.stops.findIndex(d => d.includes(id));
+  return where >= 0 ? `<button class="add on" id="addday">✓ In Day ${where + 1}</button>` : `<button class="add" id="addday">＋ Add to Day ${day + 1}</button>`;
 };
+
+function planStart(){
+  openSheet(`<div class="shead"><h2>Plan your trip</h2><button class="x" aria-label="Close">✕</button></div>
+    <p class="sub">Start from a ready-made trip, or build your own on the map.</p>
+    <div class="lbl2">Ready-made trips</div>
+    ${TRIPS.map((t, i) => `<button class="opt" data-t="${i}"><span class="ems">${t.stops.flat().slice(0, 3).map(id => em(P(id))).join("")}</span><span><b>${t.name}</b><em>${t.stops.length} day${t.stops.length > 1 ? "s" : ""} · ${MODES[t.mode]} · ${t.blurb}</em></span></button>`).join("")}
+    <div class="lbl2">Build my own</div>
+    <div class="sub" style="margin-bottom:8px">How many days?</div>
+    <div class="seg" id="d-seg">${[1, 2, 3, 4, 5].map(n => `<button data-n="${n}" aria-pressed="${draft.days === n}">${n}</button>`).join("")}</div>
+    <div class="sub" style="margin:14px 0 8px">How will you get around?</div>
+    <div class="seg" id="m-seg">${Object.entries(MODES).map(([k, v]) => `<button data-m="${k}" aria-pressed="${draft.mode === k}">${v}</button>`).join("")}</div>
+    <button class="cta" id="start" style="margin-top:18px">Start planning</button>`, "plan");
+  sheet.querySelectorAll(".opt").forEach(b => b.onclick = () => { const t = TRIPS[b.dataset.t]; plan = {name: t.name, mode: t.mode, stops: t.stops.map(d => d.slice())}; day = 0; savePlan(); tripView(true); });
+  sheet.querySelectorAll("#d-seg button").forEach(b => b.onclick = () => { draft.days = +b.dataset.n; planStart(); });
+  sheet.querySelectorAll("#m-seg button").forEach(b => b.onclick = () => { draft.mode = b.dataset.m; planStart(); });
+  document.getElementById("start").onclick = () => { plan = {name: "My Fukui trip", mode: draft.mode, stops: Array.from({length: draft.days}, () => [])}; day = 0; savePlan(); tripView(true); };
+}
+function tripView(fit){
+  const ids = plan.stops[day], stops = ids.map(P);
+  let total = 0, html = "";
+  stops.forEach((p, i) => {
+    if (i){ const l = leg(stops[i - 1], p, plan.mode); total += l.h; html += `<div class="leg">${l.txt}</div>`; }
+    total += hoursAt(p);
+    html += `<div class="stop"><span class="n">${i + 1}</span><span class="em">${em(p)}</span><button class="t" data-id="${p.id}"><b>${shortName(p)}</b><em>${p.time} · ${p.town}</em></button><span class="ctl"><button data-up="${i}" aria-label="Move up">↑</button><button data-down="${i}" aria-label="Move down">↓</button><button data-rm="${i}" aria-label="Remove">✕</button></span></div>`;
+  });
+  const cap = 9, pct = Math.min(100, total / cap * 100), over = total > cap;
+  openSheet(`<div class="shead"><h2>${plan.name}</h2><button class="x" aria-label="Close">✕</button></div>
+    <p class="sub">${plan.stops.length} day${plan.stops.length > 1 ? "s" : ""} · ${MODES[plan.mode]}</p>
+    <div class="days">${plan.stops.map((d, i) => `<button data-day="${i}" aria-pressed="${i === day}">Day ${i + 1}${d.length ? ` · ${d.length}` : ""}</button>`).join("")}<button id="addd" aria-label="Add a day">＋</button></div>
+    ${stops.length ? `<div class="sum"><span>Day ${day + 1}: about ${fmtH(total)}</span>${over ? '<span class="warn">Too full, move a stop</span>' : `<span style="color:var(--muted)">${fmtH(Math.max(0, cap - total))} free</span>`}</div><div class="meter ${over ? "over" : ""}"><i style="width:${pct}%"></i></div>${html}` : ""}
+    <div class="hint">👆 Tap any pin on the map, then <b>＋ Add to Day ${day + 1}</b>.${plan.mode !== "car" ? " Times include waiting for trains and buses." : ""}</div>
+    <button class="link" id="reset">Start a new plan</button>`, "trip");
+  sheet.querySelectorAll("[data-day]").forEach(b => b.onclick = () => { day = +b.dataset.day; syncMarkers(); tripView(true); });
+  document.getElementById("addd").onclick = () => { plan.stops.push([]); day = plan.stops.length - 1; savePlan(); tripView(); };
+  sheet.querySelectorAll(".t").forEach(b => b.onclick = () => openPlace(b.dataset.id, true));
+  const mv = (i, j) => { const a = plan.stops[day]; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; savePlan(); tripView(); };
+  sheet.querySelectorAll("[data-up]").forEach(b => b.onclick = () => mv(+b.dataset.up, +b.dataset.up - 1));
+  sheet.querySelectorAll("[data-down]").forEach(b => b.onclick = () => mv(+b.dataset.down, +b.dataset.down + 1));
+  sheet.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { plan.stops[day].splice(+b.dataset.rm, 1); savePlan(); tripView(); });
+  document.getElementById("reset").onclick = () => { plan = null; savePlan(); planStart(); };
+  syncMarkers();
+  if (fit && map && stops.length){
+    const wide = innerWidth >= 760, b = new maplibregl.LngLatBounds();
+    stops.forEach(p => b.extend([p.lon, p.lat]));
+    map.fitBounds(b, {padding: {top: 150, bottom: wide ? 60 : innerHeight * .62, left: wide ? 460 : 50, right: 60}, maxZoom: 12.5, duration: 900});
+  }
+}
+function drawRoute(){
+  if (!map || !map.isStyleLoaded()) return;
+  const coords = plan ? plan.stops[day].map(P).map(p => [p.lon, p.lat]) : [];
+  const data = {type: "Feature", geometry: {type: "LineString", coordinates: coords.length > 1 ? coords : []}};
+  const src = map.getSource("route");
+  if (src) src.setData(data);
+  else {
+    map.addSource("route", {type: "geojson", data});
+    map.addLayer({id: "route-halo", type: "line", source: "route", layout: {"line-cap": "round", "line-join": "round"}, paint: {"line-color": "#FFFFFF", "line-width": 8}});
+    map.addLayer({id: "route", type: "line", source: "route", layout: {"line-cap": "round", "line-join": "round"}, paint: {"line-color": "#1F6F5C", "line-width": 4, "line-dasharray": [1.5, 1.2]}});
+  }
+}
+document.getElementById("plan-btn").onclick = () => plan ? tripView(true) : planStart();
 document.getElementById("loc-btn").onclick = () => locate(true);
 
 buildChips();
