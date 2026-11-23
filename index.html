@@ -8,6 +8,9 @@
 <meta name="theme-color" content="#EAF3EC">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Visit Fukui">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=M+PLUS+Rounded+1c:wght@500;700&display=swap" rel="stylesheet">
@@ -341,6 +344,46 @@ h3{font-size:15px;font-weight:900;margin:18px 0 8px}
 nav.tabs{position:absolute;z-index:8;left:0;right:0;bottom:0;height:calc(var(--nav) + var(--safe-b));padding-bottom:var(--safe-b);background:var(--card);box-shadow:0 -4px 20px rgba(31,61,54,.08);display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 nav.tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:800;color:#7C918B}
 nav.tabs button[aria-selected="true"]{color:var(--action);font-weight:900}
+nav.tabs .tico{position:relative;display:flex}
+nav.tabs .tbadge{position:absolute;top:-5px;right:-10px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:var(--action);color:#fff;font-style:normal;font-size:10.5px;font-weight:900;display:flex;align-items:center;justify-content:center;border:2px solid var(--card)}
+.listbtn{position:absolute;z-index:5;right:64px;top:calc(12px + var(--safe-t) + 52px + 10px + 36px + 12px);height:40px;padding:0 14px 0 11px;border-radius:20px;background:var(--card);box-shadow:var(--shadow);font-weight:900;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:6px}
+.listbtn svg{width:17px;height:17px}
+/* add-to-trip chooser in the place sheet's footer */
+.pick{margin-top:12px}
+.pick .ph{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:900;color:var(--muted);margin-bottom:8px}
+.pick .ph button{font-weight:900;color:var(--muted);padding:4px 6px}
+.pick .opts{display:flex;flex-wrap:wrap;gap:8px}
+.pick .opts button{height:44px;padding:0 16px;border-radius:22px;background:var(--soft);font-weight:900;font-size:14px;color:var(--ink)}
+.pick .opts button.cur{background:var(--action);color:#fff}
+.pick .opts button.idea{background:#FFF6DC;color:#7A5A12;display:flex;align-items:center;gap:6px}.pick .opts button svg{width:16px;height:16px}
+.pick .opts button.idea.cur{background:#7A5A12;color:#fff}
+.pick .opts button.rm{background:#FBE8EB;color:var(--warn)}
+/* ideas in My trip */
+.idea-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #EEF3F1}
+.idea-row .tx{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column}
+.idea-row .tx b{font-size:15px;font-weight:900}
+.idea-row .tx span{font-size:12.5px;font-weight:700;color:var(--muted)}
+.idea-row .dd{width:12px;height:12px;border-radius:50%;flex:none}
+.idea-row .put{height:34px;padding:0 12px;border-radius:17px;background:#E3F2EA;color:var(--action);font-weight:900;font-size:13px;flex:none}
+.idea-row .x{width:34px;height:34px;border-radius:17px;background:var(--soft);font-weight:900;flex:none}
+.dd.must{background:var(--must)}.dd.worth{background:var(--worth)}.dd.deep{background:var(--deep)}
+.ideas-h{display:flex;align-items:baseline;justify-content:space-between}
+.ideas-h small{font-size:12px;font-weight:700;color:var(--muted)}
+.mstop .mrare{font-style:normal;font-weight:800;color:#7A5A12}
+.box p.rare{display:flex;gap:6px;align-items:flex-start;font-size:13px;font-weight:700;color:#7A5A12;background:#FFF6DC;border-radius:12px;padding:8px 10px}
+.box p.rare svg{width:15px;height:15px;flex:0 0 15px;margin-top:2px}
+.drvbtn{display:flex;align-items:center;justify-content:center;gap:8px;height:42px;border-radius:21px;background:#fff;color:var(--ink);font-weight:900;font-size:14px;margin-top:4px;box-shadow:inset 0 0 0 1.5px #D7E3DE}
+.drvbtn svg{width:18px;height:18px}
+.driver{position:fixed;inset:0;z-index:50;background:#fff;display:flex;flex-direction:column;padding:calc(20px + var(--safe-t)) 24px calc(20px + var(--safe-b));box-sizing:border-box}
+.driver .dk{font-size:13px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.driver .djp{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.driver .djp b{font-family:"M PLUS Rounded 1c",sans-serif;font-size:clamp(40px,13vw,72px);font-weight:700;line-height:1.2;color:#111;word-break:keep-all;overflow-wrap:anywhere}
+.driver .djp span{font-family:"M PLUS Rounded 1c",sans-serif;font-size:clamp(22px,6.5vw,34px);font-weight:700;color:#111}
+.driver .den{font-size:15px;font-weight:800;color:var(--muted);margin-bottom:14px}
+.driver .done{height:54px;border-radius:27px;background:var(--ink);color:#fff;font-weight:900;font-size:16px}
+.empty-trip{padding:8px 0 4px}
+.empty-trip p{font-size:15px;font-weight:700;line-height:1.5;margin:0 0 14px;color:var(--ink)}
+.shared-day{font-size:13px;font-weight:900;color:var(--muted);margin:14px 0 2px;text-transform:uppercase;letter-spacing:.05em}
 nav.tabs svg{width:24px;height:24px}
 .toast{position:absolute;z-index:9;left:50%;top:calc(16px + var(--safe-t));transform:translate(-50%,-8px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:20px;font-weight:800;font-size:14px;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
@@ -371,6 +414,7 @@ nav.tabs svg{width:24px;height:24px}
   <div class="chips" id="chips" role="toolbar" aria-label="Filters"></div>
 </div>
 
+<button class="listbtn" id="listbtn" aria-label="Show places as a list"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>List</button>
 <button class="keybtn" id="keybtn" aria-label="Map key" aria-expanded="false">?</button>
 <div class="keycard" id="keycard" hidden role="dialog" aria-label="Map key">
   <div class="kh"><b>Map key</b><button class="kx" id="keyx" aria-label="Close map key">✕</button></div>
@@ -388,11 +432,12 @@ nav.tabs svg{width:24px;height:24px}
 
 <section class="sheet" id="sheet" aria-live="polite"></section>
 <div class="toast" id="toast" role="status"></div>
+<div class="driver" id="driverc" hidden role="dialog" aria-label="Show this to a taxi driver"></div>
 
 <nav class="tabs" role="tablist" aria-label="Main">
   <button role="tab" data-tab="explore" aria-selected="true"><svg class="i" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Explore</button>
-  <button role="tab" data-tab="near" aria-selected="false"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/></svg>Near me</button>
   <button role="tab" data-tab="trips" aria-selected="false"><svg class="i" viewBox="0 0 24 24"><path d="M6 19c0-6 12-4 12-10"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/></svg>Trips</button>
+  <button role="tab" data-tab="mytrip" aria-selected="false"><span class="tico"><svg class="i" viewBox="0 0 24 24"><path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-4-6 4V4.5a1 1 0 0 1 1-1z"/></svg><i class="tbadge" id="tbadge" hidden></i></span>My trip</button>
   <button role="tab" data-tab="now" aria-selected="false"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Now</button>
 </nav>
 
@@ -474,7 +519,16 @@ const pins = {};
 let saved = [], myTrip = null, myDay = 0, routeDay = null;
 try { saved = JSON.parse(localStorage.getItem("vf-saved") || "[]"); } catch (e) {}
 try { myTrip = JSON.parse(localStorage.getItem("vf-mytrip") || "null"); } catch (e) {}
-const persist = () => { try { localStorage.setItem("vf-saved", JSON.stringify(saved)); localStorage.setItem("vf-mytrip", JSON.stringify(myTrip)); } catch (e) {} };
+const persist = () => { try { localStorage.setItem("vf-mytrip", JSON.stringify(myTrip)); } catch (e) {} if (typeof updateBadge === "function") updateBadge(); };
+/* one place to keep things: My trip. Its "ideas" list holds places you've saved but not put in a day.
+   Older versions had a separate saved list: move it into ideas once. */
+if (myTrip && !myTrip.ideas) myTrip.ideas = [];
+if (saved.length){
+  if (!myTrip) myTrip = {name: "My Fukui trip", from: null, done: [], days: [[]], ideas: []};
+  saved.forEach(id => { if (!myTrip.ideas.includes(id) && !myTrip.days.some(d => d.includes(id))) myTrip.ideas.push(id); });
+  saved = [];
+  try { localStorage.removeItem("vf-saved"); localStorage.setItem("vf-mytrip", JSON.stringify(myTrip)); } catch (e) {}
+}
 
 /* ---------- filters ---------- */
 const MODES = [["all","Everything","Nature"],["eat","Eat","Food"],["do","Do","Do"],["events","Events","Event"]];
@@ -488,7 +542,7 @@ function buildChips(){
     if (b.dataset.mode){ mode = b.dataset.mode; }
     else { const t = b.dataset.tier; tiers.has(t) ? tiers.delete(t) : tiers.add(t); }
     buildChips(); syncPins();
-    const tv = topView(); if (tv && (tv.v === "near" || tv.v === "search")) render({keepScroll: true, keepRoute: true});
+    const tv = topView(); if (tv && (tv.v === "list" || tv.v === "search")) render({keepScroll: true, keepRoute: true});
   };
 }
 function visible(p){
@@ -712,7 +766,7 @@ function showRoute(ids, label, fit){
 const sheet = $("#sheet");
 sheet.innerHTML = `<div class="grabber" id="grabber" aria-hidden="true"><div class="grab"></div></div><div class="shead" id="shead"></div><div class="sbody" id="sbody"></div><div class="sfoot" id="sfoot"></div>`;
 let snap = "closed";
-const stacks = {explore: [], near: [{v: "near"}], trips: [{v: "trips"}], now: [{v: "now"}]};
+const stacks = {explore: [], trips: [{v: "trips"}], mytrip: [{v: "mytrip"}], now: [{v: "now"}]};
 const rootDepth = t => t === "explore" ? 0 : 1;
 const topView = () => { const s = stacks[tab]; return s[s.length - 1] || null; };
 const navH = () => $("nav.tabs").offsetHeight;
@@ -739,6 +793,7 @@ function setSnap(name, animate = true){
   fab.hidden = !wide() && name === "full";
   $("#chips").style.visibility = !wide() && name === "full" ? "hidden" : "";
   $("#keybtn").style.visibility = !wide() && name !== "closed" && name !== "peek" ? "hidden" : "";
+  $("#listbtn").style.visibility = tab !== "explore" || (!wide() && name !== "closed" && name !== "peek") ? "hidden" : "";
 }
 
 function render(opts = {}){
@@ -766,9 +821,9 @@ function render(opts = {}){
    visible while you look at one of its stops, and goes away when you leave the trip. */
 function applyRoute(fit){
   const s = stacks[tab]; let ctx = null;
-  for (let k = s.length - 1; k >= 0; k--) if (s[k].v === "trip" || s[k].v === "mytrip"){ ctx = s[k]; break; }
+  for (let k = s.length - 1; k >= 0; k--) if (s[k].v === "trip" || s[k].v === "mytrip" || s[k].v === "shared"){ ctx = s[k]; break; }
   if (!ctx){ if (routeDay){ routeDay = null; drawRoute(); syncPins(); } return; }
-  const ids = ctx.v === "trip" ? TRIPS[ctx.i].stops.filter(x => x.day === ctx.day && x.place).map(x => x.place) : (myTrip ? myTrip.days[myDay] || [] : []);
+  const ids = ctx.v === "trip" ? TRIPS[ctx.i].stops.filter(x => x.day === ctx.day && x.place).map(x => x.place) : ctx.v === "shared" ? ctx.data.days.flat() : (myTrip ? myTrip.days[myDay] || [] : []);
   showRoute(ids, ctx.v, fit && topView() === ctx);
 }
 function push(v, opts = {}){
@@ -799,9 +854,7 @@ function setTab(t){
   }
   tab = t;
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
-  if (t === "near") locate(false);
   render();
-  if (t === "near" && map){ const o = origin(); map.easeTo({center: [o.lon, o.lat], zoom: Math.max(map.getZoom(), 12.5), offset: padOffset(), duration: 800}); }
 }
 function openPlace(id, fly = true){
   if (!P(id)) return;
@@ -831,10 +884,13 @@ function drawBuses(st){
   map.addLayer({id: "bus", type: "line", source: "bus", layout: {"line-cap": "round"}, paint: {"line-color": "#2E6FA8", "line-width": ["case", ["get", "tour"], 2, 3], "line-opacity": ["case", ["get", "tour"], .45, .85]}});
 }
 function openMyTrip(){
-  tab = "trips";
-  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === "trips"));
-  stacks.trips = [{v: "trips"}];
-  push({v: "mytrip"});
+  stacks.mytrip = [{v: "mytrip"}];
+  if (tab === "mytrip") render(); else setTab("mytrip");
+}
+function updateBadge(){
+  const b = $("#tbadge"); if (!b) return;
+  const n = myTrip ? myTrip.days.reduce((a, d) => a + d.length, 0) + (myTrip.ideas || []).length : 0;
+  b.hidden = !n; b.textContent = n > 99 ? "99+" : n;
 }
 
 /* drag the sheet by its top; a tap on the handle switches half and full */
@@ -911,9 +967,56 @@ function tripProgress(){
   return {total: all.length, done: all.filter(x => myTrip.done.includes(x)).length};
 }
 function newTripFrom(i){
-  const t = TRIPS[i], days = [...new Set(t.stops.map(s => s.day))];
-  myTrip = {name: t.name, from: i, done: [], days: days.map(d => [...new Set(t.stops.filter(s => s.day === d && s.place).map(s => s.place))])};
+  const t = TRIPS[i], days = [...new Set(t.stops.map(s => s.day))], ideas = myTrip ? myTrip.ideas || [] : [];
+  const dayIds = days.map(d => [...new Set(t.stops.filter(s => s.day === d && s.place).map(s => s.place))]);
+  myTrip = {name: t.name, from: i, done: [], days: dayIds, ideas: ideas.filter(id => !dayIds.some(d => d.includes(id)))};
   myDay = 0; persist();
+}
+const ensureTrip = () => { if (!myTrip){ myTrip = {name: "My Fukui trip", from: null, done: [], days: [[]], ideas: []}; myDay = 0; } if (!myTrip.ideas) myTrip.ideas = []; return myTrip; };
+const isIdea = id => !!(myTrip && myTrip.ideas && myTrip.ideas.includes(id));
+/* put a place in one spot of the trip: "idea", a day number, "new" (a new day) or null (take it out) */
+function placeIn(id, where){
+  ensureTrip();
+  myTrip.days = myTrip.days.map(d => d.filter(x => x !== id));
+  myTrip.ideas = myTrip.ideas.filter(x => x !== id);
+  if (where === "idea") myTrip.ideas.push(id);
+  else if (where === "new"){ myTrip.days.push([id]); where = myTrip.days.length - 1; }
+  else if (where !== null) myTrip.days[where].push(id);
+  persist();
+  return where;
+}
+/* trains that run rarely: worth a warning when you're going without a car */
+const RARE = [[/Etsumi-Hoku/i, "Trains on the JR Etsumi-Hoku Line come about once every 1 to 2 hours, and only a few a day go past Echizen-Ono. Check the times first (Directions shows them)."],
+  [/Obama Line/i, "Trains on the JR Obama Line come about once every 1 to 2 hours. Check the times first (Directions shows them)."]];
+const rareNote = p => { const r = RARE.find(([re]) => re.test(p.station || "")); return r ? r[1] : null; };
+/* share a trip as a link: #trip=<name>&d=<ids per day, days split by |>&i=<ideas> */
+function shareUrl(){
+  const h = new URLSearchParams({trip: myTrip.name, d: myTrip.days.map(d => d.join(",")).join("|")});
+  if (myTrip.ideas && myTrip.ideas.length) h.set("i", myTrip.ideas.join(","));
+  return location.origin + location.pathname + "#" + h.toString();
+}
+function readShared(){
+  if (!/^#trip=/.test(location.hash)) return null;
+  const h = new URLSearchParams(location.hash.slice(1));
+  const ok = id => !!P(id);
+  const days = (h.get("d") || "").split("|").map(d => d.split(",").filter(ok));
+  const ideas = (h.get("i") || "").split(",").filter(ok);
+  if (!days.some(d => d.length) && !ideas.length) return null;
+  return {name: (h.get("trip") || "Shared trip").slice(0, 60), days: days.length ? days : [[]], ideas};
+}
+async function shareTrip(){
+  const url = shareUrl();
+  try {
+    if (navigator.share){ await navigator.share({title: myTrip.name, text: `My Fukui trip: ${myTrip.name}`, url}); return; }
+    await navigator.clipboard.writeText(url); toast("Link copied. Send it to anyone");
+  } catch (e) { if (e && e.name === "AbortError") return; prompt("Copy this link", url); }
+}
+/* big Japanese name to show a taxi driver */
+function showDriver(p){
+  const c = $("#driverc");
+  c.innerHTML = `<span class="dk">Please show this to the driver</span><div class="djp"><b>${esc(p.jp)}</b><span>ここまでお願いします。</span></div><div class="den">${esc(p.name)} · ${esc(p.area)}, Fukui<br>“Please take me here.”</div><button class="done" id="drvx">Done</button>`;
+  c.hidden = false;
+  $("#drvx").onclick = () => { c.hidden = true; };
 }
 const hasStops = () => { const pr = tripProgress(); return pr && pr.total > 0; };
 function nextStop(){
@@ -929,16 +1032,14 @@ const gmapsUrl = p => {
   const d = dist(origin(), p);
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.jp + " " + p.area.split(" (")[0])}&travelmode=${carOnly(p) ? "driving" : inFukui() && d < 2 ? "walking" : "transit"}`;
 };
-function addToTrip(id){
-  if (!myTrip){ myTrip = {name: "My Fukui trip", from: null, done: [], days: [[]]}; myDay = 0; }
-  const where = dayOf(id);
-  if (where >= 0){
-    myTrip.days[where] = myTrip.days[where].filter(x => x !== id); persist();
-    toast(`Removed from Day ${where + 1}`, "Undo", () => { myTrip.days[where].push(id); persist(); render({keepScroll: true, keepRoute: true}); });
-  } else {
-    myTrip.days[myDay].push(id); persist();
-    toast(carOnly(P(id)) && tripNoCar() ? `Added to Day ${myDay + 1} · needs a car` : `Added to Day ${myDay + 1}`, "See trip", openMyTrip);
-  }
+function addToTrip(id, where){
+  const before = isIdea(id) ? "idea" : dayOf(id);
+  const at = placeIn(id, where);
+  const undo = () => { placeIn(id, before === -1 ? null : before); render({keepScroll: true, keepRoute: true}); updateTeaser(); };
+  if (at === null){ toast("Taken out of your trip", "Undo", undo); return; }
+  if (at === "idea"){ toast("Saved to Ideas in My trip", "See trip", openMyTrip); return; }
+  myDay = at;
+  toast(carOnly(P(id)) && tripNoCar() ? `Added to Day ${at + 1} · needs a car` : `Added to Day ${at + 1}`, "See trip", openMyTrip);
 }
 
 const VIEWS = {
@@ -960,36 +1061,47 @@ const VIEWS = {
     const co = carOnly(p), bus = busesTo(id);
     const unverified = /\(check/i.test([p.station, p.how, p.time, p.anote].join(" "));
     const acts = actsAt(id), foods = foodsAt(id), evs = eventsAt(id);
-    const where = dayOf(id), on = saved.includes(id);
-    const addLabel = where >= 0 ? `✓ In Day ${where + 1}` : myTrip ? `Add to Day ${myDay + 1}` : "Add to a trip";
+    const where = dayOf(id), idea = isIdea(id), rare = rareNote(p);
+    const addLabel = where >= 0 ? `✓ Day ${where + 1}` : idea ? "✓ In Ideas" : "Add to trip";
+    const nd = myTrip ? myTrip.days.length : 1;
+    const picker = `<div class="pick"><div class="ph"><span>${where >= 0 || idea ? "Move it to" : "Add it to"}</span><button id="pickx" aria-label="Close">✕</button></div><div class="opts">
+      <button class="idea ${idea ? "cur" : ""}" data-put="idea">${ic("Heart")} Ideas</button>
+      ${Array.from({length: nd}, (_, k) => `<button class="${where === k ? "cur" : ""}" data-put="${k}">Day ${k + 1}</button>`).join("")}
+      <button data-put="new">+ Day ${nd + 1}</button>
+      ${where >= 0 || idea ? `<button class="rm" data-put="out">Take out</button>` : ""}</div></div>`;
     return {
       title: shortName(p),
       body: `${photoSrcs(p).length ? `<figure class="pic photo ${tk}">${ic(p.type)}${photoHtml(p)}<figcaption>${esc(p.credit || PHOTO_CREDIT)}</figcaption></figure>` : `<div class="photo ${tk}">${ic(p.type)}<span>Photo coming soon</span></div>`}
         <div class="meta"><span class="tier ${tk}">${esc(p.tier)}</span><span>${esc(p.jp)} · ${esc(p.area)}</span></div>
         <div class="pills"><span class="pill g">${fmtDist(d)} ${here ? "away" : "from Fukui Stn"}</span><span class="pill">${esc(p.best)}</span></div>
         <p class="why">${esc(p.why)}</p>${p.df ? `<a class="dfmore" href="${esc(p.df)}" target="_blank" rel="noopener">More photos and details on DISCOVER FUKUI ↗</a>` : ""}
-        <div class="box"><div class="t"><b>Getting there</b><span class="tag ${NOCAR[p.nocar][0]}">${NOCAR[p.nocar][1]}</span></div>${p.station ? `<dl class="acc"><dt>${ic("Train")}<span>From</span></dt><dd>${esc(stripCheck(p.station))}</dd><dt>${ic(/bus/i.test(p.how) ? "Bus" : "Walk")}<span>Then</span></dt><dd>${esc(stripCheck(p.how))}</dd>${p.time ? `<dt>${ic("Clock")}<span>Time</span></dt><dd>${esc(stripCheck(p.time))}</dd>` : ""}</dl>` : `<p>${esc(stripCheck(p.how))}</p>`}${p.anote ? `<p class="anote">${esc(stripCheck(p.anote))}</p>` : ""}${unverified ? '<p class="anote chk">Some of this is not confirmed yet. Check before you go.</p>' : ""}${bus.length ? `<div class="pbus">${bus.map(([k, b]) => `<button class="pb" data-stn="${STATIONS.find(st => (st.buses || []).includes(k))?.id || ""}">${ic("Bus")}<span><b>${esc(b.name)}</b> from ${esc(b.from)}${b.time ? ` · ${esc(b.time)}` : ""}${b.tour ? " · tour" : ""}</span></button>`).join("")}</div>` : ""}<a class="asrc" href="${esc(p.asrc)}" target="_blank" rel="noopener">Source ↗</a></div>
+        <div class="box"><div class="t"><b>Getting there</b><span class="tag ${NOCAR[p.nocar][0]}">${NOCAR[p.nocar][1]}</span></div>${p.station ? `<dl class="acc"><dt>${ic("Train")}<span>From</span></dt><dd>${esc(stripCheck(p.station))}</dd><dt>${ic(/bus/i.test(p.how) ? "Bus" : "Walk")}<span>Then</span></dt><dd>${esc(stripCheck(p.how))}</dd>${p.time ? `<dt>${ic("Clock")}<span>Time</span></dt><dd>${esc(stripCheck(p.time))}</dd>` : ""}</dl>` : `<p>${esc(stripCheck(p.how))}</p>`}${p.anote && !(rare && /infrequent|few trains/i.test(p.anote)) ? `<p class="anote">${esc(stripCheck(p.anote))}</p>` : ""}${unverified ? '<p class="anote chk">Some of this is not confirmed yet. Check before you go.</p>' : ""}${rare ? `<p class="rare">${ic("Clock")}<span>${esc(rare)}</span></p>` : ""}${bus.length ? `<div class="pbus">${bus.map(([k, b]) => `<button class="pb" data-stn="${STATIONS.find(st => (st.buses || []).includes(k))?.id || ""}">${ic("Bus")}<span><b>${esc(b.name)}</b> from ${esc(b.from)}${b.time ? ` · ${esc(b.time)}` : ""}${b.tour ? " · tour" : ""}</span></button>`).join("")}</div>` : ""}<button class="drvbtn" id="driver">${ic("Car")} Show to a taxi driver</button><a class="asrc" href="${esc(p.asrc)}" target="_blank" rel="noopener">Source ↗</a></div>
         ${acts.length ? `<h3>Things to do here</h3>${acts.map(a => `<div class="item"><span class="ic">${ic("Do")}</span><div><b>${esc(a.name)}</b><p>${esc(a.what)} ${esc(stripCheck(a.note))}</p></div></div>`).join("")}` : ""}
         ${foods.length ? `<h3>Eat here</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)}${f.months && f.months.includes(thisMonth) ? ' <span class="now">In season now.</span>' : ""}</p></div></div>`).join("")}` : ""}
         ${evs.length ? `<h3>Events here</h3>${evs.map(e => `<div class="item"><span class="ic">${ic("Event")}</span><div><b>${esc(e.name)}</b><p>${isNow(e) ? '<span class="now">This month.</span> ' : ""}${esc(e.when)}. ${esc(e.note)}</p></div></div>`).join("")}` : ""}
         <p class="note">Pin positions are approximate and opening hours aren't listed yet. Check before you go. Directions open Google Maps.</p>`,
-      foot: `<div class="acts">
-        <button class="heart ${on ? "on" : ""}" id="save" aria-label="${on ? "Remove from saved" : "Save"}" aria-pressed="${on}">${ic("Heart")}</button>
+      foot: t.pick ? picker : `<div class="acts">
         <a class="dir" href="${gmapsUrl(p)}" target="_blank" rel="noopener">Directions</a>
-        <button class="add ${where >= 0 ? "on" : ""}" id="add">${addLabel}</button></div>`,
+        <button class="add ${where >= 0 || idea ? "on" : ""}" id="add">${addLabel}</button></div>`,
       snap: "half",
       bind(){
         sheet.querySelectorAll("[data-stn]").forEach(b => { if (b.dataset.stn) b.onclick = () => openStation(b.dataset.stn); });
-        $("#save").onclick = () => { saved.includes(id) ? saved = saved.filter(x => x !== id) : saved.push(id); persist(); toast(saved.includes(id) ? "Saved" : "Removed from saved"); render({keepScroll: true, keepRoute: true}); };
-        $("#add").onclick = () => { addToTrip(id); render({keepScroll: true, keepRoute: true}); updateTeaser(); };
+        $("#driver").onclick = () => showDriver(p);
+        const add = $("#add"); if (add) add.onclick = () => { t.pick = true; render({keepScroll: true, keepRoute: true}); };
+        const px = $("#pickx"); if (px) px.onclick = () => { t.pick = false; render({keepScroll: true, keepRoute: true}); };
+        sheet.querySelectorAll("[data-put]").forEach(b => b.onclick = () => {
+          const v = b.dataset.put;
+          addToTrip(id, v === "idea" ? "idea" : v === "new" ? "new" : v === "out" ? null : +v);
+          t.pick = false; render({keepScroll: true, keepRoute: true}); updateTeaser();
+        });
       }
     };
   },
-  near(){
+  list(){
     const o = origin();
-    const list = PLACES.filter(visible).map(p => ({p, d: dist(o, p)})).sort((a, b) => a.d - b.d).slice(0, 30);
-    const note = inFukui() ? "Closest to you first" : me ? "You're outside Fukui, so distances are from Fukui Station" : "Distances from Fukui Station";
-    return {title: "Near me", snap: "half",
+    const list = PLACES.filter(visible).map(p => ({p, d: dist(o, p)})).sort((a, b) => a.d - b.d);
+    const note = inFukui() ? "Closest to you first" : me ? "You're outside Fukui, so distances are from Fukui Station" : "Closest to Fukui Station first";
+    return {title: `Places · ${list.length}`, snap: "half",
       body: `<p class="sub">${note}</p>${me ? "" : '<button class="cta" id="useloc">Use my location</button>'}
         ${list.length ? list.map(({p, d}) => placeRow(p, d)).join("") : '<div class="empty">Nothing matches these filters.</div>'}`,
       bind(){ const u = $("#useloc"); if (u) u.onclick = () => locate(true); }};
@@ -1000,7 +1112,7 @@ const VIEWS = {
     const o = origin();
     return {title: t ? `“${q.value.trim()}”` : "Search", snap: "full",
       body: t ? (ps.length ? ps.map(p => placeRow(p, dist(o, p))).join("") : '<div class="empty">No matches. Try another word, or clear the filters.</div>')
-        : `<p class="sub">Places, food and things to do. Try “crab”, “temple” or “Ono”.</p>${saved.length ? `<h3>Saved</h3>${saved.map(P).filter(Boolean).map(p => placeRow(p)).join("")}` : ""}`};
+        : `<p class="sub">Places, food and things to do. Try “crab”, “temple” or “Ono”.</p>${myTrip && myTrip.ideas.length ? `<h3>Your ideas</h3>${myTrip.ideas.map(P).filter(Boolean).map(p => placeRow(p)).join("")}` : ""}`};
   },
   trips(){
     const all = TRIPS.map((t, i) => ({t, i}));
@@ -1017,16 +1129,16 @@ const VIEWS = {
         ${seg("car", [["0", "No car"], ["1", "Rental car"]], tf.car ? "1" : "0")}
         ${exact.map(tripCard).join("")}
         ${extra.length ? `<h3>${extraTitle}</h3>${extra.map(tripCard).join("")}` : ""}
-        <button class="ghost" id="scratch" style="margin-top:14px">Start from scratch instead</button>
-        ${saved.length ? `<h3>Saved places (${saved.length})</h3>${saved.map(P).filter(Boolean).map(p => placeRow(p)).join("")}` : ""}`,
+        <button class="ghost" id="scratch" style="margin-top:14px">Start from scratch instead</button>`,
       bind(){
         sheet.querySelectorAll("[data-days]").forEach(b => b.onclick = () => { tf.days = b.dataset.days; saveTf(); render({keepScroll: true, keepRoute: true}); });
         sheet.querySelectorAll("[data-car]").forEach(b => b.onclick = () => { tf.car = b.dataset.car === "1"; saveTf(); render({keepScroll: true, keepRoute: true}); });
-        const mine = $("#mine"); if (mine) mine.onclick = () => push({v: "mytrip"});
+        const mine = $("#mine"); if (mine) mine.onclick = openMyTrip;
         $("#scratch").onclick = () => {
-          if (hasStops() && !confirm("Start a new trip? Your current trip will be replaced.")) return;
-          myTrip = {name: "My Fukui trip", from: null, done: [], days: Array.from({length: +tf.days}, () => [])};
-          myDay = 0; persist(); push({v: "mytrip"});
+          if (hasStops() && !confirm("Start a new trip? Your current days will be cleared. Your ideas stay.")) return;
+          const ideas = myTrip ? myTrip.ideas || [] : [];
+          myTrip = {name: "My Fukui trip", from: null, done: [], days: Array.from({length: +tf.days}, () => []), ideas};
+          myDay = 0; persist(); openMyTrip();
         };
       }};
   },
@@ -1048,16 +1160,20 @@ const VIEWS = {
       bind(v){
         sheet.querySelectorAll("[data-day]").forEach(b => b.onclick = () => { v.day = +b.dataset.day; render(); });
         $("#usetrip").onclick = () => {
-          if (mine){ stacks.trips = [{v: "trips"}, {v: "mytrip"}]; history.replaceState({vf: 1}, ""); render(); return; }
-          if (hasStops() && !confirm(`Use "${tr.name}"? Your current trip will be replaced.`)) return;
+          if (mine){ if (tab === "mytrip") back(); else openMyTrip(); return; }
+          if (hasStops() && !confirm(`Use "${tr.name}"? Your current days will be replaced. Your ideas stay.`)) return;
           newTripFrom(v.i);
-          stacks.trips = [{v: "trips"}, {v: "mytrip"}]; history.replaceState({vf: 1}, "");
-          render(); toast("This is your trip now");
+          if (tab === "trips") stacks.trips = [{v: "trips"}];
+          openMyTrip(); toast("This is your trip now");
         };
       }};
   },
   mytrip(t){
-    if (!myTrip){ return VIEWS.trips(); }
+    if (!myTrip) return {title: "My trip", snap: "half",
+      body: `<div class="empty-trip"><p>Nothing here yet. Tap <b>Add to trip</b> on any place to keep it here, or start from a ready-made trip.</p>
+        <button class="cta" id="gotrips">Browse ready-made trips</button><button class="ghost" id="ownt">Start my own trip</button></div>`,
+      bind(){ $("#gotrips").onclick = () => setTab("trips"); $("#ownt").onclick = () => { ensureTrip(); persist(); render(); }; }};
+    if (!myTrip.ideas) myTrip.ideas = [];
     myTrip.done = myTrip.done || [];
     if (myDay >= myTrip.days.length) myDay = 0;
     const ids = myTrip.days[myDay], edit = !!t.edit;
@@ -1067,14 +1183,16 @@ const VIEWS = {
       if (k){ const prev = P(ids[k - 1]), d = dist(prev, p) * 1.3, hr = d < 1.6 ? d / 4.5 : d / 30 + .2; h += hr; html += `<div class="leg">~${Math.max(3, Math.round(hr * 60))} min · ${fmtDist(d / 1.3)}</div>`; }
       h += 1.5;
       const done = myTrip.done.includes(myDay + ":" + id);
-      html += `<div class="mstop ${done ? "isdone" : ""}"><button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button><button class="tx" data-place="${id}"><b>${esc(shortName(p))}</b><span>${carOnly(p) && tripNoCar() ? `<em class="mcar">${ic("Car")}Needs a car</em> · ` : ""}${esc(p.area)}</span></button>${edit ? `<span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span>` : `<i class="chev">${ic("Back")}</i>`}</div>`;
+      html += `<div class="mstop ${done ? "isdone" : ""}"><button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button><button class="tx" data-place="${id}"><b>${esc(shortName(p))}</b><span>${carOnly(p) && tripNoCar() ? `<em class="mcar">${ic("Car")}Needs a car</em> · ` : rareNote(p) && tripNoCar() ? `<em class="mrare">Few trains</em> · ` : ""}${esc(p.area)}</span></button>${edit ? `<span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span>` : `<i class="chev">${ic("Back")}</i>`}</div>`;
     });
     const over = h > 9, nx = nextStop(), nxToday = nx && nx.day === myDay ? nx.p : null;
     return {title: myTrip.name, snap: "half",
-      right: `<button class="hb txt" id="edit">${edit ? "Done" : "Edit"}</button>`,
+      right: `${edit ? "" : `<button class="hb" id="share" aria-label="Share this trip"><svg class="i" viewBox="0 0 24 24"><path d="M12 15V3.5M7.5 8L12 3.5 16.5 8"/><path d="M6 12H5v8.5h14V12h-1"/></svg></button>`}<button class="hb txt" id="edit">${edit ? "Done" : "Edit"}</button>`,
       body: `<div class="days sticky">${myTrip.days.map((d, k) => `<button data-mday="${k}" aria-pressed="${k === myDay}">Day ${k + 1}${d.length ? " · " + d.length : ""}</button>`).join("")}${edit ? `<button id="addday" aria-label="Add a day">+ Day</button>` : ""}</div>
         ${ids.length ? `<div class="sum"><span>Day ${myDay + 1}: about ${Math.round(h * 2) / 2} h</span><span style="color:${over ? "var(--must)" : "var(--muted)"}">${over ? "Too full" : `${Math.round((9 - h) * 2) / 2} h free`}</span></div><div class="meter ${over ? "over" : ""}"><i style="width:${Math.min(100, h / 9 * 100)}%"></i></div>${html}` : '<div class="empty">No stops on this day yet.</div>'}
         <button class="ghost" id="addstops">${ic("Do")} Add stops from the map</button>
+        <div class="ideas-h"><h3>Ideas${myTrip.ideas.length ? ` (${myTrip.ideas.length})` : ""}</h3><small>Saved, not in a day yet</small></div>
+        ${myTrip.ideas.length ? myTrip.ideas.map(P).filter(Boolean).map(p => `<div class="idea-row"><span class="dd ${tierKey(p.tier)}"></span><button class="tx" data-place="${p.id}"><b>${esc(shortName(p))}</b><span>${carOnly(p) && tripNoCar() ? "Needs a car · " : ""}${esc(p.area)}</span></button><button class="put" data-put="${p.id}">+ Day ${myDay + 1}</button><button class="x" data-unidea="${p.id}" aria-label="Remove from ideas">✕</button></div>`).join("") : '<p class="hint" style="margin-top:0">Places you might want to see. Tap <b>Add to trip → Ideas</b> on any place.</p>'}
         ${edit ? `<button class="ghost danger" id="clear">Delete this trip</button>` : `<p class="hint">Tap the number when you've been there. ${myTrip.from != null ? `<button class="linkbtn" id="orig">See the original plan with times</button>` : ""}</p>`}`,
       foot: nxToday ? `<a class="cta go" href="${gmapsUrl(nxToday)}" target="_blank" rel="noopener">${ic(carOnly(nxToday) ? "Car" : "Train")} Go to ${esc(shortName(nxToday))}</a>` : ids.length ? `<p class="fnote" style="margin:4px 0">Day ${myDay + 1} done. Nice!</p>` : "",
       bind(v){
@@ -1090,9 +1208,27 @@ const VIEWS = {
           myTrip.done = myTrip.done.includes(key) ? myTrip.done.filter(x => x !== key) : [...myTrip.done, key];
           persist(); render({keepScroll: true, keepRoute: true});
         });
-        $("#addstops").onclick = () => { setSnap("peek"); toast(`Tap a pin, then “Add to Day ${myDay + 1}”`); };
+        $("#addstops").onclick = () => { setSnap("peek"); toast("Tap a pin, then “Add to trip”"); };
+        const sh = $("#share"); if (sh) sh.onclick = shareTrip;
+        sheet.querySelectorAll("[data-put]").forEach(b => b.onclick = () => { const id = b.dataset.put; placeIn(id, myDay); render({keepScroll: true}); toast(`Moved to Day ${myDay + 1}`); });
+        sheet.querySelectorAll("[data-unidea]").forEach(b => b.onclick = () => { const id = b.dataset.unidea; placeIn(id, null); render({keepScroll: true}); toast("Removed from ideas", "Undo", () => { placeIn(id, "idea"); render({keepScroll: true}); }); });
         const og = $("#orig"); if (og) og.onclick = () => push({v: "trip", i: myTrip.from, day: Math.min(myDay + 1, [...new Set(TRIPS[myTrip.from].stops.map(s => s.day))].length)});
-        const cl = $("#clear"); if (cl) cl.onclick = () => { if (!confirm("Delete this trip?")) return; myTrip = null; persist(); stacks.trips = [{v: "trips"}]; history.replaceState({vf: 1}, ""); render(); toast("Trip deleted"); };
+        const cl = $("#clear"); if (cl) cl.onclick = () => { if (!confirm("Delete this trip and its ideas?")) return; myTrip = null; persist(); stacks.mytrip = [{v: "mytrip"}]; render(); updateTeaser(); toast("Trip deleted"); };
+      }};
+  },
+  shared(t){
+    const d = t.data;
+    return {title: "A trip shared with you", snap: "half",
+      body: `<div class="pills"><span class="pill">${esc(d.name)}</span><span class="pill">${d.days.length} day${d.days.length > 1 ? "s" : ""}</span></div>
+        ${d.days.map((ids, k) => ids.length ? `<div class="shared-day">Day ${k + 1}</div>${ids.map(P).map(p => placeRow(p)).join("")}` : "").join("")}
+        ${d.ideas.length ? `<div class="shared-day">Ideas</div>${d.ideas.map(P).map(p => placeRow(p)).join("")}` : ""}`,
+      foot: `<button class="cta" id="takeit">Use this trip</button><p class="fnote">${myTrip && hasStops() ? "It replaces your current trip" : "You can change it after"}</p>`,
+      bind(){
+        $("#takeit").onclick = () => {
+          if (myTrip && hasStops() && !confirm("Replace your current trip with this one?")) return;
+          myTrip = {name: d.name, from: null, done: [], days: d.days, ideas: d.ideas}; myDay = 0; persist();
+          openMyTrip(); updateTeaser(); toast("This is your trip now");
+        };
       }};
   },
   now(){
@@ -1153,7 +1289,7 @@ function locate(center){
     if (first && center) centerMe();
     first = false;
     const tv = topView();
-    if (tv && tv.v === "near" && (!prev || dist(prev, me) > .1)) render({keepScroll: true, keepRoute: true});
+    if (tv && tv.v === "list" && (!prev || dist(prev, me) > .1)) render({keepScroll: true, keepRoute: true});
   }, err => { watchId = null; toast(err.code === 1 ? "Location is blocked. Allow it in Settings" : "Couldn't find your location"); }, {enableHighAccuracy: true, maximumAge: 15000, timeout: 20000});
 }
 function centerMe(){
@@ -1185,10 +1321,15 @@ function showKey(on){ $("#keycard").hidden = !on; $("#keybtn").setAttribute("ari
 $("#keybtn").onclick = () => showKey($("#keycard").hidden);
 $("#keyx").onclick = () => showKey(false);
 try { if (!localStorage.getItem("vf-keyseen")) setTimeout(() => showKey(true), 900); } catch (e) {}
-history.replaceState({vf: 0}, "");
+$("#listbtn").onclick = () => { if (tab !== "explore") return; const t = topView(); if (t && t.v === "list") back(); else { stacks.explore = []; push({v: "list"}); if (!me) locate(false); } };
+const sharedTrip = readShared();
+history.replaceState({vf: 0}, "", sharedTrip ? location.pathname + location.search : undefined);
 buildChips();
 initMap();
 render();
+updateBadge();
+if (sharedTrip){ setTab("mytrip"); push({v: "shared", data: sharedTrip}); }
+if ("serviceWorker" in navigator && location.protocol === "https:") addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
 </body>
 </html>
