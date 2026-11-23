@@ -105,14 +105,37 @@ body.zm .pin.must .l,body.zn .pin.must .l,body.zn .pin.worth .l,body.zs .pin.dee
 .me{width:22px;height:22px;border-radius:50%;background:#2F80ED;border:4px solid #fff;box-shadow:0 0 0 10px rgba(47,128,237,.18),0 2px 6px rgba(0,0,0,.25)}
 
 /* sheet */
-.sheet{position:absolute;z-index:7;left:0;right:0;bottom:calc(var(--nav) + var(--safe-b));max-height:calc(100% - var(--nav) - var(--safe-b) - 70px - var(--safe-t));background:var(--card);border-radius:28px 28px 0 0;box-shadow:0 -6px 30px rgba(31,61,54,.16);overflow-y:auto;transform:translateY(110%);transition:transform .3s cubic-bezier(.2,.9,.3,1);max-width:560px;margin:0 auto;overscroll-behavior:contain}
-.sheet.open{transform:none}
-.sheet.tall{height:calc(100% - var(--nav) - var(--safe-b) - 70px - var(--safe-t))}
-.sin{padding:10px 20px 24px}
-.grab{width:40px;height:5px;border-radius:3px;background:#D5E0DB;margin:0 auto 10px}
-.head{display:flex;align-items:flex-start;gap:10px}
-.head h1,.head h2{margin:0;font-size:24px;font-weight:900;letter-spacing:-.01em;line-height:1.15;flex:1;text-wrap:balance}
-.x{width:36px;height:36px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;flex:none}
+.sheet{position:absolute;z-index:7;left:0;right:0;bottom:calc(var(--nav) + var(--safe-b));height:0;background:var(--card);border-radius:24px 24px 0 0;box-shadow:0 -6px 30px rgba(31,61,54,.16);display:flex;flex-direction:column;max-width:560px;margin:0 auto;overflow:hidden;visibility:hidden;transition:height .32s cubic-bezier(.2,.9,.3,1)}
+.sheet.open{visibility:visible}
+.sheet.dragging{transition:none}
+.grabber{flex:none;padding:8px 0 6px;cursor:grab;touch-action:none}
+.grab{width:40px;height:5px;border-radius:3px;background:#D5E0DB;margin:0 auto}
+.shead{flex:none;display:flex;align-items:center;gap:8px;padding:0 14px 10px;min-height:48px;box-sizing:border-box;touch-action:none}
+.shead h2{margin:0 4px;flex:1;min-width:0;font-size:20px;font-weight:900;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb{height:38px;min-width:38px;padding:0 9px;border-radius:19px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex:none;color:var(--ink)}
+.hb.txt{padding:0 15px;background:#E3F2EA;color:var(--action)}
+.sbody{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 20px 24px}
+.sfoot{flex:none;padding:10px 16px 12px;border-top:1px solid #EEF3F1;background:var(--card)}
+.sfoot:empty{display:none}
+.sheet.peek .sbody{flex:0 0 0;padding:0;overflow:hidden}
+.sfoot .acts{margin:0}
+.sfoot .cta{margin:0}
+.fnote{margin:6px 0 0;text-align:center;font-size:12px;font-weight:700;color:var(--muted)}
+.cta.go{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;font-size:13.5px;font-weight:700;color:var(--muted)}
+.days.sticky{position:sticky;top:0;z-index:2;background:var(--card);margin:6px -20px 8px;padding:6px 20px 8px}
+.chev{margin-left:auto;display:flex;color:#9DB2AB;align-self:center}
+.chev svg{transform:rotate(180deg);width:18px;height:18px}
+.stop .bx{display:flex;flex-direction:column;align-items:flex-start;position:relative;padding-right:30px}
+.stop .bx .chev{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+.mstop .tx{display:flex;flex-direction:column}
+.mstop .tx b{font-size:15px;font-weight:900}
+.mstop .tx span{font-size:12.5px;font-weight:700;color:var(--muted)}
+.linkbtn{color:var(--action);font-weight:900;font-size:13px;margin-right:10px;padding:0;text-decoration:underline;text-underline-offset:2px}
+.ghost{display:flex;align-items:center;justify-content:center;gap:8px}
+.ghost svg{width:18px;height:18px}
+.ghost.danger{color:var(--warn);background:#FBE8EB}
+.sub{margin:0 0 8px}
 .sub{color:var(--muted);font-size:13.5px;font-weight:700;margin:4px 0 10px}
 .tier{display:inline-flex;align-items:center;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#fff;padding:3px 9px;border-radius:8px}
 .tier.must{background:var(--must)}.tier.worth{background:var(--worth)}.tier.deep{background:var(--deep)}
@@ -247,10 +270,15 @@ nav.tabs button[aria-selected="true"]{color:var(--action);font-weight:900}
 nav.tabs svg{width:24px;height:24px}
 .toast{position:absolute;z-index:9;left:50%;top:calc(16px + var(--safe-t));transform:translate(-50%,-8px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:20px;font-weight:800;font-size:14px;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.toast{display:flex;align-items:center;gap:12px}
+.toast.show.act{pointer-events:auto}
+.toast button{color:#9FE3C9;font-weight:900;font-size:14px}
 .nomap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;text-align:center;padding:40px}
 @media (min-width:760px){
-  .sheet{left:16px;right:auto;width:420px;bottom:calc(var(--nav) + var(--safe-b) + 16px);border-radius:28px;margin:0}
-  .sheet.tall{height:calc(100% - var(--nav) - var(--safe-b) - 100px - var(--safe-t))}
+  .sheet{left:16px;right:auto;width:420px;bottom:calc(var(--nav) + var(--safe-b) + 16px);border-radius:24px;margin:0}
+  .sheet.open{height:calc(100% - var(--nav) - var(--safe-b) - 150px - var(--safe-t))}
+  .grabber{display:none}
+  .shead{padding-top:14px}
   .top{right:auto;width:460px}
   .teaser{right:auto;width:420px}
 }
@@ -373,7 +401,7 @@ function buildChips(){
     if (b.dataset.mode){ mode = b.dataset.mode; }
     else { const t = b.dataset.tier; tiers.has(t) ? tiers.delete(t) : tiers.add(t); }
     buildChips(); syncPins();
-    if (view === "near" || view === "search") render();
+    const tv = topView(); if (tv && (tv.v === "near" || tv.v === "search")) render({keepScroll: true, keepRoute: true});
   };
 }
 function visible(p){
@@ -419,14 +447,17 @@ function initMap(){
   map.on("load", () => { addFukuiShape(); fitAll(0); drawRoute(); });
   map.on("zoom", zoomClass);
   map.on("move", declutterSoon);
-  map.on("click", e => { if (!e.originalEvent.target.closest(".pin")) { if (view === "place") closeSheet(); } });
+  map.on("click", e => { if (!e.originalEvent.target.closest(".pin")){ const t = topView(); if (t && t.v === "place") back(); } });
+  /* moving the map yourself means you want to see it: tuck the sheet down */
+  map.on("dragstart", e => { if (e.originalEvent && !wide() && (snap === "half" || snap === "full")){ const t = topView(); if (t && t.v !== "search") setSnap("peek"); } });
   PLACES.forEach(p => {
     const el = document.createElement("button");
     el.className = "pin " + tierKey(p.tier);
     el.setAttribute("aria-label", `${p.name}, ${p.tier}`);
     el.innerHTML = `<span class="c">${ic(p.type)}${p.tier === "Must" ? photoHtml(p) : ""}<span class="n"></span></span><span class="l">${esc(shortName(p))}</span>`;
-    el.addEventListener("click", ev => { ev.stopPropagation(); openPlace(p.id, true); });
+    el.addEventListener("click", ev => { ev.stopPropagation(); openPlace(p.id); });
     pins[p.id] = {el, m: new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([p.lon, p.lat]).addTo(map)};
+    el.setAttribute("aria-label", `${p.name}, ${p.tier}`); el.dataset.id = p.id;
   });
   zoomClass(); syncPins();
 }
@@ -442,8 +473,7 @@ function addFukuiShape(){
 }
 function fitAll(duration = 800){
   if (!map) return;
-  const wide = innerWidth >= 760;
-  map.fitBounds([[135.45, 35.34], [136.83, 36.3]], {padding: {top: 130, bottom: wide ? 40 : 110, left: wide ? 470 : 8, right: 8}, duration});
+  map.fitBounds([[135.45, 35.34], [136.83, 36.3]], {padding: {...mapPad(), top: wide() ? 90 : 130, left: wide() ? 470 : 8, right: 8}, duration});
 }
 function zoomClass(){
   const z = map ? map.getZoom() : 8, B = document.body.classList;
@@ -495,10 +525,17 @@ function declutter(){
     else { el.classList.remove("nolabel"); boxes.push(lr); }
   });
 }
+/* ---------- map camera: always frame things in the space the sheet leaves free ---------- */
+const wide = () => innerWidth >= 760;
+function mapPad(){
+  const w = wide();
+  return {top: w ? 140 : 150, bottom: w ? 50 : sheetH() + 28 + (snap === "closed" ? teaserH() : 0), left: w ? 490 : 44, right: w ? 70 : 44};
+}
+/* centre a point in the free space without changing the map's stored padding (that breaks fitBounds) */
+const padOffset = () => { const m = mapPad(); return [(m.left - m.right) / 2, (m.top - m.bottom) / 2]; };
 function flyTo(p, z = 13){
-  if (!map) return;
-  const wide = innerWidth >= 760;
-  map.flyTo({center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), z), offset: [wide ? 220 : 0, wide ? 0 : -innerHeight * .22], duration: 900});
+  if (!map || !p) return;
+  map.easeTo({center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), z), offset: padOffset(), duration: 800});
 }
 function drawRoute(){
   if (!map || !map.isStyleLoaded()) return;
@@ -512,101 +549,158 @@ function drawRoute(){
     map.addLayer({id: "route", type: "line", source: "route", layout: {"line-cap": "round", "line-join": "round"}, paint: {"line-color": "#1F6F5C", "line-width": 4, "line-dasharray": [1.5, 1.2]}});
   }
 }
-function showRoute(ids, label){
+function showRoute(ids, label, fit){
+  const same = routeDay && ids && routeDay.ids.join() === [...new Set(ids)].join();
   routeDay = ids && ids.length ? {ids: [...new Set(ids)], label} : null;
-  drawRoute(); syncPins();
-  if (routeDay && map){
+  if (!same){ drawRoute(); syncPins(); }
+  if (fit && routeDay && map){
     const b = new maplibregl.LngLatBounds();
     routeDay.ids.map(P).forEach(p => b.extend([p.lon, p.lat]));
-    const wide = innerWidth >= 760;
-    map.fitBounds(b, {padding: {top: 150, bottom: wide ? 60 : innerHeight * .55, left: wide ? 470 : 50, right: 60}, maxZoom: 12.5, duration: 900});
+    map.fitBounds(b, {padding: mapPad(), maxZoom: 12.5, duration: 800});
   }
 }
 
-/* ---------- sheet ---------- */
+/* ---------- the sheet: closed / peek / half / full, one back stack per tab ----------
+   Back (‹) pops one step and matches the phone's back gesture (history API).
+   On Explore the first level shows ✕, which closes the sheet and returns to the map. */
 const sheet = $("#sheet");
-function openSheet(html, tall){
-  sheet.innerHTML = `<div class="sin"><div class="grab"></div>${html}</div>`;
-  sheet.classList.add("open"); sheet.classList.toggle("tall", !!tall); sheet.scrollTop = 0;
-  $("#teaser").hidden = true;
-  sheet.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
-  sheet.querySelectorAll("[data-place]").forEach(b => b.onclick = () => openPlace(b.dataset.place, true));
+sheet.innerHTML = `<div class="grabber" id="grabber" aria-hidden="true"><div class="grab"></div></div><div class="shead" id="shead"></div><div class="sbody" id="sbody"></div><div class="sfoot" id="sfoot"></div>`;
+let snap = "closed";
+const stacks = {explore: [], near: [{v: "near"}], trips: [{v: "trips"}], now: [{v: "now"}]};
+const rootDepth = t => t === "explore" ? 0 : 1;
+const topView = () => { const s = stacks[tab]; return s[s.length - 1] || null; };
+const navH = () => $("nav.tabs").offsetHeight;
+function snapPx(name){
+  const H = innerHeight - navH();
+  if (name === "full") return H - ($(".searchrow").getBoundingClientRect().bottom + 8);
+  if (name === "half") return Math.round(H * .5);
+  if (name === "peek") return $("#grabber").offsetHeight + $("#shead").offsetHeight + $("#sfoot").offsetHeight;
+  return 0;
 }
-function closeSheet(){
-  if (view === "place" && back){ const b = back; back = null; return b(); }
-  sheet.classList.remove("open"); view = null; selected = null; syncPins();
-  if (tab !== "explore") setTab("explore", true);
+const sheetH = () => snap === "closed" || wide() ? 0 : snapPx(snap);
+const teaserH = () => { const t = $("#teaser"); return t.hidden ? 0 : t.offsetHeight + 14; };
+function setSnap(name, animate = true){
+  snap = name;
+  sheet.classList.toggle("open", name !== "closed");
+  sheet.classList.toggle("dragging", !animate);
+  ["peek", "half", "full"].forEach(n => sheet.classList.toggle(n, n === name));
+  sheet.style.height = wide() ? "" : snapPx(name) + "px";
+  const t = topView(); if (t && name !== "closed") t.snap = name;
   updateTeaser();
-}
-let back = null;
-const closeBtn = '<button class="x" data-close aria-label="Close">' + ic("X") + '</button>';
-
-function placeRow(p, d){
-  return `<button class="row" data-place="${p.id}"><span class="ic ${tierKey(p.tier)}">${ic(p.type)}</span><span class="tx"><b>${esc(shortName(p))}</b><em>${esc(p.tier)} · ${esc(p.type)} · ${esc(p.area)}</em></span>${d !== undefined ? `<span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span>` : ""}</button>`;
+  const fab = $("#loc");
+  fab.style.bottom = `calc(var(--nav) + var(--safe-b) + ${(wide() ? 0 : sheetH()) + (snap === "closed" ? teaserH() : 0) + 14}px)`;
+  fab.hidden = !wide() && name === "full";
+  $("#chips").style.visibility = !wide() && name === "full" ? "hidden" : "";
 }
 
-/* place card */
-function openPlace(id, fly){
-  const p = P(id); if (!p) return;
-  if (view && view !== "place"){ const v = view, a = viewArg; back = () => { view = null; show(v, a); }; }
-  view = "place"; selected = id; syncPins();
-  if (fly) flyTo(p);
-  const tk = tierKey(p.tier), d = dist(origin(), p), here = inFukui();
-  const carOnly = /^car|car best|car or taxi|^car\./i.test(p.access) || p.access.startsWith("Car");
-  const unverified = /\(check/i.test(p.access);
-  const acts = actsAt(id), foods = foodsAt(id), evs = eventsAt(id);
-  const inTrip = myTrip && myTrip.days.some(dd => dd.includes(id));
-  const on = saved.includes(id);
-  const gmaps = gmapsUrl(p);
-  openSheet(`
-    <div class="head"><div style="flex:1"><span class="tier ${tk}">${esc(p.tier)}</span></div>${closeBtn}</div>
-    ${photoSrcs(p).length ? `<figure class="pic photo ${tk}">${ic(p.type)}${photoHtml(p)}<figcaption>${esc(p.credit || PHOTO_CREDIT)}</figcaption></figure>` : `<div class="photo ${tk}">${ic(p.type)}<span>Photo coming soon</span></div>`}
-    <div class="head"><h1>${esc(p.name)}</h1></div>
-    <div class="sub">${esc(p.jp)} · ${esc(p.area)}</div>
-    <div class="pills"><span class="pill g">${fmtDist(d)} ${here ? "away" : "from Fukui Stn"}</span><span class="pill">${esc(p.best)}</span></div>
-    <p class="why">${esc(p.why)}</p>${p.df ? `<a class="dfmore" href="${esc(p.df)}" target="_blank" rel="noopener">More photos and details on DISCOVER FUKUI ↗</a>` : ""}
-    <div class="box">
-      <div class="t"><b>${carOnly ? "Getting there" : "Without a car"}</b>${unverified ? '<span class="tag chk">Not checked yet</span>' : carOnly ? '<span class="tag car">Best by car</span>' : '<span class="tag ok">No car needed</span>'}</div>
-      <p>${esc(p.access.replace(/\s*\(check[^)]*\)/gi, ""))}</p>
-    </div>
-    ${acts.length ? `<h3>Things to do here</h3>${acts.map(a => `<div class="item"><span class="ic">${ic("Do")}</span><div><b>${esc(a.name)}</b><p>${esc(a.what)} ${esc(a.note)}</p></div></div>`).join("")}` : ""}
-    ${foods.length ? `<h3>Eat here</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)}${f.months && f.months.includes(thisMonth) ? ' <span class="now">In season now.</span>' : ""}</p></div></div>`).join("")}` : ""}
-    ${evs.length ? `<h3>Events here</h3>${evs.map(e => `<div class="item"><span class="ic">${ic("Event")}</span><div><b>${esc(e.name)}</b><p>${isNow(e) ? '<span class="now">This month.</span> ' : ""}${esc(e.when)}. ${esc(e.note)}</p></div></div>`).join("")}` : ""}
-    <div class="acts">
-      <button class="heart ${on ? "on" : ""}" id="save" aria-label="${on ? "Remove from saved" : "Save"}" aria-pressed="${on}">${ic("Heart")}</button>
-      <a class="dir" href="${gmaps}" target="_blank" rel="noopener">Directions</a>
-      <button class="add ${inTrip ? "on" : ""}" id="add">${inTrip ? "In your trip" : myTrip ? `Add to Day ${myDay + 1}` : "Add to trip"}</button>
-    </div>
-    <p class="note">Pin positions are approximate and opening hours aren't listed yet. Check before you go. Directions open Google Maps.</p>`);
-  $("#save").onclick = () => { saved.includes(id) ? saved = saved.filter(x => x !== id) : saved.push(id); persist(); toast(saved.includes(id) ? "Saved" : "Removed from saved"); openPlace(id); };
-  $("#add").onclick = () => {
-    if (!myTrip){ myTrip = {name: "My Fukui trip", from: null, done: [], days: [[]]}; myDay = 0; }
-    const where = myTrip.days.findIndex(dd => dd.includes(id));
-    if (where >= 0){ myTrip.days[where] = myTrip.days[where].filter(x => x !== id); toast(`Removed from Day ${where + 1}`); }
-    else { myTrip.days[myDay].push(id); toast(`Added to Day ${myDay + 1}`); }
-    persist(); openPlace(id);
-  };
+function render(opts = {}){
+  const t = topView();
+  if (!t){ setSnap("closed"); selected = null; syncPins(); applyRoute(false); return; }
+  const out = VIEWS[t.v](t);
+  const depth = stacks[tab].length;
+  const left = depth > rootDepth(tab) ? (depth === 1 ? `<button class="hb" id="hback" aria-label="Close">${ic("X")}</button>` : `<button class="hb" id="hback" aria-label="Back">${ic("Back")}</button>`) : "";
+  $("#shead").innerHTML = `${left}<h2>${esc(out.title)}</h2>${out.right || ""}`;
+  const body = $("#sbody"), keep = opts.keepScroll ? body.scrollTop : 0;
+  body.innerHTML = out.body;
+  $("#sfoot").innerHTML = out.foot || "";
+  body.scrollTop = keep;
+  selected = t.v === "place" ? t.id : null;
+  syncPins();
+  setSnap(opts.snap || t.snap || out.snap || "half");
+  const hb = $("#hback"); if (hb) hb.onclick = back;
+  body.querySelectorAll("[data-place]").forEach(b => b.onclick = () => openPlace(b.dataset.place));
+  body.querySelectorAll("[data-trip]").forEach(b => b.onclick = () => push({v: "trip", i: +b.dataset.trip, day: 1}));
+  out.bind && out.bind(t);
+  if (!opts.keepRoute) applyRoute(true);
+}
+/* The route on the map belongs to the nearest trip view in the stack, so it stays
+   visible while you look at one of its stops, and goes away when you leave the trip. */
+function applyRoute(fit){
+  const s = stacks[tab]; let ctx = null;
+  for (let k = s.length - 1; k >= 0; k--) if (s[k].v === "trip" || s[k].v === "mytrip"){ ctx = s[k]; break; }
+  if (!ctx){ if (routeDay){ routeDay = null; drawRoute(); syncPins(); } return; }
+  const ids = ctx.v === "trip" ? TRIPS[ctx.i].stops.filter(x => x.day === ctx.day && x.place).map(x => x.place) : (myTrip ? myTrip.days[myDay] || [] : []);
+  showRoute(ids, ctx.v, fit && topView() === ctx);
+}
+function push(v, opts = {}){
+  const s = stacks[tab], t = topView();
+  if (t && t.v === "place" && v.v === "place"){ s[s.length - 1] = v; history.replaceState({vf: 1}, ""); }
+  else { s.push(v); history.pushState({vf: 1}, ""); }
+  render(opts);
+}
+function back(){
+  if (stacks[tab].length > rootDepth(tab)) history.back();
+  else setSnap("peek");
+}
+addEventListener("popstate", () => {
+  const s = stacks[tab];
+  if (s.length > rootDepth(tab)){
+    const gone = s.pop();
+    if (gone.v === "search"){ q.value = ""; q.blur(); }
+    render();
+  }
+});
+function setTab(t){
+  if (t === tab){
+    const s = stacks[t];
+    if (s.length > rootDepth(t)){ s.length = rootDepth(t); render(); }
+    else if (t !== "explore") setSnap(snap === "half" ? "full" : "half");
+    return;
+  }
+  tab = t;
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+  if (t === "near") locate(false);
+  render();
+  if (t === "near" && map){ const o = origin(); map.easeTo({center: [o.lon, o.lat], zoom: Math.max(map.getZoom(), 12.5), offset: padOffset(), duration: 800}); }
+}
+function openPlace(id, fly = true){
+  if (!P(id)) return;
+  push({v: "place", id});
+  if (fly) flyTo(P(id));
+}
+function openMyTrip(){
+  tab = "trips";
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === "trips"));
+  stacks.trips = [{v: "trips"}];
+  push({v: "mytrip"});
 }
 
-/* near me + search */
-function nearView(){
-  const o = origin();
-  const list = PLACES.filter(visible).map(p => ({p, d: dist(o, p)})).sort((a, b) => a.d - b.d).slice(0, 25);
-  const note = inFukui() ? "Distance from where you are" : me ? "You're outside Fukui, so distances are from Fukui Station" : "Distances from Fukui Station";
-  return `<div class="head"><h2>Near me</h2>${closeBtn}</div><p class="sub">${note}</p>
-    ${me ? "" : '<button class="cta" id="useloc">Use my location</button>'}
-    ${list.length ? list.map(({p, d}) => placeRow(p, d)).join("") : '<div class="empty">Nothing matches these filters.</div>'}`;
+/* drag the sheet by its top; a tap on the handle switches half and full */
+let drag = null;
+function onDown(e){
+  if (wide() || e.target.closest("button, a, input")) return;
+  drag = {y: e.clientY, h: sheet.offsetHeight, t: performance.now(), moved: false, id: e.pointerId};
+  sheet.classList.add("dragging");
 }
-function searchView(q){
-  const t = q.toLowerCase();
-  const hit = s => String(s || "").toLowerCase().includes(t);
-  const ps = PLACES.filter(p => visible(p) && (hit(p.name) || hit(p.jp) || hit(p.area) || hit(p.type) || foodsAt(p.id).some(f => hit(f.name)) || actsAt(p.id).some(a => hit(a.name))));
-  const o = origin();
-  return `<div class="head"><h2>${q ? `“${esc(q)}”` : "Search"}</h2>${closeBtn}</div><p class="sub">Places, food and things to do</p>
-    ${ps.length ? ps.map(p => placeRow(p, dist(o, p))).join("") : '<div class="empty">No matches. Try another word, or clear the filters.</div>'}`;
+function onMove(e){
+  if (!drag) return;
+  const dy = drag.y - e.clientY;
+  if (Math.abs(dy) > 5) drag.moved = true;
+  if (!drag.moved) return;
+  sheet.style.height = Math.max(snapPx("peek"), Math.min(snapPx("full"), drag.h + dy)) + "px";
 }
+function onUp(e){
+  if (!drag) return;
+  const d = drag; drag = null;
+  sheet.classList.remove("dragging");
+  if (!d.moved){ if (e.target.closest("#grabber") || e.target.closest("#shead h2")) setSnap(snap === "half" ? "full" : "half"); return; }
+  const h = sheet.offsetHeight, v = (d.y - e.clientY) / Math.max(1, performance.now() - d.t);
+  let target;
+  if (v > .6) target = snap === "peek" ? "half" : "full";
+  else if (v < -.6) target = snap === "full" ? "half" : "peek";
+  else target = ["peek", "half", "full"].reduce((a, b) => Math.abs(snapPx(b) - h) < Math.abs(snapPx(a) - h) ? b : a);
+  setSnap(target);
+}
+["grabber", "shead"].forEach(id => $("#" + id).addEventListener("pointerdown", onDown));
+addEventListener("pointermove", onMove);
+addEventListener("pointerup", onUp);
+addEventListener("pointercancel", onUp);
 
-/* trips */
+/* ---------- views ---------- */
+const placeRow = (p, d) => `<button class="row" data-place="${p.id}"><span class="ic ${tierKey(p.tier)}">${ic(p.type)}</span><span class="tx"><b>${esc(shortName(p))}</b><em>${esc(p.tier)} · ${esc(p.type)} · ${esc(p.area)}</em></span>${d !== undefined ? `<span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span>` : ""}</button>`;
+const dayOf = id => myTrip ? myTrip.days.findIndex(d => d.includes(id)) : -1;
+
+/* trips: data helpers */
 let tf = {days: "1", car: false};
 try { Object.assign(tf, JSON.parse(localStorage.getItem("vf-tf") || "{}")); } catch (e) {}
 const saveTf = () => { try { localStorage.setItem("vf-tf", JSON.stringify(tf)); } catch (e) {} };
@@ -642,72 +736,12 @@ function tripProgress(){
   const all = myTrip.days.flatMap((d, k) => d.map(id => k + ":" + id));
   return {total: all.length, done: all.filter(x => myTrip.done.includes(x)).length};
 }
-function tripsView(){
-  const all = TRIPS.map((t, i) => ({t, i}));
-  const exact = all.filter(x => bucket(x.t) === tf.days && isCar(x.t) === tf.car);
-  let extra = [], extraTitle = "";
-  if (tf.car){ extra = all.filter(x => bucket(x.t) === tf.days && !isCar(x.t)); extraTitle = "These work with a car too"; }
-  else if (tf.days !== "1"){ extra = all.filter(x => !isCar(x.t) && +bucket(x.t) < +tf.days); extraTitle = "Or put shorter trips together"; }
-  if (!exact.length && !extra.length){ extra = all.filter(x => isCar(x.t) === tf.car); extraTitle = "Closest matches"; }
-  const pr = tripProgress();
-  return `<div class="head"><h2>Trips</h2>${closeBtn}</div>
-    ${myTrip ? `<button class="tcard mine" id="mine"><span class="k2">Your trip</span><b>${esc(myTrip.name)}</b><span>${myTrip.days.length} day${myTrip.days.length > 1 ? "s" : ""} · ${pr.done} of ${pr.total} stops done</span></button>` : ""}
-    ${seg("days", [["1", "1 day"], ["2", "2 days"], ["3", "3+ days"]], tf.days)}
-    ${seg("car", [["0", "No car"], ["1", "Rental car"]], tf.car ? "1" : "0")}
-    ${exact.map(tripCard).join("")}
-    ${extra.length ? `<h3>${extraTitle}</h3>${extra.map(tripCard).join("")}` : ""}
-    <button class="ghost" id="scratch" style="margin-top:14px">Start from scratch instead</button>
-    ${saved.length ? `<h3>Saved places (${saved.length})</h3>${saved.map(P).filter(Boolean).map(p => placeRow(p)).join("")}` : ""}`;
-}
-function tripView(i, day = 1){
-  const t = TRIPS[i];
-  const days = [...new Set(t.stops.map(s => s.day))];
-  const stops = t.stops.filter(s => s.day === day);
-  const n = tripNotes(t);
-  let html = "";
-  stops.forEach((s, k) => {
-    if (k) { const chk = /\(check/i.test(s.how); html += `<div class="leg ${chk ? "chk" : ""}">${esc(stripCheck(s.how))}${chk ? " · not checked yet" : ""}</div>`; }
-    const off = s.months && !s.months.includes(thisMonth);
-    html += `<div class="stop"><span class="tm">${esc(s.time)}</span>${s.place ? `<button class="bx" data-place="${s.place}">` : '<div class="bx">'}<b>${esc(s.stop)}</b>${k === 0 && s.how ? `<span>${esc(stripCheck(s.how))}</span><br>` : ""}${s.tip ? `<span>${esc(s.tip)}</span>` : ""}${off ? `<br><span style="color:var(--warn);font-weight:900">Not on in ${MONTH_LONG[thisMonth - 1]}</span>` : ""}${s.place ? "</button>" : "</div>"}</div>`;
-  });
-  return `<div class="head"><button class="x" id="tback" aria-label="Back to trips">${ic("Back")}</button><h2>${esc(t.name)}</h2>${closeBtn}</div>
-    <div class="pills" style="margin:10px 0 0"><span class="pill">${esc(t.length)}</span><span class="pill ${isCar(t) ? "" : "g"}">${isCar(t) ? "Rental car" : "No car needed"}</span><span class="pill">${esc(t.start)} → ${esc(t.end)}</span>${n.now.map(x => `<span class="pill now">${MONTHS[thisMonth - 1]}: ${esc(x)}</span>`).join("")}</div>
-    ${days.length > 1 ? `<div class="days">${days.map(d => `<button data-day="${d}" aria-pressed="${d === day}">Day ${d}</button>`).join("")}</div>` : '<div style="height:12px"></div>'}
-    ${html}
-    <div class="hint">Times are a rough plan. Anything marked "not checked yet" needs checking before you go.</div>
-    <button class="cta" id="usetrip">Use this trip</button>
-    <p class="note" style="text-align:center;margin-top:6px">You can change the stops after.</p>`;
-}
-function myTripView(){
-  if (!myTrip) return tripsView();
-  myTrip.done = myTrip.done || [];
-  if (myDay >= myTrip.days.length) myDay = 0;
-  const ids = myTrip.days[myDay];
-  let h = 0, html = "";
-  ids.forEach((id, k) => {
-    const p = P(id); if (!p) return;
-    if (k){ const prev = P(ids[k - 1]), d = dist(prev, p) * 1.3, hr = d < 1.6 ? d / 4.5 : d / 30 + .2; h += hr; html += `<div class="leg">~${Math.max(3, Math.round(hr * 60))} min · ${fmtDist(d / 1.3)}</div>`; }
-    h += 1.5;
-    const done = myTrip.done.includes(myDay + ":" + id);
-    html += `<div class="mstop ${done ? "isdone" : ""}"><button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button><button class="tx" data-place="${id}"><b style="font-size:15px;font-weight:900">${esc(shortName(p))}</b><br><span style="font-size:12.5px;font-weight:700;color:var(--muted)">${esc(p.area)}</span></button><span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span></div>`;
-  });
-  const over = h > 9;
-  return `<div class="head"><button class="x" id="tback" aria-label="Back to trips">${ic("Back")}</button><h2>${esc(myTrip.name)}</h2>${closeBtn}</div>
-    <div class="days">${myTrip.days.map((d, k) => `<button data-mday="${k}" aria-pressed="${k === myDay}">Day ${k + 1}${d.length ? " · " + d.length : ""}</button>`).join("")}<button id="addday" aria-label="Add a day">+</button></div>
-    ${ids.length ? `<div class="sum"><span>Day ${myDay + 1}: about ${Math.round(h * 2) / 2} h</span><span style="color:${over ? "var(--must)" : "var(--muted)"}">${over ? "Too full" : `${Math.round((9 - h) * 2) / 2} h free`}</span></div><div class="meter ${over ? "over" : ""}"><i style="width:${Math.min(100, h / 9 * 100)}%"></i></div>${html}` : '<div class="empty">No stops on this day yet.</div>'}
-    <div class="hint">Tap a number when you've been there. To add a stop, tap any pin on the map, then <b>Add to Day ${myDay + 1}</b>.</div>
-    ${myTrip.from != null && TRIPS[myTrip.from] ? `<button class="ghost" id="orig">See the original plan with times</button>` : ""}
-    <button class="ghost" id="clear">Delete this trip</button>`;
-}
-function replaceOk(){
-  const pr = tripProgress();
-  return !pr || !pr.total || confirm("Replace your current trip?");
-}
 function newTripFrom(i){
   const t = TRIPS[i], days = [...new Set(t.stops.map(s => s.day))];
   myTrip = {name: t.name, from: i, done: [], days: days.map(d => [...new Set(t.stops.filter(s => s.day === d && s.place).map(s => s.place))])};
   myDay = 0; persist();
 }
+const hasStops = () => { const pr = tripProgress(); return pr && pr.total > 0; };
 function nextStop(){
   if (!myTrip) return null;
   myTrip.done = myTrip.done || [];
@@ -721,91 +755,183 @@ const gmapsUrl = p => {
   const d = dist(origin(), p);
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.jp + " " + p.area.split(" (")[0])}&travelmode=${inFukui() && d < 2 ? "walking" : "transit"}`;
 };
-
-/* now */
-function nowView(){
-  const now = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
-  const hero = now.find(e => e.img), rest = now.filter(e => e !== hero);
-  const soon = EVENTS.filter(isSoon).sort((a, b) => a.months.indexOf(nextMonths[0]) - b.months.indexOf(nextMonths[0]));
-  const foods = FOODS.filter(f => f.months && f.months.includes(thisMonth));
-  const ecard = (e, hot) => `<${e.place ? `button data-place="${e.place}"` : "div"} class="ecard ${hot ? "hot" : ""}"><span class="cal"><b>${esc(MONTHS[(hot ? thisMonth : e.months.find(m => nextMonths.includes(m))) - 1])}</b><span>${esc(e.tier === "Must" ? "MUST" : e.tier === "Worth it" ? "WORTH IT" : "DEEP")}</span></span><span class="tx"><b>${esc(e.name)}</b><p>${esc(e.when)} · ${esc(e.where)}. ${esc(e.note)}</p>${e.latest && !/every|check/i.test(e.latest) ? `<p style="font-weight:800">Latest: ${esc(e.latest)}</p>` : ""}</span>${e.img || (e.place && photoSrcs(P(e.place)).length) ? `<span class="ethumb photo ${tierKey(e.tier)}">${evPhoto(e, true)}</span>` : ""}</${e.place ? "button" : "div"}>`;
-  return `<div class="head"><h2>Now in Fukui</h2>${closeBtn}</div><p class="sub">${MONTH_LONG[thisMonth - 1]}. Dates change each year, so check before you go.</p>
-    ${hero ? `<${hero.place ? `button data-place="${hero.place}"` : "div"} class="hero"><img src="${hero.img}" alt=""><span class="htx"><span class="k">${MONTH_LONG[thisMonth - 1]} · ${esc(hero.tier)}</span><b>${esc(hero.name)}</b><span>${esc(hero.when)} · ${esc(hero.where)}. ${esc(hero.note)}</span></span></${hero.place ? "button" : "div"}>` : ""}
-    ${rest.length ? rest.map(e => ecard(e, true)).join("") : hero ? "" : '<div class="empty">Nothing special listed this month.</div>'}
-    ${foods.length ? `<h3>In season to eat</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)} ${esc(f.where)}.</p>${f.places.length ? `<p>${f.places.map(id => `<button data-place="${id}" style="color:var(--action);font-weight:900;font-size:13px;margin-right:10px">${esc(shortName(P(id)))}</button>`).join("")}</p>` : ""}</div></div>`).join("")}` : ""}
-    ${soon.length ? `<h3>Coming up</h3>${soon.map(e => ecard(e, false)).join("")}` : ""}`;
+function addToTrip(id){
+  if (!myTrip){ myTrip = {name: "My Fukui trip", from: null, done: [], days: [[]]}; myDay = 0; }
+  const where = dayOf(id);
+  if (where >= 0){
+    myTrip.days[where] = myTrip.days[where].filter(x => x !== id); persist();
+    toast(`Removed from Day ${where + 1}`, "Undo", () => { myTrip.days[where].push(id); persist(); render({keepScroll: true, keepRoute: true}); });
+  } else {
+    myTrip.days[myDay].push(id); persist();
+    toast(`Added to Day ${myDay + 1}`, "See trip", openMyTrip);
+  }
 }
 
-/* router */
-function show(v, arg){
-  view = v; viewArg = arg; selected = v === "place" ? selected : null; syncPins();
-  if (v === "near") openSheet(nearView(), true);
-  else if (v === "search") openSheet(searchView(arg || ""), true);
-  else if (v === "trips") openSheet(tripsView(), true);
-  else if (v === "trip") openSheet(tripView(arg.i, arg.day), true);
-  else if (v === "mytrip") openSheet(myTripView(), true);
-  else if (v === "now") openSheet(nowView(), true);
-  bind();
-}
-function render(){ if (view && view !== "place") show(view, viewArg); }
-function bind(){
-  const u = $("#useloc"); if (u) u.onclick = () => locate(true);
-  sheet.querySelectorAll("[data-trip]").forEach(b => b.onclick = () => { show("trip", {i: +b.dataset.trip, day: 1}); previewTrip(+b.dataset.trip, 1); });
-  sheet.querySelectorAll("[data-days]").forEach(b => b.onclick = () => { tf.days = b.dataset.days; saveTf(); show("trips"); });
-  sheet.querySelectorAll("[data-car]").forEach(b => b.onclick = () => { tf.car = b.dataset.car === "1"; saveTf(); show("trips"); });
-  const mine = $("#mine"); if (mine) mine.onclick = () => openMyTrip();
-  const tb = $("#tback"); if (tb) tb.onclick = () => { showRoute(null); show("trips"); };
-  sheet.querySelectorAll("[data-day]").forEach(b => b.onclick = () => { const d = +b.dataset.day; show("trip", {i: viewArg.i, day: d}); previewTrip(viewArg.i, d); });
-  const ut = $("#usetrip"); if (ut) ut.onclick = () => { if (!replaceOk()) return; newTripFrom(viewArg.i); toast("This is your trip now"); openMyTrip(); };
-  const sc = $("#scratch"); if (sc) sc.onclick = () => {
-    if (!replaceOk()) return;
-    myTrip = {name: "My Fukui trip", from: null, done: [], days: Array.from({length: +tf.days}, () => [])};
-    myDay = 0; persist(); openMyTrip();
-  };
-  const og = $("#orig"); if (og) og.onclick = () => { show("trip", {i: myTrip.from, day: myDay + 1}); previewTrip(myTrip.from, myDay + 1); };
-  sheet.querySelectorAll("[data-mday]").forEach(b => b.onclick = () => { myDay = +b.dataset.mday; openMyTrip(); });
-  const ad = $("#addday"); if (ad) ad.onclick = () => { myTrip.days.push([]); myDay = myTrip.days.length - 1; persist(); show("mytrip"); showRoute(null); };
-  const mv = (i, j) => { const a = myTrip.days[myDay]; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; persist(); openMyTrip(); };
-  sheet.querySelectorAll("[data-up]").forEach(b => b.onclick = () => mv(+b.dataset.up, +b.dataset.up - 1));
-  sheet.querySelectorAll("[data-down]").forEach(b => b.onclick = () => mv(+b.dataset.down, +b.dataset.down + 1));
-  sheet.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { myTrip.days[myDay].splice(+b.dataset.rm, 1); persist(); openMyTrip(); });
-  sheet.querySelectorAll("[data-done]").forEach(b => b.onclick = () => {
-    const key = myDay + ":" + b.dataset.done;
-    myTrip.done = myTrip.done.includes(key) ? myTrip.done.filter(x => x !== key) : [...myTrip.done, key];
-    persist(); show("mytrip");
-  });
-  const cl = $("#clear"); if (cl) cl.onclick = () => { if (!confirm("Delete this trip?")) return; myTrip = null; persist(); showRoute(null); toast("Trip deleted"); show("trips"); };
-}
-function openMyTrip(){ setTab("trips", true); show("mytrip"); showRoute(myTrip.days[myDay], "mine"); }
-function previewTrip(i, day){ showRoute(TRIPS[i].stops.filter(s => s.day === day && s.place).map(s => s.place), "preview"); }
+const VIEWS = {
+  place(t){
+    const p = P(t.id), id = p.id, tk = tierKey(p.tier), d = dist(origin(), p), here = inFukui();
+    const carOnly = /^car|car best|car or taxi|^car\./i.test(p.access);
+    const unverified = /\(check/i.test(p.access);
+    const acts = actsAt(id), foods = foodsAt(id), evs = eventsAt(id);
+    const where = dayOf(id), on = saved.includes(id);
+    const addLabel = where >= 0 ? `✓ In Day ${where + 1}` : myTrip ? `Add to Day ${myDay + 1}` : "Add to a trip";
+    return {
+      title: shortName(p),
+      body: `${photoSrcs(p).length ? `<figure class="pic photo ${tk}">${ic(p.type)}${photoHtml(p)}<figcaption>${esc(p.credit || PHOTO_CREDIT)}</figcaption></figure>` : `<div class="photo ${tk}">${ic(p.type)}<span>Photo coming soon</span></div>`}
+        <div class="meta"><span class="tier ${tk}">${esc(p.tier)}</span><span>${esc(p.jp)} · ${esc(p.area)}</span></div>
+        <div class="pills"><span class="pill g">${fmtDist(d)} ${here ? "away" : "from Fukui Stn"}</span><span class="pill">${esc(p.best)}</span></div>
+        <p class="why">${esc(p.why)}</p>${p.df ? `<a class="dfmore" href="${esc(p.df)}" target="_blank" rel="noopener">More photos and details on DISCOVER FUKUI ↗</a>` : ""}
+        <div class="box"><div class="t"><b>${carOnly ? "Getting there" : "Without a car"}</b>${unverified ? '<span class="tag chk">Not checked yet</span>' : carOnly ? '<span class="tag car">Best by car</span>' : '<span class="tag ok">No car needed</span>'}</div><p>${esc(stripCheck(p.access))}</p></div>
+        ${acts.length ? `<h3>Things to do here</h3>${acts.map(a => `<div class="item"><span class="ic">${ic("Do")}</span><div><b>${esc(a.name)}</b><p>${esc(a.what)} ${esc(stripCheck(a.note))}</p></div></div>`).join("")}` : ""}
+        ${foods.length ? `<h3>Eat here</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)}${f.months && f.months.includes(thisMonth) ? ' <span class="now">In season now.</span>' : ""}</p></div></div>`).join("")}` : ""}
+        ${evs.length ? `<h3>Events here</h3>${evs.map(e => `<div class="item"><span class="ic">${ic("Event")}</span><div><b>${esc(e.name)}</b><p>${isNow(e) ? '<span class="now">This month.</span> ' : ""}${esc(e.when)}. ${esc(e.note)}</p></div></div>`).join("")}` : ""}
+        <p class="note">Pin positions are approximate and opening hours aren't listed yet. Check before you go. Directions open Google Maps.</p>`,
+      foot: `<div class="acts">
+        <button class="heart ${on ? "on" : ""}" id="save" aria-label="${on ? "Remove from saved" : "Save"}" aria-pressed="${on}">${ic("Heart")}</button>
+        <a class="dir" href="${gmapsUrl(p)}" target="_blank" rel="noopener">Directions</a>
+        <button class="add ${where >= 0 ? "on" : ""}" id="add">${addLabel}</button></div>`,
+      snap: "half",
+      bind(){
+        $("#save").onclick = () => { saved.includes(id) ? saved = saved.filter(x => x !== id) : saved.push(id); persist(); toast(saved.includes(id) ? "Saved" : "Removed from saved"); render({keepScroll: true, keepRoute: true}); };
+        $("#add").onclick = () => { addToTrip(id); render({keepScroll: true, keepRoute: true}); updateTeaser(); };
+      }
+    };
+  },
+  near(){
+    const o = origin();
+    const list = PLACES.filter(visible).map(p => ({p, d: dist(o, p)})).sort((a, b) => a.d - b.d).slice(0, 30);
+    const note = inFukui() ? "Closest to you first" : me ? "You're outside Fukui, so distances are from Fukui Station" : "Distances from Fukui Station";
+    return {title: "Near me", snap: "half",
+      body: `<p class="sub">${note}</p>${me ? "" : '<button class="cta" id="useloc">Use my location</button>'}
+        ${list.length ? list.map(({p, d}) => placeRow(p, d)).join("") : '<div class="empty">Nothing matches these filters.</div>'}`,
+      bind(){ const u = $("#useloc"); if (u) u.onclick = () => locate(true); }};
+  },
+  search(){
+    const t = q.value.trim().toLowerCase(), hit = s => String(s || "").toLowerCase().includes(t);
+    const ps = t ? PLACES.filter(p => visible(p) && (hit(p.name) || hit(p.jp) || hit(p.area) || hit(p.type) || foodsAt(p.id).some(f => hit(f.name)) || actsAt(p.id).some(a => hit(a.name)))) : [];
+    const o = origin();
+    return {title: t ? `“${q.value.trim()}”` : "Search", snap: "full",
+      body: t ? (ps.length ? ps.map(p => placeRow(p, dist(o, p))).join("") : '<div class="empty">No matches. Try another word, or clear the filters.</div>')
+        : `<p class="sub">Places, food and things to do. Try “crab”, “temple” or “Ono”.</p>${saved.length ? `<h3>Saved</h3>${saved.map(P).filter(Boolean).map(p => placeRow(p)).join("")}` : ""}`};
+  },
+  trips(){
+    const all = TRIPS.map((t, i) => ({t, i}));
+    const exact = all.filter(x => bucket(x.t) === tf.days && isCar(x.t) === tf.car);
+    let extra = [], extraTitle = "";
+    if (tf.car){ extra = all.filter(x => bucket(x.t) === tf.days && !isCar(x.t)); extraTitle = "These work with a car too"; }
+    else if (tf.days !== "1"){ extra = all.filter(x => !isCar(x.t) && +bucket(x.t) < +tf.days); extraTitle = "Or put shorter trips together"; }
+    if (!exact.length && !extra.length){ extra = all.filter(x => isCar(x.t) === tf.car); extraTitle = "Closest matches"; }
+    const pr = tripProgress(), nx = nextStop();
+    return {title: "Trips", snap: "full",
+      body: `${myTrip ? `<button class="tcard mine" id="mine"><span class="k2">Your trip</span><b>${esc(myTrip.name)}</b><span>${myTrip.days.length} day${myTrip.days.length > 1 ? "s" : ""} · ${pr.done} of ${pr.total} stops done${nx && nx.p ? ` · Next: ${esc(shortName(nx.p))}` : ""}</span></button>` : ""}
+        <p class="sub" style="margin-top:4px">${myTrip ? "Or pick another trip" : "Pick your days and how you'll get around"}</p>
+        ${seg("days", [["1", "1 day"], ["2", "2 days"], ["3", "3+ days"]], tf.days)}
+        ${seg("car", [["0", "No car"], ["1", "Rental car"]], tf.car ? "1" : "0")}
+        ${exact.map(tripCard).join("")}
+        ${extra.length ? `<h3>${extraTitle}</h3>${extra.map(tripCard).join("")}` : ""}
+        <button class="ghost" id="scratch" style="margin-top:14px">Start from scratch instead</button>
+        ${saved.length ? `<h3>Saved places (${saved.length})</h3>${saved.map(P).filter(Boolean).map(p => placeRow(p)).join("")}` : ""}`,
+      bind(){
+        sheet.querySelectorAll("[data-days]").forEach(b => b.onclick = () => { tf.days = b.dataset.days; saveTf(); render({keepScroll: true, keepRoute: true}); });
+        sheet.querySelectorAll("[data-car]").forEach(b => b.onclick = () => { tf.car = b.dataset.car === "1"; saveTf(); render({keepScroll: true, keepRoute: true}); });
+        const mine = $("#mine"); if (mine) mine.onclick = () => push({v: "mytrip"});
+        $("#scratch").onclick = () => {
+          if (hasStops() && !confirm("Start a new trip? Your current trip will be replaced.")) return;
+          myTrip = {name: "My Fukui trip", from: null, done: [], days: Array.from({length: +tf.days}, () => [])};
+          myDay = 0; persist(); push({v: "mytrip"});
+        };
+      }};
+  },
+  trip(t){
+    const tr = TRIPS[t.i], days = [...new Set(tr.stops.map(s => s.day))], stops = tr.stops.filter(s => s.day === t.day), n = tripNotes(tr);
+    let html = "";
+    stops.forEach((s, k) => {
+      if (k){ const chk = /\(check/i.test(s.how); html += `<div class="leg ${chk ? "chk" : ""}">${esc(stripCheck(s.how))}${chk ? " · not checked yet" : ""}</div>`; }
+      const off = s.months && !s.months.includes(thisMonth);
+      html += `<div class="stop"><span class="tm">${esc(s.time)}</span>${s.place ? `<button class="bx" data-place="${s.place}">` : '<div class="bx">'}<b>${esc(s.stop)}</b>${k === 0 && s.how ? `<span>${esc(stripCheck(s.how))}</span><br>` : ""}${s.tip ? `<span>${esc(s.tip)}</span>` : ""}${off ? `<br><span style="color:var(--warn);font-weight:900">Not on in ${MONTH_LONG[thisMonth - 1]}</span>` : ""}${s.place ? `<i class="chev">${ic("Back")}</i></button>` : "</div>"}</div>`;
+    });
+    const mine = myTrip && myTrip.from === t.i;
+    return {title: tr.name, snap: "half",
+      body: `<div class="pills"><span class="pill">${esc(tr.length)}</span><span class="pill ${isCar(tr) ? "" : "g"}">${isCar(tr) ? "Rental car" : "No car needed"}</span><span class="pill">${esc(tr.start)} → ${esc(tr.end)}</span>${n.now.map(x => `<span class="pill now">${MONTHS[thisMonth - 1]}: ${esc(x)}</span>`).join("")}</div>
+        ${days.length > 1 ? `<div class="days sticky">${days.map(d => `<button data-day="${d}" aria-pressed="${d === t.day}">Day ${d}</button>`).join("")}</div>` : '<div style="height:10px"></div>'}
+        ${html}
+        <div class="hint">Times are a rough plan. Anything marked "not checked yet" needs checking before you go. Tap a stop to see it.</div>`,
+      foot: mine ? `<button class="cta" id="usetrip">Open your trip</button>` : `<button class="cta" id="usetrip">Use this trip</button><p class="fnote">You can change the stops after</p>`,
+      bind(v){
+        sheet.querySelectorAll("[data-day]").forEach(b => b.onclick = () => { v.day = +b.dataset.day; render(); });
+        $("#usetrip").onclick = () => {
+          if (mine){ stacks.trips = [{v: "trips"}, {v: "mytrip"}]; history.replaceState({vf: 1}, ""); render(); return; }
+          if (hasStops() && !confirm(`Use "${tr.name}"? Your current trip will be replaced.`)) return;
+          newTripFrom(v.i);
+          stacks.trips = [{v: "trips"}, {v: "mytrip"}]; history.replaceState({vf: 1}, "");
+          render(); toast("This is your trip now");
+        };
+      }};
+  },
+  mytrip(t){
+    if (!myTrip){ return VIEWS.trips(); }
+    myTrip.done = myTrip.done || [];
+    if (myDay >= myTrip.days.length) myDay = 0;
+    const ids = myTrip.days[myDay], edit = !!t.edit;
+    let h = 0, html = "";
+    ids.forEach((id, k) => {
+      const p = P(id); if (!p) return;
+      if (k){ const prev = P(ids[k - 1]), d = dist(prev, p) * 1.3, hr = d < 1.6 ? d / 4.5 : d / 30 + .2; h += hr; html += `<div class="leg">~${Math.max(3, Math.round(hr * 60))} min · ${fmtDist(d / 1.3)}</div>`; }
+      h += 1.5;
+      const done = myTrip.done.includes(myDay + ":" + id);
+      html += `<div class="mstop ${done ? "isdone" : ""}"><button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button><button class="tx" data-place="${id}"><b>${esc(shortName(p))}</b><span>${esc(p.area)}</span></button>${edit ? `<span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span>` : `<i class="chev">${ic("Back")}</i>`}</div>`;
+    });
+    const over = h > 9, nx = nextStop(), nxToday = nx && nx.day === myDay ? nx.p : null;
+    return {title: myTrip.name, snap: "half",
+      right: `<button class="hb txt" id="edit">${edit ? "Done" : "Edit"}</button>`,
+      body: `<div class="days sticky">${myTrip.days.map((d, k) => `<button data-mday="${k}" aria-pressed="${k === myDay}">Day ${k + 1}${d.length ? " · " + d.length : ""}</button>`).join("")}${edit ? `<button id="addday" aria-label="Add a day">+ Day</button>` : ""}</div>
+        ${ids.length ? `<div class="sum"><span>Day ${myDay + 1}: about ${Math.round(h * 2) / 2} h</span><span style="color:${over ? "var(--must)" : "var(--muted)"}">${over ? "Too full" : `${Math.round((9 - h) * 2) / 2} h free`}</span></div><div class="meter ${over ? "over" : ""}"><i style="width:${Math.min(100, h / 9 * 100)}%"></i></div>${html}` : '<div class="empty">No stops on this day yet.</div>'}
+        <button class="ghost" id="addstops">${ic("Do")} Add stops from the map</button>
+        ${edit ? `<button class="ghost danger" id="clear">Delete this trip</button>` : `<p class="hint">Tap the number when you've been there. ${myTrip.from != null ? `<button class="linkbtn" id="orig">See the original plan with times</button>` : ""}</p>`}`,
+      foot: nxToday ? `<a class="cta go" href="${gmapsUrl(nxToday)}" target="_blank" rel="noopener">${ic("Train")} Go to ${esc(shortName(nxToday))}</a>` : ids.length ? `<p class="fnote" style="margin:4px 0">Day ${myDay + 1} done. Nice!</p>` : "",
+      bind(v){
+        $("#edit").onclick = () => { v.edit = !v.edit; render({keepScroll: true, keepRoute: true}); };
+        sheet.querySelectorAll("[data-mday]").forEach(b => b.onclick = () => { myDay = +b.dataset.mday; render(); });
+        const ad = $("#addday"); if (ad) ad.onclick = () => { myTrip.days.push([]); myDay = myTrip.days.length - 1; persist(); render(); };
+        const mv = (i, j) => { const a = myTrip.days[myDay]; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; persist(); render({keepScroll: true}); };
+        sheet.querySelectorAll("[data-up]").forEach(b => b.onclick = () => mv(+b.dataset.up, +b.dataset.up - 1));
+        sheet.querySelectorAll("[data-down]").forEach(b => b.onclick = () => mv(+b.dataset.down, +b.dataset.down + 1));
+        sheet.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const id = myTrip.days[myDay].splice(+b.dataset.rm, 1)[0]; persist(); render({keepScroll: true}); toast(`Removed ${shortName(P(id))}`, "Undo", () => { myTrip.days[myDay].splice(+b.dataset.rm, 0, id); persist(); render({keepScroll: true}); }); });
+        sheet.querySelectorAll("[data-done]").forEach(b => b.onclick = () => {
+          const key = myDay + ":" + b.dataset.done;
+          myTrip.done = myTrip.done.includes(key) ? myTrip.done.filter(x => x !== key) : [...myTrip.done, key];
+          persist(); render({keepScroll: true, keepRoute: true});
+        });
+        $("#addstops").onclick = () => { setSnap("peek"); toast(`Tap a pin, then “Add to Day ${myDay + 1}”`); };
+        const og = $("#orig"); if (og) og.onclick = () => push({v: "trip", i: myTrip.from, day: Math.min(myDay + 1, [...new Set(TRIPS[myTrip.from].stops.map(s => s.day))].length)});
+        const cl = $("#clear"); if (cl) cl.onclick = () => { if (!confirm("Delete this trip?")) return; myTrip = null; persist(); stacks.trips = [{v: "trips"}]; history.replaceState({vf: 1}, ""); render(); toast("Trip deleted"); };
+      }};
+  },
+  now(){
+    const now = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
+    const hero = now.find(e => e.img), rest = now.filter(e => e !== hero);
+    const soon = EVENTS.filter(isSoon).sort((a, b) => a.months.indexOf(nextMonths[0]) - b.months.indexOf(nextMonths[0]));
+    const foods = FOODS.filter(f => f.months && f.months.includes(thisMonth));
+    const ecard = (e, hot) => `<${e.place ? `button data-place="${e.place}"` : "div"} class="ecard ${hot ? "hot" : ""}"><span class="cal"><b>${esc(MONTHS[(hot ? thisMonth : e.months.find(m => nextMonths.includes(m))) - 1])}</b><span>${esc(e.tier === "Must" ? "MUST" : e.tier === "Worth it" ? "WORTH IT" : "DEEP")}</span></span><span class="tx"><b>${esc(e.name)}</b><p>${esc(e.when)} · ${esc(e.where)}. ${esc(e.note)}</p>${e.latest && !/every|check/i.test(e.latest) ? `<p style="font-weight:800">Latest: ${esc(e.latest)}</p>` : ""}</span>${e.img || (e.place && photoSrcs(P(e.place)).length) ? `<span class="ethumb photo ${tierKey(e.tier)}">${evPhoto(e, true)}</span>` : ""}</${e.place ? "button" : "div"}>`;
+    return {title: `Now in Fukui · ${MONTHS[thisMonth - 1]}`, snap: "half",
+      body: `${hero ? `<${hero.place ? `button data-place="${hero.place}"` : "div"} class="hero"><img src="${hero.img}" alt=""><span class="htx"><span class="k">${MONTH_LONG[thisMonth - 1]} · ${esc(hero.tier)}</span><b>${esc(hero.name)}</b><span>${esc(hero.when)} · ${esc(hero.where)}. ${esc(hero.note)}</span></span></${hero.place ? "button" : "div"}>` : ""}
+        ${rest.length ? rest.map(e => ecard(e, true)).join("") : hero ? "" : '<div class="empty">Nothing special listed this month.</div>'}
+        ${foods.length ? `<h3>In season to eat</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)} ${esc(f.where)}.</p>${f.places.length ? `<p>${f.places.map(id => `<button data-place="${id}" class="linkbtn">${esc(shortName(P(id)))}</button>`).join("")}</p>` : ""}</div></div>`).join("")}` : ""}
+        ${soon.length ? `<h3>Coming up</h3>${soon.map(e => ecard(e, false)).join("")}` : ""}
+        <p class="note">Dates change each year, so check before you go.</p>`};
+  }
+};
 
-function setTab(t, quiet){
-  tab = t;
-  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
-  if (quiet) return;
-  back = null;
-  if (t === "explore"){ sheet.classList.remove("open"); view = null; selected = null; showRoute(null); syncPins(); updateTeaser(); }
-  else if (t === "near"){ locate(false); show("near"); }
-  else if (t === "trips"){ show("trips"); }
-  else if (t === "now"){ show("now"); }
-}
-
-/* bar on the map: your next stop, or what's on now */
+/* bar on the map: your next stop, or what's on now (only on Explore with no sheet open) */
 function updateTeaser(){
   const t = $("#teaser");
   t.classList.remove("hasbanner");
-  if (sheet.classList.contains("open")){ t.hidden = true; return; }
+  if (tab !== "explore" || snap !== "closed"){ t.hidden = true; return; }
   const nx = nextStop(), pr = tripProgress();
   if (nx && nx.p){
     t.hidden = false;
     t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(nx.p.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic(nx.p.type)}${photoHtml(nx.p)}</span><span style="flex:1;min-width:0"><span class="k" style="color:var(--action)">Your trip · Day ${nx.day + 1}</span><b>Next: ${esc(shortName(nx.p))}</b><span class="s">${pr.done} of ${pr.total} done</span></span></button><a class="go" href="${gmapsUrl(nx.p)}" target="_blank" rel="noopener">Go</a>`;
     $("#tmain").onclick = () => { myDay = nx.day; openMyTrip(); };
-    return;
-  }
-  if (pr && pr.total && !nx){
-    t.hidden = false;
-    t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo worth" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Do")}</span><span style="flex:1;min-width:0"><span class="k" style="color:var(--action)">Your trip</span><b>All ${pr.total} stops done</b><span class="s">Nice. Tap to see your trip</span></span></button>`;
-    $("#tmain").onclick = () => openMyTrip();
     return;
   }
   const nowEv = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
@@ -815,10 +941,9 @@ function updateTeaser(){
   if (e.img){
     t.innerHTML = `<button class="tmain banner" id="tmain"><img src="${e.img}" alt=""><span class="btx"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)} · ${esc(e.where)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg)"')}</button>`;
     t.classList.add("hasbanner");
-    $("#tmain").onclick = () => setTab("now");
-    return;
+  } else {
+    t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(e.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Event")}${evPhoto(e, true)}</span><span style="flex:1;min-width:0"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg);color:var(--muted)"')}</button>`;
   }
-  t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(e.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Event")}${evPhoto(e, true)}</span><span style="flex:1;min-width:0"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg);color:var(--muted)"')}</button>`;
   $("#tmain").onclick = () => setTab("now");
 }
 
@@ -839,28 +964,37 @@ function locate(center){
     }
     if (first && center) centerMe();
     first = false;
-    if (view === "near" && (!prev || dist(prev, me) > .1)) render();
+    const tv = topView();
+    if (tv && tv.v === "near" && (!prev || dist(prev, me) > .1)) render({keepScroll: true, keepRoute: true});
   }, err => { watchId = null; toast(err.code === 1 ? "Location is blocked. Allow it in Settings" : "Couldn't find your location"); }, {enableHighAccuracy: true, maximumAge: 15000, timeout: 20000});
 }
 function centerMe(){
   if (!inFukui()){ toast(`You're ${fmtDist(dist(me, FUKUI_STN))} from Fukui`); return; }
-  map && map.flyTo({center: [me.lon, me.lat], zoom: 14, duration: 900});
+  map && map.easeTo({center: [me.lon, me.lat], zoom: 14, offset: padOffset(), duration: 800});
 }
 
 let tt;
-function toast(t){ const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 1800); }
+function toast(text, action, fn){
+  const el = $("#toast");
+  el.innerHTML = `<span>${esc(text)}</span>${action ? `<button id="tact">${esc(action)}</button>` : ""}`;
+  el.classList.add("show"); el.classList.toggle("act", !!action);
+  if (action) $("#tact").onclick = () => { el.classList.remove("show"); fn(); };
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), action ? 4000 : 1800);
+}
 
 /* wire up */
 document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => setTab(b.dataset.tab));
 $("#loc").onclick = () => locate(true);
 const q = $("#q");
-q.addEventListener("focus", () => { setTab("explore", true); show("search", q.value); });
-q.addEventListener("input", () => show("search", q.value));
-addEventListener("keydown", e => { if (e.key === "Escape" && sheet.classList.contains("open")) closeSheet(); });
-addEventListener("resize", () => map && map.resize());
+q.addEventListener("focus", () => { const t = topView(); if (!t || t.v !== "search") push({v: "search"}, {snap: "full", keepRoute: true}); });
+q.addEventListener("input", () => { const t = topView(); if (t && t.v === "search") render({snap: "full", keepRoute: true}); });
+q.addEventListener("keydown", e => { if (e.key === "Enter") q.blur(); });
+addEventListener("keydown", e => { if (e.key === "Escape") back(); });
+addEventListener("resize", () => { map && map.resize(); setSnap(snap, false); });
+history.replaceState({vf: 0}, "");
 buildChips();
 initMap();
-updateTeaser();
+render();
 </script>
 </body>
 </html>
