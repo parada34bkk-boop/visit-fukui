@@ -85,6 +85,12 @@ body.zm .pin.deep .c{width:10px;height:10px;border-width:2px}
 .pin.must .l{background:var(--ink);color:#fff;box-shadow:none}
 body.zm .pin.must .l,body.zn .pin.must .l,body.zn .pin.worth .l,body.zs .pin.deep .l{display:block}
 .pin.nolabel .l{display:none!important}
+/* car badge: places you can't really reach without a car. Shown once you zoom in */
+.pin .carb{position:absolute;left:-7px;top:-7px;width:19px;height:19px;border-radius:50%;background:#fff;color:#4F6E66;display:none;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(31,61,54,.3)}
+.pin .carb svg{width:13px!important;height:13px!important;stroke-width:2.4;display:block!important}
+.pin.must .carb{left:-4px;top:-4px;width:22px;height:22px}
+body.zn .pin .carb,.pin.on .carb,.pin.inday .carb{display:flex}
+.pin.dot .carb{display:none!important}
 .pin.dot .c{width:10px!important;height:10px!important;border-width:2px;box-shadow:0 1px 4px rgba(31,61,54,.3)}
 .pin.dot .c > svg,.pin.dot .phimg{display:none}
 .pin.dot .l{display:none!important}
@@ -211,6 +217,9 @@ body.zf .pin.must .l{display:block}
 .stn .bb{position:absolute;right:-9px;top:-9px;width:16px;height:16px;border-radius:50%;background:#2E6FA8;border:2px solid #fff;display:flex;align-items:center;justify-content:center}
 .stn .bb svg{width:10px;height:10px;stroke-width:2.6}
 .kpin.kbus{position:relative}
+.kpin.kcar{position:relative}
+.kpin.kcar .carb{position:absolute;right:-8px;top:-8px;width:17px;height:17px;border-radius:50%;background:#fff;color:#4F6E66;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(31,61,54,.3)}
+.kpin.kcar .carb svg{width:11px;height:11px}
 .kpin.kbus .bb{position:absolute;right:-8px;top:-8px;width:14px;height:14px;border-radius:50%;background:#2E6FA8;border:2px solid #fff}
 .bus{border-radius:16px;background:var(--soft);padding:12px;margin:8px 0}
 .bus .bt{display:flex;gap:10px;align-items:flex-start}
@@ -265,6 +274,10 @@ h3{font-size:15px;font-weight:900;margin:18px 0 8px}
 .row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;border-bottom:1px solid #EEF3F1;text-align:left}
 .row:last-child{border-bottom:0}
 .row .ic{width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff}
+.mstop .mcar{display:inline-flex;align-items:center;gap:3px;font-style:normal;font-weight:800;color:var(--warn)}
+.mstop .mcar svg{width:12px;height:12px}
+.row .rcar{display:inline-flex;align-items:center;gap:3px;margin-right:6px;padding:0 6px 0 4px;border-radius:6px;background:#ECEFEE;color:#4F6E66;font-weight:800}
+.row .rcar svg{width:12px;height:12px}
 .row .ic.must{background:var(--must)}.row .ic.worth{background:var(--worth)}.row .ic.deep{background:var(--deep)}
 .row .tx{flex:1;min-width:0}
 .row b{display:block;font-size:15px;font-weight:900;line-height:1.25}
@@ -366,6 +379,7 @@ nav.tabs svg{width:24px;height:24px}
   <div class="kr"><span class="kv"><span class="kpin deep"></span></span><span><b>Deep &amp; unseen</b><em>Hidden gems. Zoom in to see them</em></span></div>
   <div class="kr"><span class="kv"><span class="kpin kstn"></span></span><span><b>Train station</b><em>Big squares are Shinkansen stops</em></span></div>
   <div class="kr"><span class="kv"><span class="kpin kstn kbus"><i class="bb"></i></span></span><span><b>Station with buses</b><em>Tap it to see where the buses go</em></span></div>
+  <div class="kr"><span class="kv"><span class="kpin worth kcar"><i class="carb"><svg class="i" viewBox="0 0 24 24"><path d="M5 16l1.5-5h11l1.5 5M4 16h16v3H4zM7 19v1.5M17 19v1.5"/></svg></i></span></span><span><b>Needs a car</b><em>Hard to reach by train or bus</em></span></div>
   <div class="kr"><span class="kv"><span class="kline"></span></span><span><b>Trip route</b><em>Shown while you look at a trip</em></span></div>
   <p>Tap a pin to open it. Small dots are places tucked away to keep the map tidy: zoom in to see them.</p>
 </div>
@@ -463,7 +477,7 @@ try { myTrip = JSON.parse(localStorage.getItem("vf-mytrip") || "null"); } catch 
 const persist = () => { try { localStorage.setItem("vf-saved", JSON.stringify(saved)); localStorage.setItem("vf-mytrip", JSON.stringify(myTrip)); } catch (e) {} };
 
 /* ---------- filters ---------- */
-const MODES = [["all","Everything","Nature"],["nocar","No car","Bus"],["eat","Eat","Food"],["do","Do","Do"],["events","Events","Event"]];
+const MODES = [["all","Everything","Nature"],["eat","Eat","Food"],["do","Do","Do"],["events","Events","Event"]];
 function buildChips(){
   const c = $("#chips");
   c.innerHTML = MODES.map(([k, label, icon]) => `<button class="chip" data-mode="${k}" aria-pressed="${mode === k}">${k === "all" ? "" : ic(icon)}${label}</button>`).join("")
@@ -482,7 +496,6 @@ function visible(p){
   if (mode === "eat") return p.type === "Food" || foodsAt(p.id).length > 0;
   if (mode === "do") return actsAt(p.id).length > 0;
   if (mode === "events") return eventsAt(p.id).length > 0;
-  if (mode === "nocar") return p.nocar === "Easy" || p.nocar === "Possible";
   return true;
 }
 const carOnly = p => p.nocar === "Car only" || p.nocar === "Hard";
@@ -572,7 +585,7 @@ function initMap(){
     const el = document.createElement("button");
     el.className = "pin " + tierKey(p.tier);
     el.setAttribute("aria-label", `${p.name}, ${p.tier}`);
-    el.innerHTML = `<span class="c">${ic(p.type)}${p.tier === "Must" ? photoHtml(p) : ""}<span class="n"></span></span><span class="l">${esc(shortName(p))}</span>`;
+    el.innerHTML = `<span class="c">${ic(p.type)}${p.tier === "Must" ? photoHtml(p) : ""}<span class="n"></span>${carOnly(p) ? `<span class="carb" title="Needs a car">${ic("Car")}</span>` : ""}</span><span class="l">${esc(shortName(p))}</span>`;
     el.addEventListener("click", ev => { ev.stopPropagation(); openPlace(p.id); });
     pins[p.id] = {el, m: new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([p.lon, p.lat]).addTo(map)};
     el.setAttribute("aria-label", `${p.name}, ${p.tier}`); el.dataset.id = p.id;
@@ -856,7 +869,7 @@ addEventListener("pointerup", onUp);
 addEventListener("pointercancel", onUp);
 
 /* ---------- views ---------- */
-const placeRow = (p, d) => `<button class="row" data-place="${p.id}"><span class="ic ${tierKey(p.tier)}">${ic(p.type)}</span><span class="tx"><b>${esc(shortName(p))}</b><em>${esc(p.tier)} · ${esc(p.type)} · ${esc(p.area)}</em></span>${d !== undefined ? `<span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span>` : ""}</button>`;
+const placeRow = (p, d) => `<button class="row" data-place="${p.id}"><span class="ic ${tierKey(p.tier)}">${ic(p.type)}</span><span class="tx"><b>${esc(shortName(p))}</b><em>${carOnly(p) ? `<span class="rcar">${ic("Car")}${esc(p.nocar === "Hard" ? "Hard without a car" : "Car only")}</span>` : ""}${esc(p.tier)} · ${esc(p.type)} · ${esc(p.area)}</em></span>${d !== undefined ? `<span class="d">${fmtDist(d)}<small>${howLong(d)}</small></span>` : ""}</button>`;
 const dayOf = id => myTrip ? myTrip.days.findIndex(d => d.includes(id)) : -1;
 
 /* trips: data helpers */
@@ -866,6 +879,8 @@ const saveTf = () => { try { localStorage.setItem("vf-tf", JSON.stringify(tf)); 
 const nDays = t => parseInt(t.length, 10);
 const bucket = t => nDays(t) >= 3 ? "3" : String(nDays(t));
 const isCar = t => t.mode === "Rental car";
+/* is the trip you're building one without a car? (picked from a no-car trip, or "No car" chosen when starting) */
+const tripNoCar = () => !myTrip || (myTrip.from != null && TRIPS[myTrip.from] ? !isCar(TRIPS[myTrip.from]) : !tf.car);
 const tripPlaces = t => [...new Set(t.stops.map(s => s.place).filter(Boolean))].map(P).filter(Boolean);
 const stripCheck = s => String(s || "").replace(/\s*\(check[^)]*\)/gi, "");
 function tripNotes(t){
@@ -912,7 +927,7 @@ function nextStop(){
 }
 const gmapsUrl = p => {
   const d = dist(origin(), p);
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.jp + " " + p.area.split(" (")[0])}&travelmode=${inFukui() && d < 2 ? "walking" : "transit"}`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.jp + " " + p.area.split(" (")[0])}&travelmode=${carOnly(p) ? "driving" : inFukui() && d < 2 ? "walking" : "transit"}`;
 };
 function addToTrip(id){
   if (!myTrip){ myTrip = {name: "My Fukui trip", from: null, done: [], days: [[]]}; myDay = 0; }
@@ -922,7 +937,7 @@ function addToTrip(id){
     toast(`Removed from Day ${where + 1}`, "Undo", () => { myTrip.days[where].push(id); persist(); render({keepScroll: true, keepRoute: true}); });
   } else {
     myTrip.days[myDay].push(id); persist();
-    toast(`Added to Day ${myDay + 1}`, "See trip", openMyTrip);
+    toast(carOnly(P(id)) && tripNoCar() ? `Added to Day ${myDay + 1} · needs a car` : `Added to Day ${myDay + 1}`, "See trip", openMyTrip);
   }
 }
 
@@ -1052,7 +1067,7 @@ const VIEWS = {
       if (k){ const prev = P(ids[k - 1]), d = dist(prev, p) * 1.3, hr = d < 1.6 ? d / 4.5 : d / 30 + .2; h += hr; html += `<div class="leg">~${Math.max(3, Math.round(hr * 60))} min · ${fmtDist(d / 1.3)}</div>`; }
       h += 1.5;
       const done = myTrip.done.includes(myDay + ":" + id);
-      html += `<div class="mstop ${done ? "isdone" : ""}"><button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button><button class="tx" data-place="${id}"><b>${esc(shortName(p))}</b><span>${esc(p.area)}</span></button>${edit ? `<span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span>` : `<i class="chev">${ic("Back")}</i>`}</div>`;
+      html += `<div class="mstop ${done ? "isdone" : ""}"><button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button><button class="tx" data-place="${id}"><b>${esc(shortName(p))}</b><span>${carOnly(p) && tripNoCar() ? `<em class="mcar">${ic("Car")}Needs a car</em> · ` : ""}${esc(p.area)}</span></button>${edit ? `<span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span>` : `<i class="chev">${ic("Back")}</i>`}</div>`;
     });
     const over = h > 9, nx = nextStop(), nxToday = nx && nx.day === myDay ? nx.p : null;
     return {title: myTrip.name, snap: "half",
@@ -1061,7 +1076,7 @@ const VIEWS = {
         ${ids.length ? `<div class="sum"><span>Day ${myDay + 1}: about ${Math.round(h * 2) / 2} h</span><span style="color:${over ? "var(--must)" : "var(--muted)"}">${over ? "Too full" : `${Math.round((9 - h) * 2) / 2} h free`}</span></div><div class="meter ${over ? "over" : ""}"><i style="width:${Math.min(100, h / 9 * 100)}%"></i></div>${html}` : '<div class="empty">No stops on this day yet.</div>'}
         <button class="ghost" id="addstops">${ic("Do")} Add stops from the map</button>
         ${edit ? `<button class="ghost danger" id="clear">Delete this trip</button>` : `<p class="hint">Tap the number when you've been there. ${myTrip.from != null ? `<button class="linkbtn" id="orig">See the original plan with times</button>` : ""}</p>`}`,
-      foot: nxToday ? `<a class="cta go" href="${gmapsUrl(nxToday)}" target="_blank" rel="noopener">${ic("Train")} Go to ${esc(shortName(nxToday))}</a>` : ids.length ? `<p class="fnote" style="margin:4px 0">Day ${myDay + 1} done. Nice!</p>` : "",
+      foot: nxToday ? `<a class="cta go" href="${gmapsUrl(nxToday)}" target="_blank" rel="noopener">${ic(carOnly(nxToday) ? "Car" : "Train")} Go to ${esc(shortName(nxToday))}</a>` : ids.length ? `<p class="fnote" style="margin:4px 0">Day ${myDay + 1} done. Nice!</p>` : "",
       bind(v){
         $("#edit").onclick = () => { v.edit = !v.edit; render({keepScroll: true, keepRoute: true}); };
         sheet.querySelectorAll("[data-mday]").forEach(b => b.onclick = () => { myDay = +b.dataset.mday; render(); });
