@@ -103,6 +103,14 @@ body.far .pin.must .l{display:none}
 .pic figcaption{position:absolute;right:8px;bottom:8px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.45);padding:2px 7px;border-radius:8px;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .photo.dflink{text-decoration:none}
 .photo.dflink span{background:rgba(255,255,255,.85);padding:6px 12px;border-radius:12px;font-size:12.5px;font-weight:900}
+.photo{position:relative;overflow:hidden}
+.phimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.pic{height:200px;padding:0}
+.pic.noimg figcaption{display:none}
+.dfmore{display:inline-block;margin:-2px 0 10px;font-size:13px;font-weight:900;color:var(--action);text-decoration:none}
+.tcard .cover{display:block;height:130px;border-radius:14px;margin:0 0 8px;padding:0;align-items:center;justify-content:center}
+.tcard .cover > svg{position:absolute;left:12px;bottom:10px}
+.ecard .ethumb{width:64px;height:64px;border-radius:12px;flex:none;margin-left:auto;padding:0}
 .why{font-size:15.5px;font-weight:600;line-height:1.55;margin:10px 0 12px;color:#2C4740}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{background:var(--soft);border-radius:12px;padding:6px 11px;font-size:13px;font-weight:800}
@@ -282,6 +290,20 @@ const howLong = d => d <= 2 ? `${Math.max(1, Math.round(d * 1000 / 80))} min wal
 let me = null;
 const inFukui = () => me && dist(me, FUKUI_STN) < 70;
 const origin = () => inFukui() ? me : FUKUI_STN;
+
+
+/* photos: from DISCOVER FUKUI (used with permission), tried in order until one loads */
+const PHOTO_CREDIT = "Photo: DISCOVER FUKUI";
+const photoSrcs = p => p && p.img ? [p.img] : p && p.dfimg ? [1, 2, 3, 4, 5, 6].map(n => `${p.dfimg}${n}_l.jpg`) : [];
+function photoHtml(p){
+  const s = photoSrcs(p);
+  return s.length ? `<img class="phimg" src="${s[0]}" data-srcs="${s.join("|")}" data-i="0" alt="" loading="lazy" onerror="nextSrc(this)">` : "";
+}
+function nextSrc(img){
+  const s = img.dataset.srcs.split("|"), i = +img.dataset.i + 1;
+  if (i < s.length){ img.dataset.i = i; img.src = s[i]; }
+  else { if (img.parentNode) img.parentNode.classList.add("noimg"); img.remove(); }
+}
 
 /* links between content */
 const actsAt = id => ACTIVITIES.filter(a => a.place === id);
@@ -465,13 +487,11 @@ function openPlace(id, fly){
   const gmaps = gmapsUrl(p);
   openSheet(`
     <div class="head"><div style="flex:1"><span class="tier ${tk}">${esc(p.tier)}</span></div>${closeBtn}</div>
-    ${p.img ? `<figure class="pic"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"><figcaption>${esc(p.credit || "")}</figcaption></figure>`
-      : p.df ? `<a class="photo ${tk} dflink" href="${esc(p.df)}" target="_blank" rel="noopener">${ic(p.type)}<span>See photos on Discover Fukui ↗</span></a>`
-      : `<div class="photo ${tk}">${ic(p.type)}<span>Photo coming soon</span></div>`}
+    ${photoSrcs(p).length ? `<figure class="pic photo ${tk}">${ic(p.type)}${photoHtml(p)}<figcaption>${esc(p.credit || PHOTO_CREDIT)}</figcaption></figure>` : `<div class="photo ${tk}">${ic(p.type)}<span>Photo coming soon</span></div>`}
     <div class="head"><h1>${esc(p.name)}</h1></div>
     <div class="sub">${esc(p.jp)} · ${esc(p.area)}</div>
     <div class="pills"><span class="pill g">${fmtDist(d)} ${here ? "away" : "from Fukui Stn"}</span><span class="pill">${esc(p.best)}</span></div>
-    <p class="why">${esc(p.why)}</p>
+    <p class="why">${esc(p.why)}</p>${p.df ? `<a class="dfmore" href="${esc(p.df)}" target="_blank" rel="noopener">More photos and details on DISCOVER FUKUI ↗</a>` : ""}
     <div class="box">
       <div class="t"><b>${carOnly ? "Getting there" : "Without a car"}</b>${unverified ? '<span class="tag chk">Not checked yet</span>' : carOnly ? '<span class="tag car">Best by car</span>' : '<span class="tag ok">No car needed</span>'}</div>
       <p>${esc(p.access.replace(/\s*\(check[^)]*\)/gi, ""))}</p>
@@ -533,7 +553,9 @@ function tripNotes(t){
 function tripCard({t, i}){
   const hi = tripPlaces(t).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]).slice(0, 4);
   const n = tripNotes(t);
+  const cover = hi.find(p => photoSrcs(p).length);
   return `<button class="tcard" data-trip="${i}">
+    ${cover ? `<span class="cover photo ${tierKey(cover.tier)}">${ic(cover.type)}${photoHtml(cover)}</span>` : ""}
     <span class="hl">${hi.map(p => `<span class="${tierKey(p.tier)}" title="${esc(shortName(p))}">${ic(p.type)}</span>`).join("")}</span>
     <b>${esc(t.name)}</b><span>${esc(t.blurb)}</span>
     <span class="route">${ic(isCar(t) ? "Car" : "Train")}${esc(t.start)} → ${esc(t.end)}</span>
@@ -632,7 +654,7 @@ function nowView(){
   const now = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
   const soon = EVENTS.filter(isSoon).sort((a, b) => a.months.indexOf(nextMonths[0]) - b.months.indexOf(nextMonths[0]));
   const foods = FOODS.filter(f => f.months && f.months.includes(thisMonth));
-  const ecard = (e, hot) => `<${e.place ? `button data-place="${e.place}"` : "div"} class="ecard ${hot ? "hot" : ""}"><span class="cal"><b>${esc(MONTHS[(hot ? thisMonth : e.months.find(m => nextMonths.includes(m))) - 1])}</b><span>${esc(e.tier === "Must" ? "MUST" : e.tier === "Worth it" ? "WORTH IT" : "DEEP")}</span></span><span class="tx"><b>${esc(e.name)}</b><p>${esc(e.when)} · ${esc(e.where)}. ${esc(e.note)}</p>${e.latest && !/every|check/i.test(e.latest) ? `<p style="font-weight:800">Latest: ${esc(e.latest)}</p>` : ""}</span></${e.place ? "button" : "div"}>`;
+  const ecard = (e, hot) => `<${e.place ? `button data-place="${e.place}"` : "div"} class="ecard ${hot ? "hot" : ""}"><span class="cal"><b>${esc(MONTHS[(hot ? thisMonth : e.months.find(m => nextMonths.includes(m))) - 1])}</b><span>${esc(e.tier === "Must" ? "MUST" : e.tier === "Worth it" ? "WORTH IT" : "DEEP")}</span></span><span class="tx"><b>${esc(e.name)}</b><p>${esc(e.when)} · ${esc(e.where)}. ${esc(e.note)}</p>${e.latest && !/every|check/i.test(e.latest) ? `<p style="font-weight:800">Latest: ${esc(e.latest)}</p>` : ""}</span>${e.place && photoSrcs(P(e.place)).length ? `<span class="ethumb photo ${tierKey(e.tier)}">${photoHtml(P(e.place))}</span>` : ""}</${e.place ? "button" : "div"}>`;
   return `<div class="head"><h2>Now in Fukui</h2>${closeBtn}</div><p class="sub">${MONTH_LONG[thisMonth - 1]}. Dates change each year, so check before you go.</p>
     ${now.length ? now.map(e => ecard(e, true)).join("") : '<div class="empty">Nothing special listed this month.</div>'}
     ${foods.length ? `<h3>In season to eat</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)} ${esc(f.where)}.</p>${f.places.length ? `<p>${f.places.map(id => `<button data-place="${id}" style="color:var(--action);font-weight:900;font-size:13px;margin-right:10px">${esc(shortName(P(id)))}</button>`).join("")}</p>` : ""}</div></div>`).join("")}` : ""}
@@ -700,7 +722,7 @@ function updateTeaser(){
   const nx = nextStop(), pr = tripProgress();
   if (nx && nx.p){
     t.hidden = false;
-    t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(nx.p.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic(nx.p.type)}</span><span style="flex:1;min-width:0"><span class="k" style="color:var(--action)">Your trip · Day ${nx.day + 1}</span><b>Next: ${esc(shortName(nx.p))}</b><span class="s">${pr.done} of ${pr.total} done</span></span></button><a class="go" href="${gmapsUrl(nx.p)}" target="_blank" rel="noopener">Go</a>`;
+    t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(nx.p.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic(nx.p.type)}${photoHtml(nx.p)}</span><span style="flex:1;min-width:0"><span class="k" style="color:var(--action)">Your trip · Day ${nx.day + 1}</span><b>Next: ${esc(shortName(nx.p))}</b><span class="s">${pr.done} of ${pr.total} done</span></span></button><a class="go" href="${gmapsUrl(nx.p)}" target="_blank" rel="noopener">Go</a>`;
     $("#tmain").onclick = () => { myDay = nx.day; openMyTrip(); };
     return;
   }
@@ -713,7 +735,7 @@ function updateTeaser(){
   const e = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier])[0];
   if (!e){ t.hidden = true; return; }
   t.hidden = false;
-  t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(e.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Event")}</span><span style="flex:1;min-width:0"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg);color:var(--muted)"')}</button>`;
+  t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(e.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Event")}${photoHtml(P(e.place))}</span><span style="flex:1;min-width:0"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg);color:var(--muted)"')}</button>`;
   $("#tmain").onclick = () => setTab("now");
 }
 
