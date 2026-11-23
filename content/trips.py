@@ -103,3 +103,85 @@ Deep & unseen|3|15:00|Murasaki Shikibu Park|Car|Stay in Ono
 Deep & unseen|4|6:00|Castle in the Sky from Mt Inuyama|Car + about 20 min hike|Oct to Apr only
 Deep & unseen|4|10:00|Yamabushi-iwa (cat rock)|Car, Route 158, no parking|
 Deep & unseen|4|11:30|Oshozu spring & Ono castle town|Car|Shoyu katsudon for lunch, then back to Fukui"""
+
+# start/end stations for every trip
+TRIP_ENDS = {
+"Dinosaurs & Zen":("Fukui Stn","Fukui Stn"),
+"Cliffs, crab & onsen":("Fukui Stn","Awara-Onsen Stn"),
+"Samurai city walk":("Fukui Stn","Fukui Stn"),
+"Fukui highlights":("Fukui Stn","Awara-Onsen Stn"),
+"Zen stay & moss":("Fukui Stn","Fukui Stn"),
+"Craft towns":("Fukui Stn","Echizen-Takefu Stn"),
+"Best of Fukui":("Fukui Stn","Awara-Onsen Stn"),
+"Coast & seafood":("Fukui Stn","Tsuruga Stn"),
+"Grand tour, north to south":("Fukui Stn","Tsuruga Stn"),
+"Deep & unseen":("Fukui Stn","Fukui Stn"),
+"Echizen Coast drive":("Fukui Stn","Fukui Stn"),
+"Wakasa day from Tsuruga":("Tsuruga Stn","Tsuruga Stn"),
+"Okuetsu: dinosaurs & castle town":("Fukui Stn","Fukui Stn"),
+"Wakasa lakes, temples & sea":("Tsuruga Stn","Tsuruga Stn"),
+"North to south by train":("Fukui Stn","Tsuruga Stn"),
+}
+TRIPS_META += [
+("Echizen Coast drive","1 day","Rental car","Sea rocks, a crab lunch and potters"),
+("Wakasa day from Tsuruga","1 day","Rental car","Five lakes, a mackerel-road town and a cold spring"),
+("Okuetsu: dinosaurs & castle town","2 days","Rental car","Dinosaurs, a moss shrine and a night in Ono"),
+("Wakasa lakes, temples & sea","2 days","Rental car","The south, starting from the Shinkansen at Tsuruga"),
+("North to south by train","3 days","Train & bus","Temples, cliffs, an onsen night and craft towns"),
+]
+R += """
+Echizen Coast drive|1|9:00|Pick up a car at Fukui Stn|Rental car offices around the station|
+Echizen Coast drive|1|10:00|Benkei's Washing Rock|About 40 min by car (check)|
+Echizen Coast drive|1|10:45|Hokojima|Car, a few minutes along the coast (check)|Climb to the top for the view
+Echizen Coast drive|1|12:00|Michi-no-Eki Echizen + Echizen Crab Museum|Car along Route 305 (check)|Crab lunch from Nov 6 to Mar 20
+Echizen Coast drive|1|14:00|Echizen Misaki Suisen Land|Car (check)|Daffodils late Dec to Feb
+Echizen Coast drive|1|15:30|Echizen Pottery Village|Car inland (check)|Try the wheel if there's time
+Echizen Coast drive|1|17:30|Back to Fukui Stn|About 45 min by car (check)|
+Wakasa day from Tsuruga|1|9:30|Pick up a car at Tsuruga Stn|Rental car offices around the station|Handy if you came from Kyoto or Osaka
+Wakasa day from Tsuruga|1|10:15|Rainbow Line Summit Park (Mikata Five Lakes)|About 40 min by car (check)|
+Wakasa day from Tsuruga|1|12:00|Varve Museum|Car, near Lake Suigetsu (check)|
+Wakasa day from Tsuruga|1|13:00|Lunch at Kumagawa-juku|Car (check)|Mackerel dishes on the old mackerel road
+Wakasa day from Tsuruga|1|14:30|Uriwari no Taki Falls|Car (check)|Cold spring water all year
+Wakasa day from Tsuruga|1|16:00|Nihonkai Sakanamachi|Car back to Tsuruga (check)|Seafood to snack on or take away
+Wakasa day from Tsuruga|1|17:00|Back to Tsuruga Stn|Car|
+Okuetsu: dinosaurs & castle town|1|9:00|Pick up a car at Fukui Stn|Rental car offices around the station|
+Okuetsu: dinosaurs & castle town|1|10:00|Fukui Prefectural Dinosaur Museum|About 1 h by car (check)|Allow 3 hours
+Okuetsu: dinosaurs & castle town|1|13:30|Katsuyama Dino Park|Walk from the museum|Green season only (check)
+Okuetsu: dinosaurs & castle town|1|15:00|Heisenji Hakusan Shrine|Car (check)|
+Okuetsu: dinosaurs & castle town|1|17:00|Stay in Ono|Car (check)|Shoyu katsudon for dinner
+Okuetsu: dinosaurs & castle town|2|6:00|Castle in the Sky from Mt Inuyama|Car + about 20 min hike|Oct to Apr only. Skip otherwise
+Okuetsu: dinosaurs & castle town|2|9:30|Oshozu spring & Ono castle town|Car or walk|
+Okuetsu: dinosaurs & castle town|2|10:30|Former Uchiyama Residence|Walk (check)|Picture shoji Dec to Mar
+Okuetsu: dinosaurs & castle town|2|13:00|Eiheiji Temple|About 40 min by car (check)|
+Okuetsu: dinosaurs & castle town|2|15:30|ESHIKOTO|Car, about 15 min|Sake soft-serve by the river
+Okuetsu: dinosaurs & castle town|2|17:30|Back to Fukui Stn|Car (check)|
+Wakasa lakes, temples & sea|1|9:30|Pick up a car at Tsuruga Stn|Rental car offices around the station|Handy if you came from Kyoto or Osaka
+Wakasa lakes, temples & sea|1|10:00|Kehi Jingu Shrine|Car, a few minutes|
+Wakasa lakes, temples & sea|1|11:00|Tsuruga Red Brick Warehouses|Car (check)|Tsuruga ramen for lunch
+Wakasa lakes, temples & sea|1|14:00|Rainbow Line Summit Park (Mikata Five Lakes)|About 40 min by car (check)|
+Wakasa lakes, temples & sea|1|16:00|Varve Museum|Car (check)|
+Wakasa lakes, temples & sea|1|18:00|Stay in Obama|Car (check)|
+Wakasa lakes, temples & sea|2|9:00|Myotsuji Temple|Car (check)|
+Wakasa lakes, temples & sea|2|11:00|Sotomo cruise from Wakasa Fisherman's Wharf|Car (check)|About 1 hour. Lunch at the wharf
+Wakasa lakes, temples & sea|2|14:00|Sancho-machi (old Obama)|Car or walk (check)|
+Wakasa lakes, temples & sea|2|15:00|Wakasa Chopstick Museum|Car (check)|Polish your own chopsticks
+Wakasa lakes, temples & sea|2|17:30|Back to Tsuruga Stn|About 1 h by car (check)|
+North to south by train|1|9:00|Eiheiji Temple|Eiheiji Liner from Fukui Stn East, about 30 min|Go early
+North to south by train|1|12:30|Fukui Prefectural Dinosaur Museum|Bus to Eiheiji-guchi, Echizen Railway to Katsuyama, bus (check)|Allow 3 hours
+North to south by train|1|18:00|Dinner at Fukui Yatai Village|Back to Fukui Stn by bus or train|Stay near Fukui Stn
+North to south by train|2|9:00|Tojinbo Cliffs|Echizen Railway to Mikuni-minato, bus about 10 min|
+North to south by train|2|10:30|Oshima Island|Walk from Tojinbo (check)|
+North to south by train|2|12:00|Lunch in Mikuni Minato old town|Bus (check)|Crab in season
+North to south by train|2|15:00|Awara Onsen|Bus to Awara-Onsen (check)|Stay the night. Bath-hop ticket
+North to south by train|3|9:00|Takefu Knife Village|Shinkansen to Echizen-Takefu, then bus or taxi (check)|
+North to south by train|3|12:00|Lunch: Volga rice or Takefu chuka soba|Takefu|
+North to south by train|3|13:30|Echizen Washi Village|Bus from Takefu (check)|
+North to south by train|3|16:30|Tsuruga Red Brick Warehouses|Shinkansen to Tsuruga, then bus (check)|Tsuruga ramen for dinner, then home"""
+STOPMAP_MORE = {"Benkei's Washing Rock":"benkei","Michi-no-Eki Echizen + Echizen Crab Museum":"eki_echizen","Varve Museum":"varve","Lunch at Kumagawa-juku":"kumagawa","Uriwari no Taki Falls":"uriwari","Nihonkai Sakanamachi":"sakanamachi","Katsuyama Dino Park":"dinopark","Stay in Ono":"oshozu","Former Uchiyama Residence":"uchiyama","Sancho-machi (old Obama)":"sancho","Wakasa Chopstick Museum":"chopstick","Myotsuji Temple":"myotsuji","Dinner at Fukui Yatai Village":"yatai","Oshima Island":"oshima","Lunch in Mikuni Minato old town":"mikuniminato","Back to Tsuruga Stn":None,"Pick up a car at Fukui Stn":None,"Pick up a car at Tsuruga Stn":None,"Stay in Obama":"mermaid","Lunch in Mikuni":"mikuniminato","Stay in Takefu":"takefu"}
+# stops that only work in some months: stop name -> (months, label)
+STOP_SEASON = {
+"Castle in the Sky from Mt Inuyama":([10,11,12,1,2,3,4],"Castle in the Sky: Oct to Apr only"),
+"Jisagawa River baikamo":([7,8],"Baikamo flowers: Jul to Aug only"),
+"Brilliant Heart Museum":([4,5,6,7,8,9,10,11],"Brilliant Heart Museum: Apr to Nov only"),
+"Yokokan Garden":([3,4,5,6,7,8,9,10,11,12],"Yokokan Garden: closed Dec 29 to end of Feb"),
+}
