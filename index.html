@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
 <script src="vendor/maplibre/maplibre-gl.js"></script>
 <script src="data.js"></script>
+<script src="fukui-shape.js"></script>
 <style>
 :root{
   /* layout: full-bleed map; search + filters on top; one sheet slides over the map; 4-tab bar at the bottom */
@@ -328,9 +329,9 @@ function theme(){
 }
 function initMap(){
   if (!window.maplibregl){ $("#map").innerHTML = '<div class="nomap">The map could not load. Check your connection and try again.</div>'; return; }
-  map = new maplibregl.Map({container: "map", style: "https://tiles.openfreemap.org/styles/positron", center: [136.25, 35.95], zoom: 8.5, minZoom: 7, maxZoom: 18, attributionControl: {compact: true}, maxBounds: [[134.6, 34.9], [137.6, 36.9]]});
+  map = new maplibregl.Map({container: "map", style: "https://tiles.openfreemap.org/styles/positron", center: [136.25, 35.95], zoom: 8.5, minZoom: 7, maxZoom: 18, attributionControl: {compact: true}, maxBounds: [[134.2, 34.3], [138.1, 37.4]]});
   map.on("style.load", theme);
-  map.on("load", () => { fitAll(0); drawRoute(); });
+  map.on("load", () => { addFukuiShape(); fitAll(0); drawRoute(); });
   map.on("zoom", zoomClass);
   map.on("click", e => { if (!e.originalEvent.target.closest(".pin")) { if (view === "place") closeSheet(); } });
   PLACES.forEach(p => {
@@ -343,10 +344,20 @@ function initMap(){
   });
   zoomClass(); syncPins();
 }
+function addFukuiShape(){
+  if (typeof FUKUI_OUTLINE === "undefined" || map.getSource("fukui")) return;
+  const firstLabel = (map.getStyle().layers.find(l => l.type === "symbol") || {}).id;
+  map.addSource("fukui-mask", {type: "geojson", data: FUKUI_MASK});
+  map.addSource("fukui", {type: "geojson", data: FUKUI_OUTLINE});
+  /* soften everything outside Fukui so the prefecture reads as one place */
+  map.addLayer({id: "fukui-mask", type: "fill", source: "fukui-mask", paint: {"fill-color": "#E6EAE8", "fill-opacity": ["interpolate", ["linear"], ["zoom"], 7, .8, 11, .55, 14, .3]}}, firstLabel);
+  map.addLayer({id: "fukui-edge-halo", type: "line", source: "fukui", layout: {"line-join": "round"}, paint: {"line-color": "#FFFFFF", "line-width": ["interpolate", ["linear"], ["zoom"], 7, 4, 12, 7], "line-opacity": .9}}, firstLabel);
+  map.addLayer({id: "fukui-edge", type: "line", source: "fukui", layout: {"line-join": "round"}, paint: {"line-color": "#1F6F5C", "line-width": ["interpolate", ["linear"], ["zoom"], 7, 1.6, 12, 2.6], "line-opacity": .75, "line-dasharray": [3, 2]}}, firstLabel);
+}
 function fitAll(duration = 800){
   if (!map) return;
   const wide = innerWidth >= 760;
-  map.fitBounds([[135.5, 35.45], [136.75, 36.27]], {padding: {top: 140, bottom: wide ? 60 : 200, left: wide ? 470 : 20, right: 20}, duration});
+  map.fitBounds([[135.45, 35.34], [136.83, 36.3]], {padding: {top: 130, bottom: wide ? 40 : 110, left: wide ? 470 : 8, right: 8}, duration});
 }
 function zoomClass(){
   const z = map ? map.getZoom() : 8;
