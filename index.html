@@ -207,6 +207,27 @@ body.zf .pin.must .l{display:block}
 .kpin.deep{width:13px;height:13px;background:var(--deep);border:2px solid #fff;box-shadow:0 1px 4px rgba(31,61,54,.3)}
 .kpin.kstn{width:22px;height:22px;border-radius:6px;background:var(--ink);border:2px solid #fff;box-shadow:0 1px 4px rgba(31,61,54,.3)}
 .kline{display:block;width:34px;height:0;border-top:4px dashed var(--action)}
+.stn .sq{position:relative}
+.stn .bb{position:absolute;right:-9px;top:-9px;width:16px;height:16px;border-radius:50%;background:#2E6FA8;border:2px solid #fff;display:flex;align-items:center;justify-content:center}
+.stn .bb svg{width:10px;height:10px;stroke-width:2.6}
+.kpin.kbus{position:relative}
+.kpin.kbus .bb{position:absolute;right:-8px;top:-8px;width:14px;height:14px;border-radius:50%;background:#2E6FA8;border:2px solid #fff}
+.bus{border-radius:16px;background:var(--soft);padding:12px;margin:8px 0}
+.bus .bt{display:flex;gap:10px;align-items:flex-start}
+.bus .bi{width:34px;height:34px;border-radius:10px;background:#2E6FA8;color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.bus .bt b{display:block;font-size:15px;font-weight:900}
+.bus .bt span{font-size:12.5px;font-weight:700;color:var(--muted)}
+.bus .bt span.bi{color:#fff}
+.bus .bi svg{width:20px;height:20px}
+.bus p{margin:8px 0 0;font-size:12.5px;font-weight:700;color:var(--muted)}
+.bdest{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dchip{display:flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:#fff;font-weight:900;font-size:13px;box-shadow:0 1px 3px rgba(31,61,54,.12)}
+.dchip .dd{width:10px;height:10px;border-radius:50%}
+.dd.must{background:var(--must)}.dd.worth{background:var(--worth)}.dd.deep{background:var(--deep)}
+.pbus{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.pb{display:flex;align-items:flex-start;gap:8px;text-align:left;font-size:13px;font-weight:700;color:var(--ink);padding:8px 10px;border-radius:12px;background:#fff}
+.pb svg{width:18px;height:18px;color:#2E6FA8;flex:none}
+.note a{color:var(--action);font-weight:900}
 .why{font-size:15.5px;font-weight:600;line-height:1.55;margin:10px 0 12px;color:#2C4740}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{background:var(--soft);border-radius:12px;padding:6px 11px;font-size:13px;font-weight:800}
@@ -338,6 +359,7 @@ nav.tabs svg{width:24px;height:24px}
   <div class="kr"><span class="kv"><span class="kpin worth"></span></span><span><b>Worth it</b><em>Icon pins</em></span></div>
   <div class="kr"><span class="kv"><span class="kpin deep"></span></span><span><b>Deep &amp; unseen</b><em>Hidden gems. Zoom in to see them</em></span></div>
   <div class="kr"><span class="kv"><span class="kpin kstn"></span></span><span><b>Train station</b><em>Big squares are Shinkansen stops</em></span></div>
+  <div class="kr"><span class="kv"><span class="kpin kstn kbus"><i class="bb"></i></span></span><span><b>Station with buses</b><em>Tap it to see where the buses go</em></span></div>
   <div class="kr"><span class="kv"><span class="kline"></span></span><span><b>Trip route</b><em>Shown while you look at a trip</em></span></div>
   <p>Tap a pin to open it. Small dots are places tucked away to keep the map tidy: zoom in to see them.</p>
 </div>
@@ -378,6 +400,7 @@ const ICON = {
   Do:'<path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/>',
   Event:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
   X:'<path d="M6 6l12 12M18 6L6 18"/>', Heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  Bus:'<rect x="5" y="3.5" width="14" height="14" rx="3"/><path d="M5 11h14M8 21v-3.5M16 21v-3.5"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/>',
   Back:'<path d="M15 5l-7 7 7 7"/>', Train:'<rect x="6" y="3.5" width="12" height="13" rx="3"/><path d="M6 10h12M9 20l1.5-3.5M15 20l-1.5-3.5"/>', Car:'<path d="M5 16l1.5-5h11l1.5 5M4 16h16v3H4zM7 19v1.5M17 19v1.5"/>'
 };
 const ic = (k, cls = "i") => `<svg class="${cls}" viewBox="0 0 24 24">${ICON[k] || ICON.Nature}</svg>`;
@@ -434,7 +457,7 @@ try { myTrip = JSON.parse(localStorage.getItem("vf-mytrip") || "null"); } catch 
 const persist = () => { try { localStorage.setItem("vf-saved", JSON.stringify(saved)); localStorage.setItem("vf-mytrip", JSON.stringify(myTrip)); } catch (e) {} };
 
 /* ---------- filters ---------- */
-const MODES = [["all","Everything","Nature"],["eat","Eat","Food"],["do","Do","Do"],["events","Events","Event"]];
+const MODES = [["all","Everything","Nature"],["nocar","No car","Bus"],["eat","Eat","Food"],["do","Do","Do"],["events","Events","Event"]];
 function buildChips(){
   const c = $("#chips");
   c.innerHTML = MODES.map(([k, label, icon]) => `<button class="chip" data-mode="${k}" aria-pressed="${mode === k}">${k === "all" ? "" : ic(icon)}${label}</button>`).join("")
@@ -453,8 +476,10 @@ function visible(p){
   if (mode === "eat") return p.type === "Food" || foodsAt(p.id).length > 0;
   if (mode === "do") return actsAt(p.id).length > 0;
   if (mode === "events") return eventsAt(p.id).length > 0;
+  if (mode === "nocar") return !carOnly(p) || busesTo(p.id).length > 0;
   return true;
 }
+const carOnly = p => /^car|car best|car or taxi|^car\./i.test(p.access);
 
 /* ---------- map ---------- */
 const THEME = {land:"#EAF3EC", water:"#A6D6EA", green:"#CFE8D2", road:"#FFFFFF", casing:"#DCE8DF", rail:"#C9D9CF", building:"#DEEAE1", border:"#BFD3C6", label:"#2E5A4F", halo:"#F3F8F4"};
@@ -489,27 +514,41 @@ function theme(){
 }
 
 /* train stations: the landmarks people use when they travel without a car (positions approximate) */
+const BUSES = {
+  liner: {name: "Eiheiji Liner (express bus)", jp: "特急永平寺ライナー", from: "Fukui Stn East exit", to: ["eiheiji"], time: "about 30 min"},
+  asakura: {name: "Asakura–Eiheiji Direct Bus", jp: "朝倉・永平寺ダイレクトバス", from: "Fukui Stn East exit", to: ["ichijodani", "ichimuseum", "eiheiji"], note: "Runs daily, Apr 2026 to Mar 2027"},
+  dinobus: {name: "Dinosaur Bus", jp: "恐竜バス", from: "Fukui Stn East exit", to: ["dino"], note: "Runs on set days only. Check before you go"},
+  blue: {name: "Echizen Coast Blue Line", jp: "越前海岸ブルーライン", from: "Fukui Stn", to: ["echizencoast"], note: "Along the Echizen Coast to Nami-no-Hana. Check which stops it makes"},
+  hapi: {name: "Hapi Bus sightseeing tours", jp: "ハピバス", from: "Fukui Stn East exit or Awara-Onsen Stn West exit", to: ["dino", "heisenji", "daibutsu", "eiheiji", "ichijodani", "yoshizaki", "tojinbo"], note: "Guided day tours on weekends and holidays, entry fees included. Book ahead", tour: true},
+  tojinbo: {name: "Keifuku bus to Tojinbo", jp: "京福バス 東尋坊行き", from: "Mikuni Stn (Echizen Railway)", to: ["tojinbo"], time: "about 10 min"},
+  katsu: {name: "Bus to the Dinosaur Museum", jp: "恐竜博物館行きバス", from: "Katsuyama Stn", to: ["dino"], time: "about 12 min"},
+  shibamasa: {name: "Shibamasa World direct bus", jp: "芝政ワールド直行バス", from: "Awara-Onsen Stn", to: ["shibamasa"]},
+  guchi: {name: "Bus to Eiheiji", jp: "永平寺行きバス", from: "Eiheiji-guchi Stn", to: ["eiheiji"], time: "about 13 min (check)"}
+};
+const BUS_INFO = "https://mb.jorudan.co.jp/os/bus/1801/";
+const busesTo = id => Object.entries(BUSES).filter(([k, b]) => b.to.includes(id));
 const STATIONS = [
-  {id: "s-fukui", name: "Fukui Stn", lat: 36.0618, lon: 136.2233, major: true},
-  {id: "s-awara", name: "Awara-Onsen Stn", lat: 36.2117, lon: 136.2318, major: true},
-  {id: "s-takefu", name: "Echizen-Takefu Stn", lat: 35.9066, lon: 136.2186, major: true},
-  {id: "s-tsuruga", name: "Tsuruga Stn", lat: 35.6453, lon: 136.0754, major: true},
-  {id: "s-katsuyama", name: "Katsuyama Stn", lat: 36.0592, lon: 136.5011},
-  {id: "s-eiheijiguchi", name: "Eiheiji-guchi Stn", lat: 36.0789, lon: 136.3256},
-  {id: "s-mikuni", name: "Mikuni-minato Stn", lat: 36.2180, lon: 136.1562},
-  {id: "s-ono", name: "Echizen-Ono Stn", lat: 35.9822, lon: 136.4874},
-  {id: "s-sabae", name: "Sabae Stn", lat: 35.9550, lon: 136.1860},
-  {id: "s-obama", name: "Obama Stn", lat: 35.4947, lon: 135.7459}
+  {id: "s-fukui", name: "Fukui Stn", lat: 36.0618, lon: 136.2233, major: true, trains: "Hokuriku Shinkansen, Hapi Line Fukui, Echizen Railway (to Katsuyama and to Mikuni), Fukui Railway tram", buses: ["liner", "asakura", "dinobus", "blue", "hapi"]},
+  {id: "s-awara", name: "Awara-Onsen Stn", lat: 36.2117, lon: 136.2318, major: true, trains: "Hokuriku Shinkansen, Hapi Line Fukui", buses: ["shibamasa", "hapi"]},
+  {id: "s-takefu", name: "Echizen-Takefu Stn", lat: 35.9066, lon: 136.2186, major: true, trains: "Hokuriku Shinkansen"},
+  {id: "s-tsuruga", name: "Tsuruga Stn", lat: 35.6453, lon: 136.0754, major: true, trains: "Hokuriku Shinkansen (end of the line), JR Obama Line, Hapi Line Fukui"},
+  {id: "s-katsuyama", name: "Katsuyama Stn", lat: 36.0592, lon: 136.5011, trains: "Echizen Railway Katsuyama-Eiheiji Line", buses: ["katsu"]},
+  {id: "s-eiheijiguchi", name: "Eiheiji-guchi Stn", lat: 36.0789, lon: 136.3256, trains: "Echizen Railway Katsuyama-Eiheiji Line", buses: ["guchi"]},
+  {id: "s-mikunieki", name: "Mikuni Stn", lat: 36.2158, lon: 136.1593, trains: "Echizen Railway Mikuni-Awara Line", buses: ["tojinbo"]},
+  {id: "s-mikuni", name: "Mikuni-minato Stn", lat: 36.2180, lon: 136.1562, trains: "Echizen Railway Mikuni-Awara Line (end of the line)"},
+  {id: "s-ono", name: "Echizen-Ono Stn", lat: 35.9822, lon: 136.4874, trains: "JR Etsumi-Hoku Line"},
+  {id: "s-sabae", name: "Sabae Stn", lat: 35.9550, lon: 136.1860, trains: "Hapi Line Fukui"},
+  {id: "s-obama", name: "Obama Stn", lat: 35.4947, lon: 135.7459, trains: "JR Obama Line"}
 ];
 const stnPins = {};
 function addStations(){
   STATIONS.forEach(st => {
     const el = document.createElement("button");
     el.className = "stn" + (st.major ? " major" : "");
-    el.innerHTML = `<span class="sq">${ic("Train")}</span><span class="l">${esc(st.name)}</span>`;
-    el.addEventListener("click", ev => { ev.stopPropagation(); map.easeTo({center: [st.lon, st.lat], zoom: Math.max(map.getZoom() + 1.5, 13), offset: padOffset(), duration: 700}); });
+    el.innerHTML = `<span class="sq">${ic("Train")}${st.buses ? `<i class="bb">${ic("Bus")}</i>` : ""}</span><span class="l">${esc(st.name)}</span>`;
+    el.addEventListener("click", ev => { ev.stopPropagation(); openStation(st.id); });
     stnPins[st.id] = {el, st, m: new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([st.lon, st.lat]).addTo(map)};
-    el.setAttribute("aria-label", st.name);
+    el.setAttribute("aria-label", st.name + (st.buses ? ", buses from here" : ""));
   });
 }
 function initMap(){
@@ -684,7 +723,7 @@ function setSnap(name, animate = true){
 
 function render(opts = {}){
   const t = topView();
-  if (!t){ setSnap("closed"); selected = null; syncPins(); applyRoute(false); return; }
+  if (!t){ setSnap("closed"); selected = null; syncPins(); applyRoute(false); drawBuses(null); return; }
   const out = VIEWS[t.v](t);
   const depth = stacks[tab].length;
   const left = depth > rootDepth(tab) ? (depth === 1 ? `<button class="hb" id="hback" aria-label="Close">${ic("X")}</button>` : `<button class="hb" id="hback" aria-label="Back">${ic("Back")}</button>`) : "";
@@ -700,6 +739,7 @@ function render(opts = {}){
   body.querySelectorAll("[data-place]").forEach(b => b.onclick = () => openPlace(b.dataset.place));
   body.querySelectorAll("[data-trip]").forEach(b => b.onclick = () => push({v: "trip", i: +b.dataset.trip, day: 1}));
   out.bind && out.bind(t);
+  drawBuses(t.v === "station" ? STATIONS.find(x => x.id === t.id) : null);
   if (!opts.keepRoute) applyRoute(true);
 }
 /* The route on the map belongs to the nearest trip view in the stack, so it stays
@@ -747,6 +787,28 @@ function openPlace(id, fly = true){
   if (!P(id)) return;
   push({v: "place", id});
   if (fly) flyTo(P(id));
+}
+function openStation(id){
+  const st = STATIONS.find(x => x.id === id); if (!st) return;
+  const t = topView();
+  if (t && (t.v === "station" || t.v === "place")){ stacks[tab][stacks[tab].length - 1] = {v: "station", id}; history.replaceState({vf: 1}, ""); render(); }
+  else push({v: "station", id});
+  if (st.buses){
+    const bb = new maplibregl.LngLatBounds([st.lon, st.lat], [st.lon, st.lat]);
+    st.buses.forEach(k => BUSES[k].to.map(P).filter(Boolean).forEach(p => bb.extend([p.lon, p.lat])));
+    map.fitBounds(bb, {padding: mapPad(), maxZoom: 13, duration: 800});
+  } else map.easeTo({center: [st.lon, st.lat], zoom: Math.max(map.getZoom(), 13), offset: padOffset(), duration: 700});
+}
+/* bus lines for the station on screen: straight spokes to where each bus goes */
+function drawBuses(st){
+  if (!map || !map.isStyleLoaded()) return;
+  const feats = st && st.buses ? st.buses.flatMap(k => BUSES[k].to.map(P).filter(Boolean).map(p => ({type: "Feature", properties: {tour: !!BUSES[k].tour}, geometry: {type: "LineString", coordinates: [[st.lon, st.lat], [p.lon, p.lat]]}}))) : [];
+  const data = {type: "FeatureCollection", features: feats};
+  const src = map.getSource("bus");
+  if (src) return src.setData(data);
+  map.addSource("bus", {type: "geojson", data});
+  map.addLayer({id: "bus-halo", type: "line", source: "bus", layout: {"line-cap": "round"}, paint: {"line-color": "#fff", "line-width": 6, "line-opacity": .8}});
+  map.addLayer({id: "bus", type: "line", source: "bus", layout: {"line-cap": "round"}, paint: {"line-color": "#2E6FA8", "line-width": ["case", ["get", "tour"], 2, 3], "line-opacity": ["case", ["get", "tour"], .45, .85]}});
 }
 function openMyTrip(){
   tab = "trips";
@@ -858,9 +920,22 @@ function addToTrip(id){
 }
 
 const VIEWS = {
+  station(t){
+    const st = STATIONS.find(x => x.id === t.id), o = {lat: st.lat, lon: st.lon};
+    const near = PLACES.map(p => ({p, d: dist(o, p)})).filter(x => x.d < 1.5).sort((a, b) => a.d - b.d).slice(0, 8);
+    const buses = (st.buses || []).map(k => BUSES[k]);
+    return {title: st.name, snap: "half",
+      body: `<div class="meta"><span class="tier" style="background:var(--ink)">Station</span><span>${esc(st.trains)}</span></div>
+        ${buses.length ? `<h3>Buses from here</h3>${buses.map(b => `<div class="bus"><div class="bt"><span class="bi">${ic("Bus")}</span><div><b>${esc(b.name)}</b><span>${esc(b.jp)} · from ${esc(b.from)}${b.time ? ` · ${esc(b.time)}` : ""}</span></div></div>
+          <div class="bdest">${b.to.map(P).filter(Boolean).map(p => `<button class="dchip" data-place="${p.id}"><span class="dd ${tierKey(p.tier)}"></span>${esc(shortName(p))}</button>`).join("")}</div>
+          ${b.note ? `<p>${esc(stripCheck(b.note))}${/\(check/i.test(b.note) ? ' <span class="tag chk">Not checked yet</span>' : ""}</p>` : ""}</div>`).join("")}
+          <p class="note">Bus lines on the map are drawn straight from the station to where they go, not along the road. <a href="${BUS_INFO}" target="_blank" rel="noopener">Keifuku Bus routes and times (Japanese) ↗</a></p>` : ""}
+        ${near.length ? `<h3>Near this station</h3>${near.map(({p, d}) => placeRow(p, d)).join("")}` : ""}`,
+      foot: `<div class="acts"><a class="dir" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(st.lat + "," + st.lon)}&travelmode=transit" target="_blank" rel="noopener">Directions to the station</a></div>`};
+  },
   place(t){
     const p = P(t.id), id = p.id, tk = tierKey(p.tier), d = dist(origin(), p), here = inFukui();
-    const carOnly = /^car|car best|car or taxi|^car\./i.test(p.access);
+    const co = carOnly(p), bus = busesTo(id);
     const unverified = /\(check/i.test(p.access);
     const acts = actsAt(id), foods = foodsAt(id), evs = eventsAt(id);
     const where = dayOf(id), on = saved.includes(id);
@@ -871,7 +946,7 @@ const VIEWS = {
         <div class="meta"><span class="tier ${tk}">${esc(p.tier)}</span><span>${esc(p.jp)} · ${esc(p.area)}</span></div>
         <div class="pills"><span class="pill g">${fmtDist(d)} ${here ? "away" : "from Fukui Stn"}</span><span class="pill">${esc(p.best)}</span></div>
         <p class="why">${esc(p.why)}</p>${p.df ? `<a class="dfmore" href="${esc(p.df)}" target="_blank" rel="noopener">More photos and details on DISCOVER FUKUI ↗</a>` : ""}
-        <div class="box"><div class="t"><b>${carOnly ? "Getting there" : "Without a car"}</b>${unverified ? '<span class="tag chk">Not checked yet</span>' : carOnly ? '<span class="tag car">Best by car</span>' : '<span class="tag ok">No car needed</span>'}</div><p>${esc(stripCheck(p.access))}</p></div>
+        <div class="box"><div class="t"><b>${co ? "Getting there" : "Without a car"}</b>${unverified ? '<span class="tag chk">Not checked yet</span>' : co ? '<span class="tag car">Best by car</span>' : '<span class="tag ok">No car needed</span>'}</div><p>${esc(stripCheck(p.access))}</p>${bus.length ? `<div class="pbus">${bus.map(([k, b]) => `<button class="pb" data-stn="${STATIONS.find(st => (st.buses || []).includes(k))?.id || ""}">${ic("Bus")}<span><b>${esc(b.name)}</b> from ${esc(b.from)}${b.time ? ` · ${esc(b.time)}` : ""}${b.tour ? " · tour" : ""}</span></button>`).join("")}</div>` : ""}</div>
         ${acts.length ? `<h3>Things to do here</h3>${acts.map(a => `<div class="item"><span class="ic">${ic("Do")}</span><div><b>${esc(a.name)}</b><p>${esc(a.what)} ${esc(stripCheck(a.note))}</p></div></div>`).join("")}` : ""}
         ${foods.length ? `<h3>Eat here</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)}${f.months && f.months.includes(thisMonth) ? ' <span class="now">In season now.</span>' : ""}</p></div></div>`).join("")}` : ""}
         ${evs.length ? `<h3>Events here</h3>${evs.map(e => `<div class="item"><span class="ic">${ic("Event")}</span><div><b>${esc(e.name)}</b><p>${isNow(e) ? '<span class="now">This month.</span> ' : ""}${esc(e.when)}. ${esc(e.note)}</p></div></div>`).join("")}` : ""}
@@ -882,6 +957,7 @@ const VIEWS = {
         <button class="add ${where >= 0 ? "on" : ""}" id="add">${addLabel}</button></div>`,
       snap: "half",
       bind(){
+        sheet.querySelectorAll("[data-stn]").forEach(b => { if (b.dataset.stn) b.onclick = () => openStation(b.dataset.stn); });
         $("#save").onclick = () => { saved.includes(id) ? saved = saved.filter(x => x !== id) : saved.push(id); persist(); toast(saved.includes(id) ? "Saved" : "Removed from saved"); render({keepScroll: true, keepRoute: true}); };
         $("#add").onclick = () => { addToTrip(id); render({keepScroll: true, keepRoute: true}); updateTeaser(); };
       }
