@@ -59,7 +59,7 @@ P = [
 ("sobadojo","Worth it","Echizen Soba Dojo","Fukui City","Food","Make soba with a soba master, then eat it.","All year","Bus about 20 min from Fukui Stn + 10 min walk","越前そば道場",36.0400,136.2300),
 ("knife","Worth it","Takefu Knife Village","Echizen City","Crafts","Shared workshop where Echizen blades are forged. Watch, buy, customize.","All year","Bus or taxi from Takefu (check)","タケフナイフビレッジ",35.8840,136.1400),
 ("washi","Worth it","Echizen Washi Village","Echizen City","Crafts","A papermaking area. Make your own sheet of washi.","All year","Bus from Takefu (check)","越前和紙の里",35.9060,136.2360),
-("horossa","Worth it","Horossa Fossil Excavation Center","Katsuyama","Dinosaurs","Dig for real fossils from the Katsuyama dig site.","Check season","Car or taxi (check)","ほろっさ",36.1050,136.6100),
+("horossa","Worth it","Horossa Fossil Excavation Center","Ono (Izumi)","Dinosaurs","Crack rocks from local strata for ammonites, shells, plants and maybe a dinosaur tooth. Covered, so it runs in rain.","All year (book ahead Dec to Mar)","Car, about 10 min from Kuzuryu IC","化石発掘体験センター HOROSSA!",35.8900,136.6250),
 ("sobavillage","Deep & unseen","Echizen Soba Village","Echizen City","Food","Watch soba made through glass at a factory about 100 years old.","All year","Near Takefu (check)","越前そばの里",35.8950,136.1650),
 ("kawada","Deep & unseen","Kawada lacquer district","Sabae","Crafts","About 1,500 years of Echizen lacquerware. Learn from a craftsman.","Book ahead","Bus or taxi from Sabae (check)","河和田",35.9300,136.2200),
 ("takefu","Deep & unseen","Takefu town","Echizen City","Town","Old Takefu: home of Volga rice and Takefu chuka soba.","All year","JR Takefu Stn or Shinkansen Echizen-Takefu","武生",35.9010,136.1700),

@@ -98,6 +98,11 @@ body.far .pin.must .l{display:none}
 .photo.worth{background:repeating-linear-gradient(45deg,#CFE7E3 0 12px,#E1F0EE 12px 24px);color:#16655C}
 .photo.deep{background:repeating-linear-gradient(45deg,#DED6EC 0 12px,#ECE7F4 12px 24px);color:#4E3A78}
 .photo svg{width:40px;height:40px;opacity:.7}
+.pic{margin:4px 0 14px;position:relative;border-radius:20px;overflow:hidden;height:190px;background:var(--soft)}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pic figcaption{position:absolute;right:8px;bottom:8px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.45);padding:2px 7px;border-radius:8px;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo.dflink{text-decoration:none}
+.photo.dflink span{background:rgba(255,255,255,.85);padding:6px 12px;border-radius:12px;font-size:12.5px;font-weight:900}
 .why{font-size:15.5px;font-weight:600;line-height:1.55;margin:10px 0 12px;color:#2C4740}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{background:var(--soft);border-radius:12px;padding:6px 11px;font-size:13px;font-weight:800}
@@ -460,7 +465,9 @@ function openPlace(id, fly){
   const gmaps = gmapsUrl(p);
   openSheet(`
     <div class="head"><div style="flex:1"><span class="tier ${tk}">${esc(p.tier)}</span></div>${closeBtn}</div>
-    <div class="photo ${tk}">${ic(p.type)}<span>Photo coming soon</span></div>
+    ${p.img ? `<figure class="pic"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"><figcaption>${esc(p.credit || "")}</figcaption></figure>`
+      : p.df ? `<a class="photo ${tk} dflink" href="${esc(p.df)}" target="_blank" rel="noopener">${ic(p.type)}<span>See photos on Discover Fukui ↗</span></a>`
+      : `<div class="photo ${tk}">${ic(p.type)}<span>Photo coming soon</span></div>`}
     <div class="head"><h1>${esc(p.name)}</h1></div>
     <div class="sub">${esc(p.jp)} · ${esc(p.area)}</div>
     <div class="pills"><span class="pill g">${fmtDist(d)} ${here ? "away" : "from Fukui Stn"}</span><span class="pill">${esc(p.best)}</span></div>
