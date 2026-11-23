@@ -54,7 +54,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stro
 .chip[aria-pressed="true"] .dot{box-shadow:0 0 0 2px #fff}
 .sep{flex:none;width:1px;background:#C9D9CF;margin:6px 2px}
 
-.fab{position:absolute;z-index:5;right:16px;bottom:calc(var(--nav) + var(--safe-b) + 108px);width:52px;height:52px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:var(--action)}
+.fab{position:absolute;z-index:5;right:16px;bottom:calc(var(--nav) + var(--safe-b) + 146px);width:52px;height:52px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:var(--action)}
 .fab.on{background:var(--action);color:#fff}
 
 .teaser{position:absolute;z-index:5;left:16px;right:16px;bottom:calc(var(--nav) + var(--safe-b) + 14px);display:flex;align-items:center;gap:12px;padding:12px;border-radius:22px;background:var(--card);box-shadow:var(--shadow);text-align:left;max-width:520px}
@@ -111,6 +111,22 @@ body.far .pin.must .l{display:none}
 .tcard .cover{display:block;height:130px;border-radius:14px;margin:0 0 8px;padding:0;align-items:center;justify-content:center}
 .tcard .cover > svg{position:absolute;left:12px;bottom:10px}
 .ecard .ethumb{width:64px;height:64px;border-radius:12px;flex:none;margin-left:auto;padding:0}
+.teaser.hasbanner{padding:0;overflow:hidden}
+.tmain.banner{position:relative;height:118px;padding:14px 16px;color:#fff;align-items:flex-end}
+.tmain.banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.tmain.banner::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,28,25,.78),rgba(14,28,25,.2) 80%)}
+.tmain.banner .btx,.tmain.banner svg{position:relative}
+.tmain.banner .btx{flex:1;min-width:0}
+.tmain.banner .k{color:#fff;opacity:.9}
+.tmain.banner b{color:#fff;font-size:18px}
+.tmain.banner .s{color:rgba(255,255,255,.9)}
+.hero{position:relative;display:block;width:100%;height:230px;border-radius:22px;overflow:hidden;margin:6px 0 10px;text-align:left;color:#fff}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(14,28,25,.8),rgba(14,28,25,0) 65%)}
+.hero .htx{position:absolute;left:16px;right:16px;bottom:14px;z-index:2;display:flex;flex-direction:column;gap:3px}
+.hero .k{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.hero b{font-size:21px;font-weight:900;line-height:1.15}
+.hero span:last-child{font-size:13px;font-weight:700;line-height:1.4;opacity:.92}
 .why{font-size:15.5px;font-weight:600;line-height:1.55;margin:10px 0 12px;color:#2C4740}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{background:var(--soft);border-radius:12px;padding:6px 11px;font-size:13px;font-weight:800}
@@ -299,6 +315,7 @@ function photoHtml(p){
   const s = photoSrcs(p);
   return s.length ? `<img class="phimg" src="${s[0]}" data-srcs="${s.join("|")}" data-i="0" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="nextSrc(this)">` : "";
 }
+const evPhoto = (e, small) => e && e.img ? `<img class="phimg" src="${small ? e.thumb : e.img}" alt="" loading="lazy">` : photoHtml(e && e.place ? P(e.place) : null);
 function nextSrc(img){
   const s = img.dataset.srcs.split("|"), i = +img.dataset.i + 1;
   if (i < s.length){ img.dataset.i = i; img.src = s[i]; }
@@ -652,11 +669,13 @@ const gmapsUrl = p => {
 /* now */
 function nowView(){
   const now = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
+  const hero = now.find(e => e.img), rest = now.filter(e => e !== hero);
   const soon = EVENTS.filter(isSoon).sort((a, b) => a.months.indexOf(nextMonths[0]) - b.months.indexOf(nextMonths[0]));
   const foods = FOODS.filter(f => f.months && f.months.includes(thisMonth));
-  const ecard = (e, hot) => `<${e.place ? `button data-place="${e.place}"` : "div"} class="ecard ${hot ? "hot" : ""}"><span class="cal"><b>${esc(MONTHS[(hot ? thisMonth : e.months.find(m => nextMonths.includes(m))) - 1])}</b><span>${esc(e.tier === "Must" ? "MUST" : e.tier === "Worth it" ? "WORTH IT" : "DEEP")}</span></span><span class="tx"><b>${esc(e.name)}</b><p>${esc(e.when)} · ${esc(e.where)}. ${esc(e.note)}</p>${e.latest && !/every|check/i.test(e.latest) ? `<p style="font-weight:800">Latest: ${esc(e.latest)}</p>` : ""}</span>${e.place && photoSrcs(P(e.place)).length ? `<span class="ethumb photo ${tierKey(e.tier)}">${photoHtml(P(e.place))}</span>` : ""}</${e.place ? "button" : "div"}>`;
+  const ecard = (e, hot) => `<${e.place ? `button data-place="${e.place}"` : "div"} class="ecard ${hot ? "hot" : ""}"><span class="cal"><b>${esc(MONTHS[(hot ? thisMonth : e.months.find(m => nextMonths.includes(m))) - 1])}</b><span>${esc(e.tier === "Must" ? "MUST" : e.tier === "Worth it" ? "WORTH IT" : "DEEP")}</span></span><span class="tx"><b>${esc(e.name)}</b><p>${esc(e.when)} · ${esc(e.where)}. ${esc(e.note)}</p>${e.latest && !/every|check/i.test(e.latest) ? `<p style="font-weight:800">Latest: ${esc(e.latest)}</p>` : ""}</span>${e.img || (e.place && photoSrcs(P(e.place)).length) ? `<span class="ethumb photo ${tierKey(e.tier)}">${evPhoto(e, true)}</span>` : ""}</${e.place ? "button" : "div"}>`;
   return `<div class="head"><h2>Now in Fukui</h2>${closeBtn}</div><p class="sub">${MONTH_LONG[thisMonth - 1]}. Dates change each year, so check before you go.</p>
-    ${now.length ? now.map(e => ecard(e, true)).join("") : '<div class="empty">Nothing special listed this month.</div>'}
+    ${hero ? `<${hero.place ? `button data-place="${hero.place}"` : "div"} class="hero"><img src="${hero.img}" alt=""><span class="htx"><span class="k">${MONTH_LONG[thisMonth - 1]} · ${esc(hero.tier)}</span><b>${esc(hero.name)}</b><span>${esc(hero.when)} · ${esc(hero.where)}. ${esc(hero.note)}</span></span></${hero.place ? "button" : "div"}>` : ""}
+    ${rest.length ? rest.map(e => ecard(e, true)).join("") : hero ? "" : '<div class="empty">Nothing special listed this month.</div>'}
     ${foods.length ? `<h3>In season to eat</h3>${foods.map(f => `<div class="item"><span class="ic">${ic("Food")}</span><div><b>${esc(f.name)} <span style="color:var(--muted);font-weight:700">${esc(f.jp)}</span></b><p>${esc(f.what)} ${esc(f.where)}.</p>${f.places.length ? `<p>${f.places.map(id => `<button data-place="${id}" style="color:var(--action);font-weight:900;font-size:13px;margin-right:10px">${esc(shortName(P(id)))}</button>`).join("")}</p>` : ""}</div></div>`).join("")}` : ""}
     ${soon.length ? `<h3>Coming up</h3>${soon.map(e => ecard(e, false)).join("")}` : ""}`;
 }
@@ -718,6 +737,7 @@ function setTab(t, quiet){
 /* bar on the map: your next stop, or what's on now */
 function updateTeaser(){
   const t = $("#teaser");
+  t.classList.remove("hasbanner");
   if (sheet.classList.contains("open")){ t.hidden = true; return; }
   const nx = nextStop(), pr = tripProgress();
   if (nx && nx.p){
@@ -732,10 +752,17 @@ function updateTeaser(){
     $("#tmain").onclick = () => openMyTrip();
     return;
   }
-  const e = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier])[0];
+  const nowEv = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
+  const e = nowEv.find(x => x.img) || nowEv[0];
   if (!e){ t.hidden = true; return; }
   t.hidden = false;
-  t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(e.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Event")}${photoHtml(P(e.place))}</span><span style="flex:1;min-width:0"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg);color:var(--muted)"')}</button>`;
+  if (e.img){
+    t.innerHTML = `<button class="tmain banner" id="tmain"><img src="${e.img}" alt=""><span class="btx"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)} · ${esc(e.where)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg)"')}</button>`;
+    t.classList.add("hasbanner");
+    $("#tmain").onclick = () => setTab("now");
+    return;
+  }
+  t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(e.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Event")}${evPhoto(e, true)}</span><span style="flex:1;min-width:0"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg);color:var(--muted)"')}</button>`;
   $("#tmain").onclick = () => setTab("now");
 }
 

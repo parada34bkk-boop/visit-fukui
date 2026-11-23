@@ -16,3 +16,5 @@ DF = {k: _A % v for k, v in {
 DF.update({"umenosato":"shop/detail_7068.html","jinguji":"events/detail_5816.html","uchiyama":"events/detail_5112.html"})
 # photos we have permission to use: place id -> (image url, credit). Empty until permission or our own photos.
 PHOTOS = {}
+# photos for events (files in /images), (large, small)
+EVENT_PHOTOS = {"Castle in the Sky season": ("images/ono-castle-sky.jpg", "images/ono-castle-sky-s.jpg")}

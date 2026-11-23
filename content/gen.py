@@ -7,7 +7,8 @@ places=[dict(id=p[0],tier=p[1],name=p[2],area=p[3],type=p[4],why=p[5],best=p[6],
 assert all(k in ids for k in DF), [k for k in DF if k not in ids]
 acts=[dict(tier=a[0],name=a[1],place=a[2],what=a[3],note=a[4]) for a in A]
 foods=[dict(tier=f[0],name=f[1],jp=f[2],what=f[3],where=f[4],places=f[5],months=f[6]) for f in F]
-events=[dict(tier=e[0],name=e[1],when=e[2],latest=e[3],where=e[4],note=e[5],place=e[6],months=e[7]) for e in E]
+events=[dict(tier=e[0],name=e[1],when=e[2],latest=e[3],where=e[4],note=e[5],place=e[6],months=e[7],img=EVENT_PHOTOS.get(e[1],(None,None))[0],thumb=EVENT_PHOTOS.get(e[1],(None,None))[1]) for e in E]
+assert all(any(x['name']==k for x in events) for k in EVENT_PHOTOS)
 for a in acts: assert a['place'] in ids, a
 for f in foods: assert all(x in ids for x in f['places']), f
 for e in events: assert e['place'] is None or e['place'] in ids, e
