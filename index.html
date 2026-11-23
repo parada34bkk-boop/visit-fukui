@@ -182,6 +182,31 @@ body.zm .pin.must .l,body.zn .pin.must .l,body.zn .pin.worth .l,body.zs .pin.dee
 .teaser .ptx b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .teaser .px{width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--soft)}
 .teaser .px svg{width:16px;height:16px}
+.stn{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.stn .sq{width:20px;height:20px;border-radius:6px;background:#3E5650;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(31,61,54,.3);box-sizing:content-box}
+.stn .sq svg{width:13px;height:13px;stroke-width:2.4}
+.stn.major .sq{width:22px;height:22px;background:var(--ink)}
+.stn .l{position:absolute;top:100%;margin-top:3px;white-space:nowrap;font-size:11px;font-weight:900;color:var(--ink);text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;pointer-events:none}
+.stn.nolabel .l{display:none}
+.stn.off{display:none}
+body.zf .stn:not(.major){display:none}
+body.zf .pin.must .l{display:block}
+.keybtn{position:absolute;z-index:5;right:16px;top:calc(12px + var(--safe-t) + 52px + 10px + 36px + 12px);width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);font-weight:900;font-size:18px;color:var(--ink)}
+.keycard{position:absolute;z-index:9;right:16px;top:calc(12px + var(--safe-t) + 52px + 10px + 36px + 60px);width:min(300px,calc(100% - 32px));background:var(--card);border-radius:20px;box-shadow:0 10px 34px rgba(31,61,54,.22);padding:12px 14px 14px;box-sizing:border-box}
+.keycard .kh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.keycard .kh b{font-size:16px;font-weight:900}
+.keycard .kx{width:30px;height:30px;border-radius:50%;background:var(--soft);font-weight:900}
+.keycard .kr{display:flex;align-items:center;gap:12px;padding:6px 0}
+.keycard .kr b{display:block;font-size:14px;font-weight:900}
+.keycard .kr em{display:block;font-style:normal;font-size:12px;font-weight:700;color:var(--muted)}
+.keycard p{margin:8px 0 0;font-size:12.5px;font-weight:700;color:var(--muted);line-height:1.45}
+.kv{width:40px;display:flex;justify-content:center;flex:none}
+.kpin{display:block;border-radius:50%;box-sizing:border-box}
+.kpin.must{width:34px;height:34px;border:2px solid #fff;box-shadow:0 0 0 2.5px var(--must);background:linear-gradient(135deg,#9CC3D6,#5C8F7C)}
+.kpin.worth{width:26px;height:26px;background:var(--worth);border:2px solid #fff;box-shadow:0 1px 4px rgba(31,61,54,.3)}
+.kpin.deep{width:13px;height:13px;background:var(--deep);border:2px solid #fff;box-shadow:0 1px 4px rgba(31,61,54,.3)}
+.kpin.kstn{width:22px;height:22px;border-radius:6px;background:var(--ink);border:2px solid #fff;box-shadow:0 1px 4px rgba(31,61,54,.3)}
+.kline{display:block;width:34px;height:0;border-top:4px dashed var(--action)}
 .why{font-size:15.5px;font-weight:600;line-height:1.55;margin:10px 0 12px;color:#2C4740}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{background:var(--soft);border-radius:12px;padding:6px 11px;font-size:13px;font-weight:800}
@@ -306,6 +331,16 @@ nav.tabs svg{width:24px;height:24px}
   <div class="chips" id="chips" role="toolbar" aria-label="Filters"></div>
 </div>
 
+<button class="keybtn" id="keybtn" aria-label="Map key" aria-expanded="false">?</button>
+<div class="keycard" id="keycard" hidden role="dialog" aria-label="Map key">
+  <div class="kh"><b>Map key</b><button class="kx" id="keyx" aria-label="Close map key">✕</button></div>
+  <div class="kr"><span class="kv"><span class="kpin must"></span></span><span><b>Must see</b><em>Photo pins: the big ones</em></span></div>
+  <div class="kr"><span class="kv"><span class="kpin worth"></span></span><span><b>Worth it</b><em>Icon pins</em></span></div>
+  <div class="kr"><span class="kv"><span class="kpin deep"></span></span><span><b>Deep &amp; unseen</b><em>Hidden gems. Zoom in to see them</em></span></div>
+  <div class="kr"><span class="kv"><span class="kpin kstn"></span></span><span><b>Train station</b><em>Big squares are Shinkansen stops</em></span></div>
+  <div class="kr"><span class="kv"><span class="kline"></span></span><span><b>Trip route</b><em>Shown while you look at a trip</em></span></div>
+  <p>Tap a pin to open it. Small dots are places tucked away to keep the map tidy: zoom in to see them.</p>
+</div>
 <button class="fab" id="loc" aria-label="Show my location"><svg class="i" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M12 2.5l7 18-7-4-7 4z" fill="currentColor" stroke="none"/></svg></button>
 <div class="teaser" id="teaser" hidden></div>
 
@@ -436,9 +471,11 @@ function theme(){
     else if (l.type === "line"){
       if (/water|river|stream|canal|ditch/.test(id)) set("line-color", THEME.water);
       else if (/casing|outline/.test(id)) set("line-color", THEME.casing);
-      else if (/rail|transit/.test(id)) set("line-color", THEME.rail);
+      else if (/rail|transit/.test(id)) set("line-color", "#8FA79E");
       else if (/boundary|admin/.test(id)) set("line-color", THEME.border);
       else if (/road|highway|street|path|motorway|trunk|primary|secondary|tertiary|minor|service|bridge|tunnel|track/.test(id)) set("line-color", THEME.road);
+      /* small roads only when you're close: fewer lines, easier map */
+      if (/minor|service|path|track|pedestrian|footway|cycleway|steps/.test(id)) try { map.setLayerZoomRange(l.id, 12, 24); } catch (e) {}
     } else if (l.type === "symbol"){
       if (/poi|housenum|aerodrome|airport|mountain_peak/.test(id)) return lay("visibility", "none");
       if (l.layout && l.layout["text-field"]){
@@ -446,7 +483,33 @@ function theme(){
         set("text-color", THEME.label); set("text-halo-color", THEME.halo); set("text-halo-width", 1.4);
       }
       if (l.layout && l.layout["icon-image"] && /road|shield|highway/.test(id)) lay("visibility", "none");
+      if (/highway.*name|road.*(name|label)|transportation_name|street/.test(id)) try { map.setLayerZoomRange(l.id, 13, 24); } catch (e) {}
     }
+  });
+}
+
+/* train stations: the landmarks people use when they travel without a car (positions approximate) */
+const STATIONS = [
+  {id: "s-fukui", name: "Fukui Stn", lat: 36.0618, lon: 136.2233, major: true},
+  {id: "s-awara", name: "Awara-Onsen Stn", lat: 36.2117, lon: 136.2318, major: true},
+  {id: "s-takefu", name: "Echizen-Takefu Stn", lat: 35.9066, lon: 136.2186, major: true},
+  {id: "s-tsuruga", name: "Tsuruga Stn", lat: 35.6453, lon: 136.0754, major: true},
+  {id: "s-katsuyama", name: "Katsuyama Stn", lat: 36.0592, lon: 136.5011},
+  {id: "s-eiheijiguchi", name: "Eiheiji-guchi Stn", lat: 36.0789, lon: 136.3256},
+  {id: "s-mikuni", name: "Mikuni-minato Stn", lat: 36.2180, lon: 136.1562},
+  {id: "s-ono", name: "Echizen-Ono Stn", lat: 35.9822, lon: 136.4874},
+  {id: "s-sabae", name: "Sabae Stn", lat: 35.9550, lon: 136.1860},
+  {id: "s-obama", name: "Obama Stn", lat: 35.4947, lon: 135.7459}
+];
+const stnPins = {};
+function addStations(){
+  STATIONS.forEach(st => {
+    const el = document.createElement("button");
+    el.className = "stn" + (st.major ? " major" : "");
+    el.innerHTML = `<span class="sq">${ic("Train")}</span><span class="l">${esc(st.name)}</span>`;
+    el.addEventListener("click", ev => { ev.stopPropagation(); map.easeTo({center: [st.lon, st.lat], zoom: Math.max(map.getZoom() + 1.5, 13), offset: padOffset(), duration: 700}); });
+    stnPins[st.id] = {el, st, m: new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([st.lon, st.lat]).addTo(map)};
+    el.setAttribute("aria-label", st.name);
   });
 }
 function initMap(){
@@ -456,7 +519,7 @@ function initMap(){
   map.on("load", () => { addFukuiShape(); fitAll(0); drawRoute(); });
   map.on("zoom", zoomClass);
   map.on("move", declutterSoon);
-  map.on("click", e => { if (!e.originalEvent.target.closest(".pin")){ const t = topView(); if (t && t.v === "place") back(); } });
+  map.on("click", e => { if (!$("#keycard").hidden) showKey(false); if (!e.originalEvent.target.closest(".pin")){ const t = topView(); if (t && t.v === "place") back(); } });
   /* moving the map yourself means you want to see it: tuck the sheet down */
   map.on("dragstart", e => { if (e.originalEvent && !wide() && (snap === "half" || snap === "full")){ const t = topView(); if (t && t.v !== "search") setSnap("peek"); } });
   PLACES.forEach(p => {
@@ -468,6 +531,7 @@ function initMap(){
     pins[p.id] = {el, m: new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([p.lon, p.lat]).addTo(map)};
     el.setAttribute("aria-label", `${p.name}, ${p.tier}`); el.dataset.id = p.id;
   });
+  addStations();
   zoomClass(); syncPins();
 }
 function addFukuiShape(){
@@ -478,7 +542,7 @@ function addFukuiShape(){
   /* soften everything outside Fukui so the prefecture reads as one place */
   map.addLayer({id: "fukui-mask", type: "fill", source: "fukui-mask", paint: {"fill-color": "#E6EAE8", "fill-opacity": ["interpolate", ["linear"], ["zoom"], 7, .8, 11, .55, 14, .3]}}, firstLabel);
   map.addLayer({id: "fukui-edge-halo", type: "line", source: "fukui", layout: {"line-join": "round"}, paint: {"line-color": "#FFFFFF", "line-width": ["interpolate", ["linear"], ["zoom"], 7, 4, 12, 7], "line-opacity": .9}}, firstLabel);
-  map.addLayer({id: "fukui-edge", type: "line", source: "fukui", layout: {"line-join": "round"}, paint: {"line-color": "#1F6F5C", "line-width": ["interpolate", ["linear"], ["zoom"], 7, 1.6, 12, 2.6], "line-opacity": .75, "line-dasharray": [3, 2]}}, firstLabel);
+  map.addLayer({id: "fukui-edge", type: "line", source: "fukui", layout: {"line-join": "round"}, paint: {"line-color": "#7FA597", "line-width": ["interpolate", ["linear"], ["zoom"], 7, 1.4, 12, 2.4], "line-opacity": .9}}, firstLabel);
 }
 function fitAll(duration = 800){
   if (!map) return;
@@ -516,11 +580,15 @@ function declutter(){
     if (p.tier === "Worth it") return z < 9 ? 14 : 34;
     return z < 9 ? 0 : z < 11.5 ? 12 : 16;
   };
-  const hasLabel = p => p.id === selected || dayIds.includes(p.id) || (p.tier === "Must" ? z >= 9 : p.tier === "Worth it" ? z >= 11.5 : z >= 13);
+  const hasLabel = p => p.id === selected || dayIds.includes(p.id) || (p.tier === "Must" ? true : p.tier === "Worth it" ? z >= 11.5 : z >= 13);
   const boxes = [];
   const hit = r => boxes.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
+  const stnBox = (st, withLabel) => { const pt = map.project([st.lon, st.lat]); const r = [{x: pt.x - 12, y: pt.y - 12, w: 24, h: 24}]; if (withLabel){ const lw = st.name.length * 6.2 + 14; r.push({x: pt.x - lw / 2, y: pt.y + 14, w: lw, h: 18}); } return r; };
+  let stnDone = false;
+  const placeMajorStations = () => { stnDone = true; Object.values(stnPins).forEach(({el, st}) => { if (!st.major) return; el.style.zIndex = 9; const lab = z >= 8.6 && !hit(stnBox(st, true)[1]); el.classList.toggle("nolabel", !lab); stnBox(st, lab).forEach(r => boxes.push(r)); }); };
   const list = PLACES.filter(p => pins[p.id] && !pins[p.id].el.classList.contains("hide")).sort((a, b) => rank(a) - rank(b));
   list.forEach(p => {
+    if (!stnDone && rank(p) >= 1) placeMajorStations();
     const el = pins[p.id].el, pt = map.project([p.lon, p.lat]), s = size(p);
     el.style.zIndex = p.id === selected ? 30 : dayIds.includes(p.id) ? 20 : 10 - TIER_ORDER[p.tier] * 3;
     if (pt.x < -80 || pt.y < -80 || pt.x > W + 80 || pt.y > H + 80 || !s){ el.classList.remove("dot", "nolabel"); return; }
@@ -532,6 +600,16 @@ function declutter(){
     const lw = shortName(p).length * 6.6 + 18, lr = {x: pt.x - lw / 2, y: pt.y + s / 2 + 2, w: lw, h: 20};
     if (!must && hit(lr)) el.classList.add("nolabel");
     else { el.classList.remove("nolabel"); boxes.push(lr); }
+  });
+  if (!stnDone) placeMajorStations();
+  Object.values(stnPins).forEach(({el, st}) => {
+    if (st.major) return;
+    el.style.zIndex = 6;
+    if (z < 10.5){ el.classList.add("off"); return; }
+    const r = stnBox(st, true);
+    if (hit(r[0])){ el.classList.add("off"); return; }
+    el.classList.remove("off"); boxes.push(r[0]);
+    const lab = !hit(r[1]); el.classList.toggle("nolabel", !lab); if (lab) boxes.push(r[1]);
   });
 }
 /* ---------- map camera: always frame things in the space the sheet leaves free ---------- */
@@ -601,6 +679,7 @@ function setSnap(name, animate = true){
   fab.style.bottom = `calc(var(--nav) + var(--safe-b) + ${(wide() ? 0 : sheetH()) + (snap === "closed" && !pill ? teaserH() : 0) + 14}px)`;
   fab.hidden = !wide() && name === "full";
   $("#chips").style.visibility = !wide() && name === "full" ? "hidden" : "";
+  $("#keybtn").style.visibility = !wide() && name !== "closed" && name !== "peek" ? "hidden" : "";
 }
 
 function render(opts = {}){
@@ -633,6 +712,7 @@ function applyRoute(fit){
   showRoute(ids, ctx.v, fit && topView() === ctx);
 }
 function push(v, opts = {}){
+  if (!$("#keycard").hidden) showKey(false);
   const s = stacks[tab], t = topView();
   if (t && t.v === "place" && v.v === "place"){ s[s.length - 1] = v; history.replaceState({vf: 1}, ""); }
   else { s.push(v); history.pushState({vf: 1}, ""); }
@@ -1001,6 +1081,12 @@ q.addEventListener("input", () => { const t = topView(); if (t && t.v === "searc
 q.addEventListener("keydown", e => { if (e.key === "Enter") q.blur(); });
 addEventListener("keydown", e => { if (e.key === "Escape") back(); });
 addEventListener("resize", () => { map && map.resize(); setSnap(snap, false); });
+
+/* map key: opens by itself on the first visit */
+function showKey(on){ $("#keycard").hidden = !on; $("#keybtn").setAttribute("aria-expanded", on); if (!on) try { localStorage.setItem("vf-keyseen", "1"); } catch (e) {} }
+$("#keybtn").onclick = () => showKey($("#keycard").hidden);
+$("#keyx").onclick = () => showKey(false);
+try { if (!localStorage.getItem("vf-keyseen")) setTimeout(() => showKey(true), 900); } catch (e) {}
 history.replaceState({vf: 0}, "");
 buildChips();
 initMap();
