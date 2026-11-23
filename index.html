@@ -64,21 +64,44 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stro
 .teaser span.s{font-size:13px;font-weight:700;color:var(--muted)}
 
 /* pins */
+/* pins: Must = photo, Worth = icon, Deep = dot. Size and labels change with zoom (body.zf/zm/zn/zs);
+   pins that would collide shrink to a dot (.dot) or drop their label (.nolabel) — see declutter() */
 .pin{display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.pin .c{position:relative;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .15s}
-.pin.must .c{width:44px;height:44px;background:var(--must);border:3px solid #fff;color:#fff;box-shadow:0 4px 12px rgba(31,61,54,.28)}
-.pin.worth .c{width:34px;height:34px;background:#fff;border:3px solid var(--worth);color:var(--worth);box-shadow:0 3px 8px rgba(31,61,54,.2)}
-.pin.deep .c{width:18px;height:18px;background:var(--deep);border:3px solid #fff;box-shadow:0 2px 6px rgba(31,61,54,.28)}
-.pin.must svg{width:22px;height:22px}.pin.worth svg{width:17px;height:17px}.pin.deep svg{display:none}
-.pin .l{position:absolute;top:100%;margin-top:3px;white-space:nowrap;font-size:12px;font-weight:800;background:rgba(255,255,255,.95);padding:1px 8px;border-radius:9px;box-shadow:0 1px 4px rgba(31,61,54,.15);pointer-events:none;display:none}
-.pin.must .l{display:block}
-body.z11 .pin.worth .l,body.z12 .pin.deep .l{display:block}
-body.far .pin.must .l{display:none}
-.pin.on .c{transform:scale(1.2);box-shadow:0 0 0 6px rgba(31,61,54,.25)}
-.pin.on .l{display:block;background:var(--ink);color:#fff}
+.pin .c{position:relative;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:width .18s,height .18s,transform .15s;box-sizing:border-box;color:#fff}
+.pin .c > svg{position:relative}
+.pin.must .c{width:52px;height:52px;background:var(--must);border:2.5px solid #fff;box-shadow:0 0 0 3px var(--must),0 5px 14px rgba(31,61,54,.32)}
+.pin.must .c .phimg{border-radius:50%}
+.pin.must svg{width:22px;height:22px}
+.pin.worth .c{width:30px;height:30px;background:var(--worth);border:2.5px solid #fff;box-shadow:0 3px 8px rgba(31,61,54,.25)}
+.pin.worth svg{width:15px;height:15px}
+.pin.deep .c{width:14px;height:14px;background:var(--deep);border:2.5px solid #fff;box-shadow:0 2px 5px rgba(31,61,54,.3)}
+.pin.deep svg{display:none}
+body.zf .pin.must .c{width:40px;height:40px}
+body.zf .pin.worth .c{width:12px;height:12px}
+body.zf .pin.worth svg{display:none}
+body.zf .pin.deep{display:none}
+body.zm .pin.deep .c{width:10px;height:10px;border-width:2px}
+.pin .l{position:absolute;top:100%;margin-top:6px;white-space:nowrap;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:9px;pointer-events:none;display:none;background:rgba(255,255,255,.95);color:var(--ink);box-shadow:0 1px 4px rgba(31,61,54,.15)}
+.pin.must .l{background:var(--ink);color:#fff;box-shadow:none}
+body.zm .pin.must .l,body.zn .pin.must .l,body.zn .pin.worth .l,body.zs .pin.deep .l{display:block}
+.pin.nolabel .l{display:none!important}
+.pin.dot .c{width:10px!important;height:10px!important;border-width:2px;box-shadow:0 1px 4px rgba(31,61,54,.3)}
+.pin.dot .c > svg,.pin.dot .phimg{display:none}
+.pin.dot .l{display:none!important}
+.pin.dot.worth{display:flex}
+.pin.on .c,.pin.inday .c{transform:scale(1.12)}
+.pin.on .c{box-shadow:0 0 0 3px var(--ink),0 0 0 9px rgba(31,61,54,.18)}
+.pin.on .l,.pin.inday .l{display:block!important}
+.pin.on .l{background:var(--ink);color:#fff}
+.pin.on,.pin.inday{display:flex!important}
+.pin.on .c,.pin.inday .c{width:52px;height:52px}
+.pin.worth.on .c,.pin.worth.inday .c{width:34px;height:34px}
+.pin.deep.on .c,.pin.deep.inday .c{width:18px;height:18px}
+.pin.on svg,.pin.inday svg{display:block}
+.pin.deep.on svg,.pin.deep.inday svg{display:none}
 .pin .n{position:absolute;top:-8px;right:-8px;min-width:20px;height:20px;border-radius:10px;background:var(--action);color:#fff;font-size:11px;font-weight:900;display:none;align-items:center;justify-content:center;border:2px solid #fff;padding:0 4px}
 .pin.inday .n{display:flex}
-.pin.hide{display:none}
+.pin.hide{display:none!important}
 .me{width:22px;height:22px;border-radius:50%;background:#2F80ED;border:4px solid #fff;box-shadow:0 0 0 10px rgba(47,128,237,.18),0 2px 6px rgba(0,0,0,.25)}
 
 /* sheet */
@@ -235,7 +258,7 @@ nav.tabs svg{width:24px;height:24px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body class="far">
+<body class="zf">
 <div id="map" aria-label="Map of Fukui"></div>
 
 <div class="top">
@@ -395,12 +418,13 @@ function initMap(){
   map.on("style.load", theme);
   map.on("load", () => { addFukuiShape(); fitAll(0); drawRoute(); });
   map.on("zoom", zoomClass);
+  map.on("move", declutterSoon);
   map.on("click", e => { if (!e.originalEvent.target.closest(".pin")) { if (view === "place") closeSheet(); } });
   PLACES.forEach(p => {
     const el = document.createElement("button");
     el.className = "pin " + tierKey(p.tier);
     el.setAttribute("aria-label", `${p.name}, ${p.tier}`);
-    el.innerHTML = `<span class="c">${ic(p.type)}<span class="n"></span></span><span class="l">${esc(shortName(p))}</span>`;
+    el.innerHTML = `<span class="c">${ic(p.type)}${p.tier === "Must" ? photoHtml(p) : ""}<span class="n"></span></span><span class="l">${esc(shortName(p))}</span>`;
     el.addEventListener("click", ev => { ev.stopPropagation(); openPlace(p.id, true); });
     pins[p.id] = {el, m: new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([p.lon, p.lat]).addTo(map)};
   });
@@ -422,10 +446,9 @@ function fitAll(duration = 800){
   map.fitBounds([[135.45, 35.34], [136.83, 36.3]], {padding: {top: 130, bottom: wide ? 40 : 110, left: wide ? 470 : 8, right: 8}, duration});
 }
 function zoomClass(){
-  const z = map ? map.getZoom() : 8;
-  document.body.classList.toggle("far", z < 8.7);
-  document.body.classList.toggle("z11", z >= 10.5);
-  document.body.classList.toggle("z12", z >= 12);
+  const z = map ? map.getZoom() : 8, B = document.body.classList;
+  B.toggle("zf", z < 9); B.toggle("zm", z >= 9 && z < 11.5); B.toggle("zn", z >= 11.5); B.toggle("zs", z >= 13);
+  declutterSoon();
 }
 function syncPins(){
   const dayIds = routeDay ? routeDay.ids : [];
@@ -436,7 +459,40 @@ function syncPins(){
     pin.el.classList.toggle("on", selected === p.id);
     pin.el.classList.toggle("inday", k >= 0);
     pin.el.querySelector(".n").textContent = k >= 0 ? k + 1 : "";
-    pin.el.style.zIndex = selected === p.id ? 20 : k >= 0 ? 15 : TIER_ORDER[p.tier] === 0 ? 3 : TIER_ORDER[p.tier] === 1 ? 2 : 1;
+  });
+  declutterSoon();
+}
+/* Decide, on screen, which pins get full size and a label. Most important first:
+   the selected pin, stops of the trip on screen, then Must, Worth it, Deep & unseen.
+   A pin that would overlap one already placed shrinks to a dot; a label that would overlap is dropped. */
+let dcPending = false;
+function declutterSoon(){ if (!dcPending && map){ dcPending = true; requestAnimationFrame(() => { dcPending = false; declutter(); }); } }
+function declutter(){
+  const z = map.getZoom(), W = map.getContainer().clientWidth, H = map.getContainer().clientHeight;
+  const dayIds = routeDay ? routeDay.ids : [];
+  const rank = p => p.id === selected ? -2 : dayIds.includes(p.id) ? -1 : TIER_ORDER[p.tier];
+  const size = p => {
+    if (p.id === selected || dayIds.includes(p.id)) return p.tier === "Must" ? 58 : p.tier === "Worth it" ? 38 : 20;
+    if (p.tier === "Must") return z < 9 ? 38 : 54;
+    if (p.tier === "Worth it") return z < 9 ? 14 : 34;
+    return z < 9 ? 0 : z < 11.5 ? 12 : 16;
+  };
+  const hasLabel = p => p.id === selected || dayIds.includes(p.id) || (p.tier === "Must" ? z >= 9 : p.tier === "Worth it" ? z >= 11.5 : z >= 13);
+  const boxes = [];
+  const hit = r => boxes.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
+  const list = PLACES.filter(p => pins[p.id] && !pins[p.id].el.classList.contains("hide")).sort((a, b) => rank(a) - rank(b));
+  list.forEach(p => {
+    const el = pins[p.id].el, pt = map.project([p.lon, p.lat]), s = size(p);
+    el.style.zIndex = p.id === selected ? 30 : dayIds.includes(p.id) ? 20 : 10 - TIER_ORDER[p.tier] * 3;
+    if (pt.x < -80 || pt.y < -80 || pt.x > W + 80 || pt.y > H + 80 || !s){ el.classList.remove("dot", "nolabel"); return; }
+    const r = {x: pt.x - s / 2, y: pt.y - s / 2, w: s, h: s};
+    const must = rank(p) < 0;
+    if (!must && hit(r)){ el.classList.add("dot"); el.classList.remove("nolabel"); el.style.zIndex = 1; return; }
+    el.classList.remove("dot"); boxes.push(r);
+    if (!hasLabel(p)){ el.classList.remove("nolabel"); return; }
+    const lw = shortName(p).length * 6.6 + 18, lr = {x: pt.x - lw / 2, y: pt.y + s / 2 + 2, w: lw, h: 20};
+    if (!must && hit(lr)) el.classList.add("nolabel");
+    else { el.classList.remove("nolabel"); boxes.push(lr); }
   });
 }
 function flyTo(p, z = 13){
