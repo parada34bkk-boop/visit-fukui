@@ -13,8 +13,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=M+PLUS+Rounded+1c:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
 <script src="vendor/maplibre/maplibre-gl.js"></script>
-<script src="data.js"></script>
-<script src="fukui-shape.js"></script>
+<script src="data.js?v=11fea98"></script>
+<script src="fukui-shape.js?v=11fea98"></script>
 <style>
 :root{
   /* layout: full-bleed map; search + filters on top; one sheet slides over the map; 4-tab bar at the bottom */
@@ -297,7 +297,7 @@ const PHOTO_CREDIT = "Photo: DISCOVER FUKUI";
 const photoSrcs = p => p && p.img ? [p.img] : p && p.dfimg ? [1, 2, 3, 4, 5, 6].map(n => `${p.dfimg}${n}_l.jpg`) : [];
 function photoHtml(p){
   const s = photoSrcs(p);
-  return s.length ? `<img class="phimg" src="${s[0]}" data-srcs="${s.join("|")}" data-i="0" alt="" loading="lazy" onerror="nextSrc(this)">` : "";
+  return s.length ? `<img class="phimg" src="${s[0]}" data-srcs="${s.join("|")}" data-i="0" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="nextSrc(this)">` : "";
 }
 function nextSrc(img){
   const s = img.dataset.srcs.split("|"), i = +img.dataset.i + 1;
