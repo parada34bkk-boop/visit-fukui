@@ -1,9 +1,15 @@
 import json
-exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'places.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'rest.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'trips.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'more.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'df.py')).read())
+exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'places.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'rest.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'trips.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'more.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'df.py')).read()); exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__),'access.py')).read())
 P=P+P2; A=A+A2; F=F+F2; E=E+E2
 STOPMAP.update(STOPMAP_MORE)
 ids={p[0] for p in P}; assert len(ids)==len(P)
 places=[dict(id=p[0],tier=p[1],name=p[2],area=p[3],type=p[4],why=p[5],best=p[6],access=p[7],jp=p[8],lat=p[9],lon=p[10],df=('https://www.fuku-e.com/en/'+DF[p[0]]) if p[0] in DF else None,dfimg=(lambda n:'https://www.fuku-e.com/lsc/upfile/spot/0000/%s/%s_'%(n,n) if n else None)(DF[p[0]].split('_')[1].split('.')[0] if p[0] in DF and DF[p[0]].startswith('attractions/') else None),img=PHOTOS.get(p[0],(None,None))[0],credit=PHOTOS.get(p[0],(None,None))[1]) for p in P]
+for x in places:
+  r,stn,how,tm,note,src=ACCESS[x['id']]
+  x.update(nocar=r,station=None if stn=='-' else stn,how=how,time=None if tm=='-' else tm,anote=note or None,asrc=src)
+  if x['id'] in COORDS: x['lat'],x['lon']=COORDS[x['id']]
+  if x['id']=='ranch': x['area']='Katsuyama'
+assert set(ACCESS)==ids
 assert all(k in ids for k in DF), [k for k in DF if k not in ids]
 acts=[dict(tier=a[0],name=a[1],place=a[2],what=a[3],note=a[4]) for a in A]
 foods=[dict(tier=f[0],name=f[1],jp=f[2],what=f[3],where=f[4],places=f[5],months=f[6]) for f in F]
