@@ -173,6 +173,15 @@ body.zm .pin.must .l,body.zn .pin.must .l,body.zn .pin.worth .l,body.zs .pin.dee
 .hero .k{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
 .hero b{font-size:21px;font-weight:900;line-height:1.15}
 .hero span:last-child{font-size:13px;font-weight:700;line-height:1.4;opacity:.92}
+.teaser.pillmode{right:auto;max-width:calc(100% - 100px);padding:6px 6px 6px 6px;border-radius:30px;gap:4px}
+.teaser.pillmode .tmain{gap:10px}
+.teaser .pth{width:40px;height:40px;border-radius:50%;flex:none;margin:0;padding:0;display:flex;align-items:center;justify-content:center}
+.teaser .pth .phimg{border-radius:50%}
+.teaser .ptx{display:flex;flex-direction:column;min-width:0}
+.teaser .ptx .k{font-size:10px}
+.teaser .ptx b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.teaser .px{width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--soft)}
+.teaser .px svg{width:16px;height:16px}
 .why{font-size:15.5px;font-weight:600;line-height:1.55;margin:10px 0 12px;color:#2C4740}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{background:var(--soft);border-radius:12px;padding:6px 11px;font-size:13px;font-weight:800}
@@ -588,7 +597,8 @@ function setSnap(name, animate = true){
   const t = topView(); if (t && name !== "closed") t.snap = name;
   updateTeaser();
   const fab = $("#loc");
-  fab.style.bottom = `calc(var(--nav) + var(--safe-b) + ${(wide() ? 0 : sheetH()) + (snap === "closed" ? teaserH() : 0) + 14}px)`;
+  const pill = $("#teaser").classList.contains("pillmode");
+  fab.style.bottom = `calc(var(--nav) + var(--safe-b) + ${(wide() ? 0 : sheetH()) + (snap === "closed" && !pill ? teaserH() : 0) + 14}px)`;
   fab.hidden = !wide() && name === "full";
   $("#chips").style.visibility = !wide() && name === "full" ? "hidden" : "";
 }
@@ -925,7 +935,7 @@ const VIEWS = {
 /* bar on the map: your next stop, or what's on now (only on Explore with no sheet open) */
 function updateTeaser(){
   const t = $("#teaser");
-  t.classList.remove("hasbanner");
+  t.classList.remove("hasbanner", "pillmode");
   if (tab !== "explore" || snap !== "closed"){ t.hidden = true; return; }
   const nx = nextStop(), pr = tripProgress();
   if (nx && nx.p){
@@ -934,17 +944,17 @@ function updateTeaser(){
     $("#tmain").onclick = () => { myDay = nx.day; openMyTrip(); };
     return;
   }
+  /* what's on now: a small pill you can close; it stays closed for the rest of this month */
   const nowEv = EVENTS.filter(isNow).sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
   const e = nowEv.find(x => x.img) || nowEv[0];
-  if (!e){ t.hidden = true; return; }
+  const key = `${new Date().getFullYear()}-${thisMonth}`;
+  let hidden = ""; try { hidden = localStorage.getItem("vf-now-hide") || ""; } catch (err) {}
+  if (!e || hidden === key){ t.hidden = true; return; }
   t.hidden = false;
-  if (e.img){
-    t.innerHTML = `<button class="tmain banner" id="tmain"><img src="${e.img}" alt=""><span class="btx"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)} · ${esc(e.where)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg)"')}</button>`;
-    t.classList.add("hasbanner");
-  } else {
-    t.innerHTML = `<button class="tmain" id="tmain"><span class="ph photo ${tierKey(e.tier)}" style="margin:0;height:56px;padding:0;align-items:center;justify-content:center">${ic("Event")}${evPhoto(e, true)}</span><span style="flex:1;min-width:0"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b><span class="s">${esc(e.when)}</span></span>${ic("Back").replace('class="i"', 'class="i" style="transform:rotate(180deg);color:var(--muted)"')}</button>`;
-  }
+  t.classList.add("pillmode");
+  t.innerHTML = `<button class="tmain" id="tmain" aria-label="Now in Fukui: ${esc(e.name)}"><span class="pth photo ${tierKey(e.tier)}">${ic("Event")}${evPhoto(e, true)}</span><span class="ptx"><span class="k">Now in Fukui</span><b>${esc(e.name)}</b></span></button><button class="px" id="nowx" aria-label="Hide for this month">${ic("X")}</button>`;
   $("#tmain").onclick = () => setTab("now");
+  $("#nowx").onclick = ev => { ev.stopPropagation(); try { localStorage.setItem("vf-now-hide", key); } catch (err) {} t.hidden = true; setSnap(snap, false); toast("Hidden for this month. It's still in the Now tab."); };
 }
 
 /* location */
