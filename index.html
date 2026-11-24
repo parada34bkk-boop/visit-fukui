@@ -516,6 +516,8 @@ const isSoon = e => e.months && nextMonths.some(m => e.months.includes(m)) && !i
 let tab = "explore", mode = "all", selected = null, map = null, view = null, viewArg = null;
 const tiers = new Set();
 const pins = {};
+/* isStyleLoaded() reads false while any source is still loading, so drawing waits for this flag instead */
+let mapReady = false;
 let saved = [], myTrip = null, myDay = 0, routeDay = null;
 try { saved = JSON.parse(localStorage.getItem("vf-saved") || "[]"); } catch (e) {}
 try { myTrip = JSON.parse(localStorage.getItem("vf-mytrip") || "null"); } catch (e) {}
@@ -629,7 +631,7 @@ function initMap(){
   if (!window.maplibregl){ $("#map").innerHTML = '<div class="nomap">The map could not load. Check your connection and try again.</div>'; return; }
   map = new maplibregl.Map({container: "map", style: "https://tiles.openfreemap.org/styles/positron", center: [136.25, 35.95], zoom: 8.5, minZoom: 7, maxZoom: 18, attributionControl: {compact: true}, maxBounds: [[134.2, 34.3], [138.1, 37.4]]});
   map.on("style.load", theme);
-  map.on("load", () => { addFukuiShape(); fitAll(0); drawRoute(); });
+  map.on("load", () => { mapReady = true; addFukuiShape(); fitAll(0); drawRoute(); if (routeDay && routeDay.ids.length > 1) showRoute(routeDay.ids, routeDay.label, true); });
   map.on("zoom", zoomClass);
   map.on("move", declutterSoon);
   map.on("click", e => { if (!$("#keycard").hidden) showKey(false); if (!e.originalEvent.target.closest(".pin")){ const t = topView(); if (t && t.v === "place") back(); } });
@@ -738,7 +740,7 @@ function flyTo(p, z = 13){
   map.easeTo({center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), z), offset: padOffset(), duration: 800});
 }
 function drawRoute(){
-  if (!map || !map.isStyleLoaded()) return;
+  if (!map || !mapReady) return;
   const coords = routeDay ? routeDay.ids.map(P).filter(Boolean).map(p => [p.lon, p.lat]) : [];
   const data = {type: "Feature", geometry: {type: "LineString", coordinates: coords.length > 1 ? coords : []}};
   const src = map.getSource("route");
@@ -822,7 +824,13 @@ function render(opts = {}){
 function applyRoute(fit){
   const s = stacks[tab]; let ctx = null;
   for (let k = s.length - 1; k >= 0; k--) if (s[k].v === "trip" || s[k].v === "mytrip" || s[k].v === "shared"){ ctx = s[k]; break; }
-  if (!ctx){ if (routeDay){ routeDay = null; drawRoute(); syncPins(); } return; }
+  if (!ctx){
+    /* no trip open in this tab: while your own trip is under way, keep today's route on the map */
+    const ns = nextStop();
+    if (ns) showRoute(myTrip.days[ns.day], "mytrip", false);
+    else if (routeDay){ routeDay = null; drawRoute(); syncPins(); }
+    return;
+  }
   const ids = ctx.v === "trip" ? TRIPS[ctx.i].stops.filter(x => x.day === ctx.day && x.place).map(x => x.place) : ctx.v === "shared" ? ctx.data.days.flat() : (myTrip ? myTrip.days[myDay] || [] : []);
   showRoute(ids, ctx.v, fit && topView() === ctx);
 }
@@ -874,7 +882,7 @@ function openStation(id){
 }
 /* bus lines for the station on screen: straight spokes to where each bus goes */
 function drawBuses(st){
-  if (!map || !map.isStyleLoaded()) return;
+  if (!map || !mapReady) return;
   const feats = st && st.buses ? st.buses.flatMap(k => BUSES[k].to.map(P).filter(Boolean).map(p => ({type: "Feature", properties: {tour: !!BUSES[k].tour}, geometry: {type: "LineString", coordinates: [[st.lon, st.lat], [p.lon, p.lat]]}}))) : [];
   const data = {type: "FeatureCollection", features: feats};
   const src = map.getSource("bus");
