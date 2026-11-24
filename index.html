@@ -382,6 +382,29 @@ nav.tabs .tbadge{position:absolute;top:-5px;right:-10px;min-width:17px;height:17
 .driver .den{font-size:15px;font-weight:800;color:var(--muted);margin-bottom:14px}
 .driver .done{height:54px;border-radius:27px;background:var(--ink);color:#fff;font-weight:900;font-size:16px}
 .empty-trip{padding:8px 0 4px}
+/* route planner */
+.planbtn{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,#E3F2EA,#F4F9F6);box-shadow:inset 0 0 0 1.5px #CFE5DA;margin:4px 0 10px}
+.planbtn .pi{width:38px;height:38px;border-radius:19px;background:var(--action);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.planbtn .pi svg{width:20px;height:20px}
+.planbtn b{display:block;font-size:15px;font-weight:900;color:var(--ink)}
+.planbtn small{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-top:1px}
+.psec{font-size:12.5px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+.psug{font-size:13px;font-weight:800;color:var(--action);margin:6px 0 0}
+.chips2{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips2 button{flex:none;height:38px;padding:0 14px;border-radius:19px;background:var(--soft);font-weight:900;font-size:13.5px;color:var(--ink)}
+.chips2 button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chips2 button .rec{font-size:11px;margin-left:4px;color:var(--action)}
+.chips2 button[aria-pressed="true"] .rec{color:#BFE8D6}
+.tl-end{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;font-weight:800;color:var(--ink)}
+.tl-end .tt,.mstop .tt{font-variant-numeric:tabular-nums}
+.tl-end .tt{width:44px;font-weight:900;color:var(--muted);font-size:13px}
+.tl-end .dot{width:12px;height:12px;border-radius:6px;border:3px solid var(--ink);box-sizing:border-box;margin:0 7px}
+.tl-lunch{margin-left:13px;border-left:2px dashed #C9D9CF;padding:6px 0 6px 14px;font-size:13px;font-weight:800;color:#7A5A12;display:flex;align-items:center;gap:6px}
+.tl-lunch svg{width:15px;height:15px}
+.mstop .tt{font-weight:900;color:var(--action)}
+.pwarn{background:#FFF6DC;color:#6B4E0F;border-radius:14px;padding:10px 12px;font-size:13px;font-weight:700;margin:10px 0;line-height:1.45}
+.pwarn p{margin:0}.pwarn p+p{margin-top:6px}
+.tmeta{font-size:12.5px;font-weight:700;color:var(--muted);margin:2px 0 8px}
 .empty-trip p{font-size:15px;font-weight:700;line-height:1.5;margin:0 0 14px;color:var(--ink)}
 .shared-day{font-size:13px;font-weight:900;color:var(--muted);margin:14px 0 2px;text-transform:uppercase;letter-spacing:.05em}
 nav.tabs svg{width:24px;height:24px}
@@ -466,7 +489,7 @@ const ICON = {
   Event:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
   X:'<path d="M6 6l12 12M18 6L6 18"/>', Heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
   Bus:'<rect x="5" y="3.5" width="14" height="14" rx="3"/><path d="M5 11h14M8 21v-3.5M16 21v-3.5"/><path d="M8.5 14.5h.01M15.5 14.5h.01"/>',
-  Back:'<path d="M15 5l-7 7 7 7"/>', Walk:'<circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2-6 3 3v3M12 15l1-5-3 1-2 3M13 10l2.5 3H18"/>', Clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', Train:'<rect x="6" y="3.5" width="12" height="13" rx="3"/><path d="M6 10h12M9 20l1.5-3.5M15 20l-1.5-3.5"/>', Car:'<path d="M5 16l1.5-5h11l1.5 5M4 16h16v3H4zM7 19v1.5M17 19v1.5"/>'
+  Back:'<path d="M15 5l-7 7 7 7"/>', Walk:'<circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2-6 3 3v3M12 15l1-5-3 1-2 3M13 10l2.5 3H18"/>', Route:'<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M6 17c0-6 12-4 12-10"/>', Spark:'<path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1-5.1-1.9 5.1-1.9z"/><path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>', Clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', Train:'<rect x="6" y="3.5" width="12" height="13" rx="3"/><path d="M6 10h12M9 20l1.5-3.5M15 20l-1.5-3.5"/>', Car:'<path d="M5 16l1.5-5h11l1.5 5M4 16h16v3H4zM7 19v1.5M17 19v1.5"/>'
 };
 const ic = (k, cls = "i") => `<svg class="${cls}" viewBox="0 0 24 24">${ICON[k] || ICON.Nature}</svg>`;
 const tierKey = t => t === "Must" ? "must" : t === "Worth it" ? "worth" : "deep";
@@ -823,7 +846,7 @@ function render(opts = {}){
    visible while you look at one of its stops, and goes away when you leave the trip. */
 function applyRoute(fit){
   const s = stacks[tab]; let ctx = null;
-  for (let k = s.length - 1; k >= 0; k--) if (s[k].v === "trip" || s[k].v === "mytrip" || s[k].v === "shared"){ ctx = s[k]; break; }
+  for (let k = s.length - 1; k >= 0; k--) if (s[k].v === "trip" || s[k].v === "mytrip" || s[k].v === "shared" || s[k].v === "plan"){ ctx = s[k]; break; }
   if (!ctx){
     /* no trip open in this tab: while your own trip is under way, keep today's route on the map */
     const ns = nextStop();
@@ -831,7 +854,7 @@ function applyRoute(fit){
     else if (routeDay){ routeDay = null; drawRoute(); syncPins(); }
     return;
   }
-  const ids = ctx.v === "trip" ? TRIPS[ctx.i].stops.filter(x => x.day === ctx.day && x.place).map(x => x.place) : ctx.v === "shared" ? ctx.data.days.flat() : (myTrip ? myTrip.days[myDay] || [] : []);
+  const ids = ctx.v === "trip" ? TRIPS[ctx.i].stops.filter(x => x.day === ctx.day && x.place).map(x => x.place) : ctx.v === "shared" ? ctx.data.days.flat() : ctx.v === "plan" ? (ctx.res && ctx.res[ctx.pday || 0]) || [] : (myTrip ? myTrip.days[myDay] || [] : []);
   showRoute(ids, ctx.v, fit && topView() === ctx);
 }
 function push(v, opts = {}){
@@ -944,7 +967,7 @@ const nDays = t => parseInt(t.length, 10);
 const bucket = t => nDays(t) >= 3 ? "3" : String(nDays(t));
 const isCar = t => t.mode === "Rental car";
 /* is the trip you're building one without a car? (picked from a no-car trip, or "No car" chosen when starting) */
-const tripNoCar = () => !myTrip || (myTrip.from != null && TRIPS[myTrip.from] ? !isCar(TRIPS[myTrip.from]) : !tf.car);
+const tripNoCar = () => !myTrip || (typeof myTrip.car === "boolean" ? !myTrip.car : myTrip.from != null && TRIPS[myTrip.from] ? !isCar(TRIPS[myTrip.from]) : !tf.car);
 const tripPlaces = t => [...new Set(t.stops.map(s => s.place).filter(Boolean))].map(P).filter(Boolean);
 const stripCheck = s => String(s || "").replace(/\s*\(check[^)]*\)/gi, "");
 function tripNotes(t){
@@ -996,6 +1019,114 @@ function placeIn(id, where){
 /* trains that run rarely: worth a warning when you're going without a car */
 const RARE = [[/Etsumi-Hoku/i, "Trains on the JR Etsumi-Hoku Line come about once every 1 to 2 hours, and only a few a day go past Echizen-Ono. Check the times first (Directions shows them)."],
   [/Obama Line/i, "Trains on the JR Obama Line come about once every 1 to 2 hours. Check the times first (Directions shows them)."]];
+/* ---------- route planner ----------
+   How long people usually stay, how long the hop between two places takes, and a planner that
+   puts any set of places in a sensible order, splits them into days and sets the times. */
+const STAY = {Dinosaurs: 2, Temple: 1.25, Nature: 1, History: 1.25, Castle: 1, Shrine: .75, Onsen: 2, Garden: 1, Food: 1, Crafts: 1.5, Art: 1, Town: 1.5, Museum: 1.25, Family: 2.5, Outdoors: 3, Park: 1};
+const STAY_ID = {dino: 3, eiheiji: 1.5, ichijodani: 2, tojinbo: 1.25, aquarium: 2, heko: 4, toriage: 4, akausagi: 4, fieldstation: 3, echizencoast: 3, mikata: 1.5, ono: 1.5, shibamasa: 3, skijam: 4, angelland: 2.5, awara: 2, eshikoto: 1.5};
+const PACES = {relaxed: {label: "Relaxed", start: 9.5, end: 17.5, k: 1.2}, normal: {label: "Normal", start: 9, end: 18, k: 1}, packed: {label: "Packed", start: 8.5, end: 19, k: .85}};
+const stayH = (p, pace) => Math.round((STAY_ID[p.id] || STAY[p.type] || 1.25) * (PACES[pace] || PACES.normal).k * 4) / 4;
+/* rough door-to-door time. Walking under 1.5 km. Further, longer trips go faster (expressway, Shinkansen),
+   and train/bus trips add time to wait and change. Checked against a few real trips:
+   Fukui to Eiheiji ~45 min, to Katsuyama ~1 h 20 by train + bus, to Obama ~2 h by train, ~1 h 45 by car. */
+function legRaw(a, b, car){
+  const k = dist(a, b), d = k * 1.3;
+  if (d < 1.5) return {h: d / 4.5, mode: "walk", d};
+  return car ? {h: d / (35 + Math.min(k, 60) * .4) + .15, mode: "drive", d} : {h: d / (25 + Math.min(k, 60) * .5) + (d < 5 ? .25 : .4), mode: "transit", d};
+}
+/* without a car, the Shinkansen is often the quick way along the north-south line:
+   Awara-Onsen, Fukui, Echizen-Takefu, Tsuruga (hours from Awara-Onsen), plus ~15 min to wait */
+const SHINKANSEN = [["s-awara", 0], ["s-fukui", .13], ["s-takefu", .32], ["s-tsuruga", .5]].map(([id, h]) => ({st: STATIONS.find(x => x.id === id), h}));
+function legOf(a, b, car){
+  const r = legRaw(a, b, car);
+  if (car || r.mode === "walk") return r;
+  const near = x => SHINKANSEN.reduce((m, s) => dist(x, s.st) < dist(x, m.st) ? s : m);
+  const sa = near(a), sb = near(b);
+  if (sa === sb) return r;
+  const h = legRaw(a, sa.st, false).h + .25 + Math.abs(sa.h - sb.h) + legRaw(sb.st, b, false).h;
+  return h < r.h ? {...r, h, sk: true} : r;
+}
+const baseOf = id => STATIONS.find(s => s.id === id) || STATIONS[0];
+const clock = h => { const m = Math.round(h * 12) * 5; return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, "0")}`; };
+const dur = h => { const m = Math.max(5, Math.round(h * 12) * 5); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60} min` : ""}`; };
+const legTxt = l => l.mode === "walk" ? `${dur(l.h)} walk` : l.mode === "drive" ? `~${dur(l.h)} drive · ${fmtDist(l.d / 1.3)}` : `~${dur(l.h)} by ${l.sk ? "Shinkansen + local" : "train or bus"} · ${fmtDist(l.d / 1.3)}`;
+const tripOpt = () => ({base: (myTrip && myTrip.opt && myTrip.opt.base) || "s-fukui", pace: (myTrip && myTrip.opt && myTrip.opt.pace) || "normal", car: !tripNoCar()});
+/* one day, in order: leave the base, each stop with its time, lunch around noon, back to the base */
+function dayPlan(ids, o){
+  const pc = PACES[o.pace] || PACES.normal, base = baseOf(o.base), ps = ids.map(P).filter(Boolean);
+  if (!ps.length) return null;
+  let t = pc.start, prev = base, lunch = false;
+  const rows = [{k: "start", t, name: base.name}];
+  ps.forEach((p, i) => {
+    const l = legOf(prev, p, o.car); rows.push({k: "leg", ...l}); t += l.h;
+    if (!lunch && t >= 12.75){ rows.push({k: "lunch", t, near: p}); t += 1; lunch = true; }
+    const h = stayH(p, o.pace); rows.push({k: "stop", t, h, p, i}); t += h;
+    if (!lunch && t >= 11.75 && i < ps.length - 1){ rows.push({k: "lunch", t, near: p}); t += 1; lunch = true; }
+    prev = p;
+  });
+  const l = legOf(prev, base, o.car); rows.push({k: "leg", ...l}); t += l.h;
+  rows.push({k: "end", t, name: base.name});
+  return {rows, start: pc.start, end: t, len: t - pc.start, budget: pc.end - pc.start, over: t > pc.end + .05};
+}
+/* shortest loop from the base through the places: nearest neighbour, then 2-opt */
+function orderLoop(ids, o){
+  const base = baseOf(o.base), left = [...ids], seq = [];
+  let cur = base;
+  while (left.length){ left.sort((a, b) => dist(cur, P(a)) - dist(cur, P(b))); const n = left.shift(); seq.push(n); cur = P(n); }
+  const L = q => { if (!q.length) return 0; let c = dist(base, P(q[0])) + dist(P(q[q.length - 1]), base); for (let i = 1; i < q.length; i++) c += dist(P(q[i - 1]), P(q[i])); return c; };
+  let best = seq, bl = L(seq), better = true;
+  while (better){
+    better = false;
+    for (let i = 0; i < best.length - 1; i++) for (let j = i + 1; j < best.length; j++){
+      const q = best.slice(0, i).concat(best.slice(i, j + 1).reverse(), best.slice(j + 1)), ql = L(q);
+      if (ql < bl - 1e-9){ best = q; bl = ql; better = true; }
+    }
+  }
+  return best;
+}
+/* Split places into D day trips from the base. Classic "sweep": sort the places by direction from the base,
+   so each day is one petal out and back; try every starting direction and cut the circle into D runs with the
+   least time overall, where any time past the end of the day counts many times over. Then put each day in its best order. */
+function planner(ids, o){
+  const base = baseOf(o.base), n = ids.length, ps = ids.map(P), cosl = Math.cos(base.lat * Math.PI / 180);
+  const ang = ps.map(p => Math.atan2(p.lat - base.lat, (p.lon - base.lon) * cosl));
+  const order = ids.map((_, i) => i).sort((a, b) => ang[a] - ang[b]);
+  const stay = ps.map(p => stayH(p, o.pace)), out = ps.map(p => legOf(base, p, o.car).h);
+  const lg = ps.map(a => ps.map(b => legOf(a, b, o.car).h));
+  const withLunch = h => h > 3.5 ? h + 1 : h;
+  const pc = PACES[o.pace] || PACES.normal, budget = pc.end - pc.start;
+  const score = c => c <= budget ? c : c + 20 * (c - budget);
+  const best = {};
+  for (let r = 0; r < n; r++){
+    const q = order.slice(r).concat(order.slice(0, r));
+    const cost = q.map(() => Array(n + 1).fill(0));
+    for (let i = 0; i < n; i++){ let run = out[q[i]] + stay[q[i]]; for (let j = i + 1; j <= n; j++){ if (j > i + 1) run += lg[q[j - 2]][q[j - 1]] + stay[q[j - 1]]; cost[i][j] = withLunch(run + out[q[j - 1]]); } }
+    let f = Array(n + 1).fill(null); f[0] = {mx: 0, sum: 0, cuts: []};
+    for (let D = 1; D <= Math.min(n, 7); D++){
+      const g = Array(n + 1).fill(null);
+      for (let j = D; j <= n; j++) for (let i = D - 1; i < j; i++){
+        const pr = f[i]; if (!pr) continue;
+        const c = cost[i][j], mx = Math.max(pr.mx, c), sum = pr.sum + score(c), cur = g[j];
+        if (!cur || sum < cur.sum - 1e-6 || (Math.abs(sum - cur.sum) < 1e-6 && mx < cur.mx)) g[j] = {mx, sum, cuts: [...pr.cuts, i]};
+      }
+      f = g;
+      const res = g[n], b = best[D];
+      if (res && (!b || res.sum < b.sum - 1e-6 || (Math.abs(res.sum - b.sum) < 1e-6 && res.mx < b.mx))) best[D] = {mx: res.mx, sum: res.sum, days: res.cuts.map((c, k) => q.slice(c, res.cuts[k + 1] ?? n).map(i => ids[i]))};
+    }
+  }
+  return best;
+}
+function autoPlan(ids, D, o){
+  if (!ids.length) return [];
+  const b = planner(ids, o), k = Math.max(1, Math.min(D, ids.length, 7));
+  return b[k].days.map(d => orderLoop(d, o));
+}
+function suggestDays(ids, o){
+  if (!ids.length) return 1;
+  const b = planner(ids, o), pc = PACES[o.pace] || PACES.normal;
+  for (let D = 1; D <= Math.min(ids.length, 7); D++) if (b[D] && b[D].days.every(d => !dayPlan(orderLoop(d, o), o).over)) return D;
+  return Math.min(ids.length, 7);
+}
 const rareNote = p => { const r = RARE.find(([re]) => re.test(p.station || "")); return r ? r[1] : null; };
 /* share a trip as a link: #trip=<name>&d=<ids per day, days split by |>&i=<ideas> */
 function shareUrl(){
@@ -1050,6 +1181,22 @@ function addToTrip(id, where){
   toast(carOnly(P(id)) && tripNoCar() ? `Added to Day ${at + 1} · needs a car` : `Added to Day ${at + 1}`, "See trip", openMyTrip);
 }
 
+/* a day as a timetable: leave, stops with times, lunch, back */
+function timeline(plan, {edit = false, day = null} = {}){
+  let html = "";
+  plan.rows.forEach(r => {
+    if (r.k === "start") html += `<div class="tl-end"><span class="tt">${clock(r.t)}</span><span class="dot"></span>Leave ${esc(r.name)}</div>`;
+    else if (r.k === "end") html += `<div class="tl-end"><span class="tt">${clock(r.t)}</span><span class="dot"></span>Back at ${esc(r.name)}</div>`;
+    else if (r.k === "leg") html += `<div class="leg">${legTxt(r)}</div>`;
+    else if (r.k === "lunch") html += `<div class="tl-lunch">${ic("Food")} ${clock(r.t)} Lunch near ${esc(shortName(r.near))} · 1 h</div>`;
+    else {
+      const p = r.p, k = r.i, id = p.id, done = day != null && myTrip.done.includes(day + ":" + id);
+      const flag = carOnly(p) && tripNoCar() ? `<em class="mcar">${ic("Car")}Needs a car</em> · ` : rareNote(p) && tripNoCar() ? `<em class="mrare">Few trains</em> · ` : "";
+      html += `<div class="mstop ${done ? "isdone" : ""}">${day != null ? `<button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button>` : `<span class="k">${k + 1}</span>`}<button class="tx" data-place="${id}"><b>${esc(shortName(p))}</b><span><span class="tt">${clock(r.t)}</span> · ${dur(r.h)} · ${flag}${esc(p.area)}</span></button>${edit ? `<span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span>` : `<i class="chev">${ic("Back")}</i>`}</div>`;
+    }
+  });
+  return html;
+}
 const VIEWS = {
   station(t){
     const st = STATIONS.find(x => x.id === t.id), o = {lat: st.lat, lon: st.lon};
@@ -1178,34 +1325,31 @@ const VIEWS = {
   },
   mytrip(t){
     if (!myTrip) return {title: "My trip", snap: "half",
-      body: `<div class="empty-trip"><p>Nothing here yet. Tap <b>Add to trip</b> on any place to keep it here, or start from a ready-made trip.</p>
+      body: `<div class="empty-trip"><p>Nothing here yet. Tap <b>Add to trip</b> on the places you like, in any order. The app then plans the route and the times for you. Or start from a ready-made trip.</p>
         <button class="cta" id="gotrips">Browse ready-made trips</button><button class="ghost" id="ownt">Start my own trip</button></div>`,
       bind(){ $("#gotrips").onclick = () => setTab("trips"); $("#ownt").onclick = () => { ensureTrip(); persist(); render(); }; }};
     if (!myTrip.ideas) myTrip.ideas = [];
     myTrip.done = myTrip.done || [];
     if (myDay >= myTrip.days.length) myDay = 0;
     const ids = myTrip.days[myDay], edit = !!t.edit;
-    let h = 0, html = "";
-    ids.forEach((id, k) => {
-      const p = P(id); if (!p) return;
-      if (k){ const prev = P(ids[k - 1]), d = dist(prev, p) * 1.3, hr = d < 1.6 ? d / 4.5 : d / 30 + .2; h += hr; html += `<div class="leg">~${Math.max(3, Math.round(hr * 60))} min · ${fmtDist(d / 1.3)}</div>`; }
-      h += 1.5;
-      const done = myTrip.done.includes(myDay + ":" + id);
-      html += `<div class="mstop ${done ? "isdone" : ""}"><button class="k ${done ? "done" : ""}" data-done="${id}" aria-label="${done ? "Mark as not done" : "Mark as done"}" aria-pressed="${done}">${done ? "✓" : k + 1}</button><button class="tx" data-place="${id}"><b>${esc(shortName(p))}</b><span>${carOnly(p) && tripNoCar() ? `<em class="mcar">${ic("Car")}Needs a car</em> · ` : rareNote(p) && tripNoCar() ? `<em class="mrare">Few trains</em> · ` : ""}${esc(p.area)}</span></button>${edit ? `<span class="ctl"><button data-up="${k}" aria-label="Move up">↑</button><button data-down="${k}" aria-label="Move down">↓</button><button data-rm="${k}" aria-label="Remove">✕</button></span>` : `<i class="chev">${ic("Back")}</i>`}</div>`;
-    });
-    const over = h > 9, nx = nextStop(), nxToday = nx && nx.day === myDay ? nx.p : null;
+    const o = tripOpt(), plan = dayPlan(ids, o);
+    const html = plan ? timeline(plan, {edit, day: myDay}) : "";
+    const total = myTrip.days.reduce((a, d) => a + d.length, 0) + myTrip.ideas.length;
+    const nx = nextStop(), nxToday = nx && nx.day === myDay ? nx.p : null;
     return {title: myTrip.name, snap: "half",
       right: `${edit ? "" : `<button class="hb" id="share" aria-label="Share this trip"><svg class="i" viewBox="0 0 24 24"><path d="M12 15V3.5M7.5 8L12 3.5 16.5 8"/><path d="M6 12H5v8.5h14V12h-1"/></svg></button>`}<button class="hb txt" id="edit">${edit ? "Done" : "Edit"}</button>`,
       body: `<div class="days sticky">${myTrip.days.map((d, k) => `<button data-mday="${k}" aria-pressed="${k === myDay}">Day ${k + 1}${d.length ? " · " + d.length : ""}</button>`).join("")}${edit ? `<button id="addday" aria-label="Add a day">+ Day</button>` : ""}</div>
-        ${ids.length ? `<div class="sum"><span>Day ${myDay + 1}: about ${Math.round(h * 2) / 2} h</span><span style="color:${over ? "var(--must)" : "var(--muted)"}">${over ? "Too full" : `${Math.round((9 - h) * 2) / 2} h free`}</span></div><div class="meter ${over ? "over" : ""}"><i style="width:${Math.min(100, h / 9 * 100)}%"></i></div>${html}` : '<div class="empty">No stops on this day yet.</div>'}
+        ${total >= 2 && !edit ? `<button class="planbtn" id="plan"><span class="pi">${ic("Spark")}</span><span><b>${myTrip.opt ? "Re-plan my route" : "Plan my route for me"}</b><small>${myTrip.opt ? "Change the days, start station or pace" : "Sorts the order, splits the days and sets the times"}</small></span></button>` : ""}
+        ${plan ? `<div class="sum"><span>Day ${myDay + 1} · ${clock(plan.start)} to ${clock(plan.end)}</span><span style="color:${plan.over ? "var(--must)" : "var(--muted)"}">${plan.over ? "Runs late" : `${dur(plan.budget - plan.len)} spare`}</span></div><div class="meter ${plan.over ? "over" : ""}"><i style="width:${Math.min(100, plan.len / plan.budget * 100)}%"></i></div><p class="tmeta">From ${esc(baseOf(o.base).name)} · ${PACES[o.pace].label} pace · ${o.car ? "Rental car" : "No car"} · times are estimates</p>${html}` : '<div class="empty">No stops on this day yet.</div>'}
         <button class="ghost" id="addstops">${ic("Do")} Add stops from the map</button>
         <div class="ideas-h"><h3>Ideas${myTrip.ideas.length ? ` (${myTrip.ideas.length})` : ""}</h3><small>Saved, not in a day yet</small></div>
-        ${myTrip.ideas.length ? myTrip.ideas.map(P).filter(Boolean).map(p => `<div class="idea-row"><span class="dd ${tierKey(p.tier)}"></span><button class="tx" data-place="${p.id}"><b>${esc(shortName(p))}</b><span>${carOnly(p) && tripNoCar() ? "Needs a car · " : ""}${esc(p.area)}</span></button><button class="put" data-put="${p.id}">+ Day ${myDay + 1}</button><button class="x" data-unidea="${p.id}" aria-label="Remove from ideas">✕</button></div>`).join("") : '<p class="hint" style="margin-top:0">Places you might want to see. Tap <b>Add to trip → Ideas</b> on any place.</p>'}
+        ${myTrip.ideas.length ? myTrip.ideas.map(P).filter(Boolean).map(p => `<div class="idea-row"><span class="dd ${tierKey(p.tier)}"></span><button class="tx" data-place="${p.id}"><b>${esc(shortName(p))}</b><span>${carOnly(p) && tripNoCar() ? "Needs a car · " : ""}${esc(p.area)}</span></button><button class="put" data-put="${p.id}">+ Day ${myDay + 1}</button><button class="x" data-unidea="${p.id}" aria-label="Remove from ideas">✕</button></div>`).join("") : '<p class="hint" style="margin-top:0">Add places in any order: tap <b>Add to trip → Ideas</b> on any place. Then <b>Plan my route for me</b> puts them into days with times.</p>'}
         ${edit ? `<button class="ghost danger" id="clear">Delete this trip</button>` : `<p class="hint">Tap the number when you've been there. ${myTrip.from != null ? `<button class="linkbtn" id="orig">See the original plan with times</button>` : ""}</p>`}`,
       foot: nxToday ? `<a class="cta go" href="${gmapsUrl(nxToday)}" target="_blank" rel="noopener">${ic(carOnly(nxToday) ? "Car" : "Train")} Go to ${esc(shortName(nxToday))}</a>` : ids.length ? `<p class="fnote" style="margin:4px 0">Day ${myDay + 1} done. Nice!</p>` : "",
       bind(v){
         $("#edit").onclick = () => { v.edit = !v.edit; render({keepScroll: true, keepRoute: true}); };
         sheet.querySelectorAll("[data-mday]").forEach(b => b.onclick = () => { myDay = +b.dataset.mday; render(); });
+        const pl = $("#plan"); if (pl) pl.onclick = () => push({v: "plan"});
         const ad = $("#addday"); if (ad) ad.onclick = () => { myTrip.days.push([]); myDay = myTrip.days.length - 1; persist(); render(); };
         const mv = (i, j) => { const a = myTrip.days[myDay]; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; persist(); render({keepScroll: true}); };
         sheet.querySelectorAll("[data-up]").forEach(b => b.onclick = () => mv(+b.dataset.up, +b.dataset.up - 1));
@@ -1222,6 +1366,58 @@ const VIEWS = {
         sheet.querySelectorAll("[data-unidea]").forEach(b => b.onclick = () => { const id = b.dataset.unidea; placeIn(id, null); render({keepScroll: true}); toast("Removed from ideas", "Undo", () => { placeIn(id, "idea"); render({keepScroll: true}); }); });
         const og = $("#orig"); if (og) og.onclick = () => push({v: "trip", i: myTrip.from, day: Math.min(myDay + 1, [...new Set(TRIPS[myTrip.from].stops.map(s => s.day))].length)});
         const cl = $("#clear"); if (cl) cl.onclick = () => { if (!confirm("Delete this trip and its ideas?")) return; myTrip = null; persist(); stacks.mytrip = [{v: "mytrip"}]; render(); updateTeaser(); toast("Trip deleted"); };
+      }};
+  },
+  plan(t){
+    const all = [...new Set([...myTrip.days.flat(), ...myTrip.ideas])].filter(id => P(id));
+    if (t.car == null) t.car = !tripNoCar();
+    if (!t.base) t.base = tripOpt().base;
+    if (!t.pace) t.pace = tripOpt().pace;
+    const o = {base: t.base, pace: t.pace, car: t.car};
+    const ids = all.filter(id => o.car || P(id).nocar !== "Car only"), left = all.filter(id => !ids.includes(id));
+    const rec = ids.length ? suggestDays(ids, o) : 1;
+    if (!t.days) t.days = Math.min(Math.max(myTrip.days.filter(d => d.length).length, 1) > 1 ? myTrip.days.filter(d => d.length).length : rec, Math.max(1, ids.length));
+    const D = Math.min(t.days, Math.max(1, ids.length));
+    const res = autoPlan(ids, D, o), plans = res.map(d => dayPlan(d, o));
+    t.res = res; if (t.pday == null || t.pday >= res.length) t.pday = 0;
+    const late = plans.map((p, k) => p.over ? k : -1).filter(k => k >= 0);
+    const rare = !o.car ? ids.filter(id => rareNote(P(id))) : [];
+    const warn = [
+      left.length ? `<p><b>Left out:</b> ${left.map(id => esc(shortName(P(id)))).join(", ")} ${left.length > 1 ? "need" : "needs"} a car. Choose Rental car to include ${left.length > 1 ? "them" : "it"}. ${left.length > 1 ? "They stay" : "It stays"} in Ideas.</p>` : "",
+      late.length ? `<p><b>${late.map(k => `Day ${k + 1}`).join(", ")} ${late.length > 1 ? "run" : "runs"} late.</b> Try ${D < 7 && D < ids.length ? `${D + 1} days, ` : ""}a packed pace, or take a place out.</p>` : "",
+      rare.length ? `<p><b>Few trains:</b> ${rare.map(id => esc(shortName(P(id)))).join(", ")}. Trains come about every 1 to 2 hours, so check the times.</p>` : ""].join("");
+    const nmax = Math.min(7, Math.max(1, ids.length));
+    const cur = plans[t.pday];
+    return {title: "Plan my route", snap: "half",
+      body: `<p class="sub">${all.length} place${all.length > 1 ? "s" : ""} from your trip and Ideas. The app sorts them into the shortest loop, splits it into days and sets the times.</p>
+        <div class="psec">Days</div>
+        <div class="chips2">${Array.from({length: nmax}, (_, k) => `<button data-pdays="${k + 1}" aria-pressed="${D === k + 1}">${k + 1} day${k ? "s" : ""}${k + 1 === rec ? '<span class="rec">★</span>' : ""}</button>`).join("")}</div>
+        <p class="psug">★ ${rec} day${rec > 1 ? "s" : ""} fit${rec > 1 ? "" : "s"} these places at a ${PACES[o.pace].label.toLowerCase()} pace</p>
+        <div class="psec">Start and end each day at</div>
+        <div class="chips2">${STATIONS.map(st => `<button data-pbase="${st.id}" aria-pressed="${st.id === o.base}">${esc(st.name.replace(/ Stn$/, ""))}</button>`).join("")}</div>
+        <div class="psec">Getting around</div>
+        ${seg("pcar", [["0", "No car"], ["1", "Rental car"]], o.car ? "1" : "0")}
+        <div class="psec">Pace</div>
+        ${seg("ppace", Object.entries(PACES).map(([k, v]) => [k, v.label]), o.pace)}
+        ${warn ? `<div class="pwarn">${warn}</div>` : ""}
+        <div class="psec">Your route</div>
+        ${res.length ? `<div class="days">${res.map((d, k) => `<button data-pday="${k}" aria-pressed="${k === t.pday}">Day ${k + 1} · ${d.length}</button>`).join("")}</div>
+        <div class="sum"><span>${clock(cur.start)} to ${clock(cur.end)}</span><span style="color:${cur.over ? "var(--must)" : "var(--muted)"}">${cur.over ? "Runs late" : `${dur(cur.budget - cur.len)} spare`}</span></div>
+        <div class="meter ${cur.over ? "over" : ""}"><i style="width:${Math.min(100, cur.len / cur.budget * 100)}%"></i></div>
+        ${timeline(cur)}` : '<div class="empty">Add at least one place you can reach.</div>'}`,
+      foot: res.length ? `<button class="cta" id="useplan">Use this plan</button><p class="fnote">Times are estimates. You can still move things around.</p>` : "",
+      bind(v){
+        const re = () => render({keepScroll: true});
+        sheet.querySelectorAll("[data-pdays]").forEach(b => b.onclick = () => { v.days = +b.dataset.pdays; v.pday = 0; re(); });
+        sheet.querySelectorAll("[data-pbase]").forEach(b => b.onclick = () => { v.base = b.dataset.pbase; re(); });
+        sheet.querySelectorAll("[data-pcar]").forEach(b => b.onclick = () => { v.car = b.dataset.pcar === "1"; v.days = null; re(); });
+        sheet.querySelectorAll("[data-ppace]").forEach(b => b.onclick = () => { v.pace = b.dataset.ppace; re(); });
+        sheet.querySelectorAll("[data-pday]").forEach(b => b.onclick = () => { v.pday = +b.dataset.pday; render({keepScroll: true, fit: true}); });
+        const u = $("#useplan"); if (u) u.onclick = () => {
+          myTrip.days = v.res.map(d => [...d]); myTrip.ideas = left; myTrip.done = [];
+          myTrip.opt = {base: v.base, pace: v.pace}; myTrip.car = v.car; myTrip.from = null; myDay = v.pday || 0;
+          persist(); back(); updateTeaser(); toast(`Your ${v.res.length}-day route is ready`);
+        };
       }};
   },
   shared(t){
